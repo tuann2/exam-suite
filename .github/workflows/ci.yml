@@ -1,0 +1,175 @@
+name: CI
+
+# Chỉ chạy tay (Actions → CI → Run workflow) hoặc khi gắn tag phát hành. Lý do ban đầu (Nt0 quyết 2026-10-16, khi repo
+# còn private): tiết kiệm phút Actions (job macOS tính gấp 10). Repo public chạy Actions miễn phí trên runner của GitHub;
+# bật CI cho PR là quyết định sau của Nt0. Bằng chứng merge hằng ngày là commit status `local/verify` do
+# scripts/verify_local.sh ghi (docs/process/review-and-merge.md mục 2).
+#
+# Mỗi sự kiện chạy một nhóm job (Nt0 chốt 2026-10-19, plan giai đoạn 6, Decisions):
+# - chạy tay (`workflow_dispatch`): chỉ hai job kiểm `core-linux`, `apps-macos`;
+# - gắn tag `v*` (`push`): chỉ job `release-dmg`. Hai job kiểm hiện "skipped", không tốn phút.
+# Chạy lại job hỏng của lần gắn tag: Re-run trên chính lần chạy đó (sự kiện vẫn là `push`); chạy tay với ref là tag
+# chỉ chạy hai job kiểm, không tạo Release.
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+# Nhóm theo cả sự kiện: chạy tay với ref là tag không huỷ lần chạy phát hành của chính tag đó (cùng ref, khác sự kiện).
+concurrency:
+  group: ci-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Mặc định chỉ đọc; chỉ `release-dmg` xin quyền ghi (tạo GitHub Release) ở cấp job.
+permissions:
+  contents: read
+
+jobs:
+  # Lõi thuần Foundation + schema + ranh giới: chạy trên Linux để agent cloud cũng
+  # dùng được cùng lệnh. Chỉ khi chạy tay (bước Linux của `local/verify` chạy cùng lệnh trong Docker `swift:6.1`).
+  core-linux:
+    name: ExamKit, schema, boundaries (Linux)
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    container: swift:6.1
+    # Thường chạy khoảng 1,5 phút. Trần 15 phút để job tự dừng nếu ZIPFoundation 0.9.20
+    # treo trên Linux với luồng deflate hỏng (docs/decisions/0006-thu-vien-ngoai.md),
+    # thay vì chờ mặc định 6 giờ của GitHub.
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - name: Install python3 + jsonschema
+        run: |
+          apt-get update -q
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -q python3 python3-jsonschema
+      - name: Run core checks
+        run: scripts/check.sh --core
+
+  # Giao diện và hai target app: cần macOS + Xcode. Build cả hai target để chứng
+  # minh bản Học viên link được mà không có AuthoringFeature. Chỉ khi chạy tay.
+  apps-macos:
+    name: ExamFeatures + hai target app (macOS)
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: macos-15
+    # Thường chạy khoảng 2–2,5 phút; thời gian chờ runner không tính vào trần này.
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - name: Select Xcode
+        run: |
+          sudo xcode-select -s "$(ls -d /Applications/Xcode_27*.app /Applications/Xcode_26*.app /Applications/Xcode_16*.app 2>/dev/null | sort -V | tail -1)/Contents/Developer"
+          xcodebuild -version
+      # Lõi cũng chạy trên macOS vì app thật chạy ở đây: bắt khác biệt Foundation giữa
+      # Linux và macOS (JSON, chuẩn hoá Unicode của dấu vân tay câu). Nt0 duyệt 2026-10-15.
+      - name: Test core package (macOS)
+        run: swift test --package-path Packages/ExamKit
+      - name: Test feature package
+        run: swift test --package-path Packages/ExamFeatures
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate project
+        run: xcodegen generate
+      - name: Build Student app
+        run: |
+          xcodebuild -project ExamSuite.xcodeproj -scheme ExamSuite -configuration Debug \
+            -destination 'platform=macOS,arch=arm64' -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO build | tail -20
+      - name: Build Admin app
+        run: |
+          xcodebuild -project ExamSuite.xcodeproj -scheme ExamSuiteAdmin -configuration Debug \
+            -destination 'platform=macOS,arch=arm64' -derivedDataPath build/DerivedData \
+            CODE_SIGNING_ALLOWED=NO build | tail -20
+      - name: Student app must not contain authoring code (ADR 0003)
+        run: scripts/check_bundle_boundary.sh build/DerivedData/Build/Products/Debug
+
+  # Phát hành (plan giai đoạn 6; ADR 0004): CHỈ khi gắn tag `v*` (sự kiện `push`; chỉ Nt0 đẩy tag), không khi chạy tay.
+  # Từ v0.1.1 (repo public, Nt0 chốt 2026-10-20) DMG của GitHub Release là DMG do job này đóng; tải thêm DMG đóng tại chỗ
+  # lên Release sau đó là tuỳ chọn. Đóng hai DMG bằng đúng script đóng tại chỗ (scripts/make_dmg.sh --clean: build Release,
+  # kiểm ranh giới hai bản và code UI test, ký ad-hoc, hdiutil verify, codesign trên app trong DMG) rồi tạo GitHub Release
+  # đính hai DMG; ghi chú phát hành lấy từ mục của phiên bản trong CHANGELOG.md, kèm macOS/Xcode của runner và sha256 của
+  # hai DMG. Tag có dấu "-" (v0.2.0-beta.1) là bản phát hành thử (prerelease).
+  #
+  # Là job duy nhất chạy khi gắn tag (Nt0 chốt 2026-10-19); trước đó đã không chờ hai job kiểm (Nt0 chốt 2026-10-18,
+  # review độc lập #58 S1): `apps-macos` chạy cả snapshot test, ảnh tham chiếu ghi trên macOS 26 / Xcode 27 nên runner có
+  # thể đỏ vì môi trường; `core-linux` cần mạng (apt-get) và có trần thời gian cho lỗi treo của ZIPFoundation trên Linux.
+  # Bằng chứng cho SHA gắn tag là `scripts/verify_local.sh --clean --uitest` trên Mac của người điều phối (cổng G3), không
+  # phải các job này.
+  #
+  # DMG của job này được build lại trên image macOS và Xcode của GitHub, nên KHÔNG trùng từng byte với DMG đóng tại chỗ bằng
+  # scripts/make_dmg.sh từ cùng commit (cùng số build). Với v0.1.0, Nt0 test tay G3 trên DMG beta build 349 (9fff274), cùng
+  # mã app với commit gắn tag, không phải trên DMG của commit gắn tag (plan giai đoạn 6, Result). Runner `macos-15` có thể
+  # dùng Xcode khác máy người điều phối (bước Select Xcode chọn bản mới nhất có sẵn); thiếu SDK mà project cần thì job lỗi,
+  # DMG đóng tại chỗ vẫn là bản dùng được.
+  release-dmg:
+    name: DMG và GitHub Release (tag v*)
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    runs-on: macos-15
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          # Số build = 1000 + số commit của HEAD (scripts/make_dmg.sh, `--print-build`): cần đủ lịch sử, không checkout
+          # nông (make_dmg.sh dừng khi repo là clone nông).
+          fetch-depth: 0
+      # Dừng ngay (trước bước build ~15 phút) khi tag không khớp phiên bản của app: tag phải là v<MARKETING_VERSION> hoặc
+      # v<MARKETING_VERSION>-<nhãn> (prerelease), mọi chỗ khai báo MARKETING_VERSION trong project.yml cùng một giá trị.
+      - name: Tag must match MARKETING_VERSION
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version="${TAG#v}"
+          base="${version%%-*}"
+          declared="$(sed -n 's/^[[:space:]]*MARKETING_VERSION:[[:space:]]*"\{0,1\}\([^"[:space:]]*\)"\{0,1\}[[:space:]]*$/\1/p' project.yml | sort -u)"
+          if [[ -z "$declared" || "$declared" != "$base" ]]; then
+            echo "Tag $TAG không khớp MARKETING_VERSION trong project.yml ($(echo $declared)): không build, không tạo Release" >&2
+            exit 1
+          fi
+          echo "Tag $TAG khớp MARKETING_VERSION $base"
+      - name: Select Xcode
+        run: |
+          sudo xcode-select -s "$(ls -d /Applications/Xcode_27*.app /Applications/Xcode_26*.app /Applications/Xcode_16*.app 2>/dev/null | sort -V | tail -1)/Contents/Developer"
+          sw_vers
+          xcodebuild -version
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Build, check and package two DMGs
+        run: scripts/make_dmg.sh --clean --out dist
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          version="${TAG#v}"
+          base="${version%%-*}"
+          student="dist/ExamSuite-$base.dmg"
+          admin="dist/ExamSuiteAdmin-$base.dmg"
+          if [[ ! -f "$student" || ! -f "$admin" ]]; then
+            echo "Tag $TAG không khớp phiên bản của app (MARKETING_VERSION trong project.yml): $(ls dist)" >&2
+            exit 1
+          fi
+          awk -v version="$base" '
+            index($0, "## [" version "]") == 1 { found = 1; next }
+            found && /^## \[/ { exit }
+            found { print }
+          ' CHANGELOG.md > release-notes.md
+          [[ -s release-notes.md ]] || echo "Xem CHANGELOG.md." > release-notes.md
+          {
+            echo
+            echo "## Bản build"
+            echo
+            echo "DMG đóng trên runner GitHub từ commit $GITHUB_SHA (build $(scripts/make_dmg.sh --print-build)); không trùng từng byte với DMG đóng tại chỗ bằng scripts/make_dmg.sh từ cùng commit."
+            echo
+            echo "- Runner: macOS $(sw_vers -productVersion) ($(sw_vers -buildVersion)), $(xcodebuild -version | tr '\n' ' ')"
+            echo "- Lần chạy: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+            for dmg in "$student" "$admin"; do
+              echo "- \`$(basename "$dmg")\` sha256 \`$(shasum -a 256 "$dmg" | cut -c1-64)\`"
+            done
+          } >> release-notes.md
+          prerelease=()
+          if [[ "$version" == *-* ]]; then prerelease=(--prerelease); fi
+          # --verify-tag: tag phải có sẵn trên GitHub (job chạy vì tag đó); không có thì dừng, không để gh tự tạo tag mới
+          # trên nhánh mặc định.
+          gh release create "$TAG" "$student" "$admin" --verify-tag --title "Exam Suite $version" \
+            --notes-file release-notes.md ${prerelease[@]+"${prerelease[@]}"}

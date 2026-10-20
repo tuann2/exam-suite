@@ -1,0 +1,36 @@
+{
+  "description": "Kết luận mong đợi cho mọi fixture, ràng buộc cả scripts/validate_exam.py (kiểm bằng scripts/check_validator_parity.py) lẫn app (test Swift ExamValidatorParityTests). Khoá: đường dẫn dưới fixtures/ không có đuôi (exams/<tên> = exams/<tên>/exam.json kèm media/ của nó; invalid/<tên> = invalid/<tên>.json). Giá trị: valid = không có error (có thể có warning), script đậu; error = model giải mã được, ExamValidator báo error; undecodable = model (JSONDecoder) từ chối; examfile = model giải mã được, ExamValidator không báo gì, ExamFile chế độ nghiêm (bản Học viên) từ chối (phiên bản, trường lạ). Mọi giá trị khác valid: script phải báo error. whiteSpace: tập code point Unicode White_Space (khoảng trắng của ExamValidator.isBlank), dạng XXXX hoặc XXXX-YYYY.",
+  "whiteSpace": [
+    "0009-000D",
+    "0020",
+    "0085",
+    "00A0",
+    "1680",
+    "2000-200A",
+    "2028-2029",
+    "202F",
+    "205F",
+    "3000"
+  ],
+  "verdicts": {
+    "exams/bien-khoang-trang": "valid",
+    "exams/kien-thuc-chung": "valid",
+    "exams/toi-thieu": "valid",
+    "invalid/code-trailing-newline": "error",
+    "invalid/correct-not-in-options": "error",
+    "invalid/duplicate-id-case": "error",
+    "invalid/duplicate-question-id": "error",
+    "invalid/future-version": "examfile",
+    "invalid/image-bad-name": "error",
+    "invalid/image-trailing-newline": "error",
+    "invalid/missing-correct": "undecodable",
+    "invalid/one-option": "error",
+    "invalid/option-ids-out-of-order": "error",
+    "invalid/pass-percent-decimal": "undecodable",
+    "invalid/single-with-two-correct": "error",
+    "invalid/unknown-question-field": "examfile",
+    "invalid/unknown-top-level-field": "examfile",
+    "invalid/whitespace-only-option": "error",
+    "invalid/whitespace-only-title": "error"
+  }
+}

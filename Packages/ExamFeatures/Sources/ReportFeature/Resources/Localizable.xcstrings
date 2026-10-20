@@ -1,0 +1,426 @@
+{
+  "sourceLanguage" : "vi",
+  "strings" : {
+    "(tiếp)" : {
+      "comment" : "PDF: chữ nhỏ dưới nhãn A/B/C của phần sau khi một lựa chọn quá dài bị tách sang trang sau (\"continued\")",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "(continued)"
+          }
+        }
+      }
+    },
+    "%@ – Kết quả" : {
+      "comment" : "Siêu dữ liệu PDF kết quả: Title",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ – Results"
+          }
+        }
+      }
+    },
+    "%@ (có đáp án)" : {
+      "comment" : "Tên file gợi ý: PDF đề có đáp án",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ (with answers)"
+          }
+        }
+      }
+    },
+    "%@ (đề)" : {
+      "comment" : "Tên file gợi ý: PDF đề không đáp án",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ (questions only)"
+          }
+        }
+      }
+    },
+    "%@ (tiếp)" : {
+      "comment" : "PDF: tiêu đề khối (ví dụ Theo phần) lặp lại ở trang sau khi khối bị tách (\"continued\")",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ (continued)"
+          }
+        }
+      }
+    },
+    "%lld câu" : {
+      "comment" : "PDF: số câu (phần xem lại của PDF kết quả; mỗi phần của PDF đề)",
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld question"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld questions"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Bạn chọn" : {
+      "comment" : "PDF: đánh dấu lựa chọn của người làm",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your answer"
+          }
+        }
+      }
+    },
+    "Câu %lld (tiếp)" : {
+      "comment" : "PDF: đầu phần sau của khối câu bị tách sang trang sau (\"Question 12 (continued)\")",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Question %lld (continued)"
+          }
+        }
+      }
+    },
+    "Câu %lld/%lld" : {
+      "comment" : "PDF: số câu trên tổng số câu",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Question %1$lld of %2$lld"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Câu %1$lld/%2$lld"
+          }
+        }
+      }
+    },
+    "Câu sai và chưa làm" : {
+      "comment" : "PDF kết quả: mức xem lại mặc định",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Incorrect and unanswered questions"
+          }
+        }
+      }
+    },
+    "Đã đánh dấu" : {
+      "comment" : "PDF: câu đã đánh dấu khi làm bài",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flagged"
+          }
+        }
+      }
+    },
+    "Đang chuẩn bị trang…" : {
+      "comment" : "Tiến độ xuất PDF: đang xếp trang",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Preparing pages…"
+          }
+        }
+      }
+    },
+    "Đang dựng trang %lld…" : {
+      "comment" : "Tiến độ xuất PDF",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rendering page %lld…"
+          }
+        }
+      }
+    },
+    "Đáp án đúng" : {
+      "comment" : "PDF: đánh dấu lựa chọn đúng",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correct answer"
+          }
+        }
+      }
+    },
+    "Đề này ẩn đáp án: chỉ hiện lựa chọn của bạn và kết quả đúng/sai." : {
+      "comment" : "PDF kết quả: dòng trên câu của đề hideAnswers",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This exam hides answers: only your answers and whether they were correct are shown."
+          }
+        }
+      }
+    },
+    "Exam Suite %@" : {
+      "comment" : "Siêu dữ liệu PDF: Creator",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exam Suite %@"
+          }
+        }
+      }
+    },
+    "File PDF vừa ghi bị lỗi, có thể do ổ đĩa đầy." : {
+      "comment" : "Hộp báo lỗi Xuất PDF: file PDF vừa ghi không đọc lại được (thường do ổ đĩa đầy giữa chừng)",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The PDF file that was just written is damaged, possibly because the disk is full."
+          }
+        }
+      }
+    },
+    "Giải thích" : {
+      "comment" : "PDF: tiêu đề khung giải thích",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Explanation"
+          }
+        }
+      }
+    },
+    "Kết quả" : {
+      "comment" : "PDF kết quả: dòng phụ trên tên đề ở đầu trang đầu (\"Results\")",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Results"
+          }
+        }
+      }
+    },
+    "Kết quả luyện tập, không có giá trị xác nhận" : {
+      "comment" : "Chân trang PDF kết quả",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Practice result, not an official certification"
+          }
+        }
+      }
+    },
+    "Không" : {
+      "comment" : "PDF kết quả: mức phần xem lại = không có phần xem lại (\"None\"), không phải câu trả lời Có/Không",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "None"
+          }
+        }
+      }
+    },
+    "Không chuẩn bị được bản in." : {
+      "comment" : "Hộp báo lỗi In…: không tạo được thao tác In từ PDF đã dựng",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t prepare the document for printing."
+          }
+        }
+      }
+    },
+    "Không có câu nào." : {
+      "comment" : "PDF kết quả: mức xem lại Tất cả câu mà không có câu nào",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No questions."
+          }
+        }
+      }
+    },
+    "Không có câu sai hoặc chưa làm." : {
+      "comment" : "PDF kết quả: phần xem lại trống",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No incorrect or unanswered questions."
+          }
+        }
+      }
+    },
+    "Không có quyền ghi vào thư mục đã chọn." : {
+      "comment" : "Hộp báo lỗi Xuất PDF: không có quyền ghi vào thư mục chọn trong hộp Lưu",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You don’t have permission to write to the selected folder."
+          }
+        }
+      }
+    },
+    "Không ghi được file PDF." : {
+      "comment" : "Hộp báo lỗi Xuất PDF: lỗi ghi file khác (lý do chung)",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t write the PDF file."
+          }
+        }
+      }
+    },
+    "Không hiện được ảnh của câu này" : {
+      "comment" : "PDF: ảnh không giải mã được",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t show this question’s image"
+          }
+        }
+      }
+    },
+    "Không tìm thấy thư mục đã chọn." : {
+      "comment" : "Hộp báo lỗi Xuất PDF: thư mục chọn trong hộp Lưu không còn",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The selected folder can’t be found."
+          }
+        }
+      }
+    },
+    "Ngưỡng đậu" : {
+      "comment" : "PDF kết quả: nhãn",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passing score"
+          }
+        }
+      }
+    },
+    "Ổ đĩa đã chọn chỉ đọc." : {
+      "comment" : "Hộp báo lỗi Xuất PDF: ổ đĩa của thư mục đã chọn chỉ đọc",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The selected disk is read-only."
+          }
+        }
+      }
+    },
+    "Ổ đĩa không còn đủ chỗ trống." : {
+      "comment" : "Hộp báo lỗi Xuất PDF: ổ đĩa đầy",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There isn’t enough free space on the disk."
+          }
+        }
+      }
+    },
+    "Phần yếu nhất" : {
+      "comment" : "PDF kết quả: nhãn phần có % thấp nhất",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weakest section"
+          }
+        }
+      }
+    },
+    "Tất cả câu" : {
+      "comment" : "PDF kết quả: xem lại mọi câu",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All questions"
+          }
+        }
+      }
+    },
+    "Theo phần" : {
+      "comment" : "PDF kết quả: đề mục bảng theo phần",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "By Section"
+          }
+        }
+      }
+    },
+    "Trang %lld/%lld" : {
+      "comment" : "Chân trang PDF: số trang",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Page %1$lld of %2$lld"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Trang %1$lld/%2$lld"
+          }
+        }
+      }
+    },
+    "Xem lại bài" : {
+      "comment" : "PDF kết quả: đề mục phần xem lại",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Answer Review"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

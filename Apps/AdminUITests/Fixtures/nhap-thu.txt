@@ -1,0 +1,23 @@
+Đề tự soạn cho UI test Import đề… (bản Admin). Dòng này nằm trước câu đầu tiên nên bị bỏ qua.
+
+Q1:
+Thủ đô của Việt Nam là thành phố nào?
+A. Hà Nội
+B. Huế
+C. Đà Nẵng
+Correct Answer: A
+Explanation: Hà Nội là thủ đô của Việt Nam.
+
+Q2:
+Những giao thức nào dùng cho thư điện tử (email)?
+A. SMTP
+B. IMAP
+C. HTTP
+D. FTP
+Correct Answer: A,B
+Ghi chú lạc giữa dòng đáp án và dòng giải thích.
+Explanation: SMTP gửi thư, IMAP đọc thư trên máy chủ.
+
+Q3:
+Câu này không có lựa chọn nào nên bị bỏ khi import.
+Correct Answer: A

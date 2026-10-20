@@ -1,0 +1,17 @@
+Exam Suite
+Copyright 2026 Nt0
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+This product includes software developed by third parties:
+
+  ZIPFoundation (https://github.com/weichsel/ZIPFoundation)
+  Copyright (c) 2017-2025 Thomas Zoechling (https://www.peakstep.com)
+  Licensed under the MIT License; the full license text is in
+  THIRD_PARTY_NOTICES.md (THIRD_PARTY_NOTICES.txt in each DMG).
+
+The source repository also contains agent-harness files (AI agent guidance and tools)
+from repository-harness (https://github.com/hoangnb24/repository-harness)
+Copyright (c) 2025 Hoang Nguyen
+Licensed under the MIT License; see THIRD_PARTY_NOTICES.md. These files are not
+part of the apps.

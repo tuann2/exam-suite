@@ -1,0 +1,43 @@
+# Harness core maintenance binary
+scripts/bin/harness
+scripts/bin/harness.exe
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Packages/*/.build/
+Package.resolved.bak
+
+# Xcode (project is generated from project.yml by XcodeGen)
+*.xcodeproj
+*.xcworkspace
+xcuserdata/
+DerivedData/
+*.xcresult
+
+# Build output
+build/
+dist/
+*.dmg
+
+# macOS
+.DS_Store
+
+# Python helper scripts
+__pycache__/
+*.pyc
+
+# Local secrets and overrides
+.env
+*.local.yml
+
+# Info.plist sinh bởi XcodeGen từ project.yml
+Apps/*/Info.plist
+
+# Worktree tạm của Claude Code agent
+.claude/worktrees/
+
+# File đề thật dùng thử import (có bản quyền của bên thứ ba): chỉ để tại máy, không vào git (import.md)
+docs/archive/*.vce
+docs/archive/*.txt
+docs/archive/*.docx

@@ -1,0 +1,157 @@
+{
+  "formatVersion": 1,
+  "id": "0b6c1f8e-4d2a-4c1b-9f3e-2a7d5e8c1b40",
+  "title": "Kiến thức chung",
+  "code": "KTC01",
+  "passPercent": 70,
+  "timeLimitMinutes": 30,
+  "hideAnswers": false,
+  "instructions": "Trả lời **tất cả** các câu. Câu nhiều đáp án phải chọn đủ.",
+  "sections": [
+    {
+      "id": "5e1d3b2a-7c4f-4e8d-9a1b-3c5d7e9f1a2b",
+      "title": "Vật lý",
+      "questions": [
+        {
+          "id": "a91c2d3e-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+          "type": "single",
+          "text": "Đơn vị đo cường độ dòng điện là gì?",
+          "image": "media/9d5dc894e10f060d.png",
+          "options": [
+            {
+              "id": "A",
+              "text": "Vôn"
+            },
+            {
+              "id": "B",
+              "text": "Ampe"
+            },
+            {
+              "id": "C",
+              "text": "Ôm"
+            },
+            {
+              "id": "D",
+              "text": "Oát"
+            }
+          ],
+          "correct": [
+            "B"
+          ],
+          "explanation": "Ampe (A) là đơn vị SI của cường độ dòng điện."
+        },
+        {
+          "id": "b12d3e4f-5a6b-4c7d-9e8f-0a1b2c3d4e5f",
+          "type": "multiple",
+          "text": "Những đại lượng nào sau đây là **vector**?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Vận tốc"
+            },
+            {
+              "id": "B",
+              "text": "Khối lượng"
+            },
+            {
+              "id": "C",
+              "text": "Lực"
+            },
+            {
+              "id": "D",
+              "text": "Nhiệt độ"
+            }
+          ],
+          "correct": [
+            "A",
+            "C"
+          ],
+          "explanation": "Vận tốc và lực có hướng; khối lượng và nhiệt độ là đại lượng vô hướng."
+        },
+        {
+          "id": "c23e4f5a-6b7c-4d8e-8f9a-1b2c3d4e5f6a",
+          "type": "single",
+          "text": "Tốc độ ánh sáng trong chân không xấp xỉ bao nhiêu?",
+          "options": [
+            {
+              "id": "A",
+              "text": "3 × 10^5 km/s"
+            },
+            {
+              "id": "B",
+              "text": "3 × 10^6 km/s"
+            },
+            {
+              "id": "C",
+              "text": "3 × 10^8 km/s"
+            }
+          ],
+          "correct": [
+            "A"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "6f2e4c3b-8d5a-4f9e-ab2c-4d6e8f0a2b3c",
+      "title": "Toán",
+      "questions": [
+        {
+          "id": "d34f5a6b-7c8d-4e9f-9a0b-2c3d4e5f6a7b",
+          "type": "single",
+          "text": "Giá trị của `2^10` là bao nhiêu?",
+          "options": [
+            {
+              "id": "A",
+              "text": "512"
+            },
+            {
+              "id": "B",
+              "text": "1024"
+            },
+            {
+              "id": "C",
+              "text": "2048"
+            }
+          ],
+          "correct": [
+            "B"
+          ],
+          "explanation": "2^10 = 1024."
+        },
+        {
+          "id": "e45a6b7c-8d9e-4f0a-8b1c-3d4e5f6a7b8c",
+          "type": "multiple",
+          "text": "Số nào sau đây là số nguyên tố?",
+          "options": [
+            {
+              "id": "A",
+              "text": "2"
+            },
+            {
+              "id": "B",
+              "text": "9"
+            },
+            {
+              "id": "C",
+              "text": "11"
+            },
+            {
+              "id": "D",
+              "text": "15"
+            },
+            {
+              "id": "E",
+              "text": "17"
+            }
+          ],
+          "correct": [
+            "A",
+            "C",
+            "E"
+          ]
+        }
+      ]
+    }
+  ]
+}

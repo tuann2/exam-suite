@@ -1,0 +1,62 @@
+{
+  "formatVersion": 1,
+  "id": "44444444-5555-4666-8777-888888888888",
+  "title": "Đề biên khoảng trắng",
+  "passPercent": 50,
+  "timeLimitMinutes": 5,
+  "instructions": "Đề mẫu kiểm biên: ký tự không phải Unicode White_Space không bị coi là trống.",
+  "sections": [
+    {
+      "id": "44444444-5555-4666-8777-000000000001",
+      "title": "\u00a0Phần A\u3000",
+      "questions": [
+        {
+          "id": "44444444-5555-4666-8777-000000000011",
+          "type": "single",
+          "text": "\u200b",
+          "options": [
+            {
+              "id": "A",
+              "text": "\u001c"
+            },
+            {
+              "id": "B",
+              "text": "\u180e"
+            },
+            {
+              "id": "C",
+              "text": "\ufeff"
+            }
+          ],
+          "correct": [
+            "A"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "44444444-5555-4666-8777-000000000002",
+      "title": "phần a",
+      "questions": [
+        {
+          "id": "44444444-5555-4666-8777-000000000021",
+          "type": "multiple",
+          "text": "Câu nhiều đáp án nhưng chỉ có một đáp án đúng (cảnh báo, không phải lỗi).",
+          "options": [
+            {
+              "id": "A",
+              "text": "Một"
+            },
+            {
+              "id": "B",
+              "text": "Hai"
+            }
+          ],
+          "correct": [
+            "B"
+          ]
+        }
+      ]
+    }
+  ]
+}

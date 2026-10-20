@@ -1,0 +1,344 @@
+{
+  "formatVersion": 1,
+  "id": "d55ecdea-98ea-446a-b3c3-9a9ce426be6d",
+  "title": "Làm quen với Exam Suite",
+  "code": "LAMQUEN",
+  "passPercent": 60,
+  "timeLimitMinutes": 10,
+  "hideAnswers": false,
+  "instructions": "Đề này giúp bạn **làm quen** với Exam Suite. Nên làm ở chế độ *Luyện tập* trước: chọn đáp án rồi bấm **Kiểm tra đáp án** để biết ngay đúng hay sai và đọc giải thích. Câu có nhiều đáp án đúng có ô đánh dấu kèm gợi ý số đáp án cần chọn (ví dụ *Chọn 2 đáp án*); câu đó chỉ được tính điểm khi bạn chọn **đúng và đủ**, không thiếu, không thừa.",
+  "sections": [
+    {
+      "id": "36d74840-8c6f-4452-84a2-01c1cd7654cf",
+      "title": "Luyện tập và Thi",
+      "questions": [
+        {
+          "id": "f2cabce8-e78c-4380-9769-e3bc6ec6bad7",
+          "type": "single",
+          "text": "Bạn muốn làm bài **không giới hạn thời gian**, và sau mỗi câu xem được ngay mình đúng hay sai kèm lời giải thích. Nên chọn chế độ nào?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Luyện tập"
+            },
+            {
+              "id": "B",
+              "text": "Thi"
+            },
+            {
+              "id": "C",
+              "text": "Chế độ nào cũng được, vì cả hai đều có nút Kiểm tra đáp án"
+            }
+          ],
+          "correct": [
+            "A"
+          ],
+          "explanation": "Chế độ **Luyện tập** không đếm ngược (chỉ hiện thời gian đã làm) và có nút **Kiểm tra đáp án**: bấm để xem ngay đúng hay sai và lời giải thích. Sau khi kiểm tra, đáp án của câu đó được khoá lại. Chế độ **Thi** có đồng hồ đếm ngược và không có Kiểm tra đáp án."
+        },
+        {
+          "id": "8e302f66-f38c-44a8-9171-3d877121de6a",
+          "type": "multiple",
+          "text": "Những điều nào sau đây đúng với chế độ **Thi**? (Chọn tất cả đáp án đúng.)",
+          "options": [
+            {
+              "id": "A",
+              "text": "Có đồng hồ đếm ngược; thời gian mặc định lấy từ đề và đổi được ở màn Trước khi thi"
+            },
+            {
+              "id": "B",
+              "text": "Có cảnh báo khi còn 5 phút và khi còn 1 phút"
+            },
+            {
+              "id": "C",
+              "text": "Có nút Kiểm tra đáp án để xem ngay đáp án của từng câu"
+            },
+            {
+              "id": "D",
+              "text": "Đồng hồ vẫn chạy trong lúc tạm dừng"
+            }
+          ],
+          "correct": [
+            "A",
+            "B"
+          ],
+          "explanation": "Chế độ Thi đếm ngược từ thời gian làm bài của đề (đổi được ở màn Trước khi thi) và cảnh báo khi còn 5 phút, khi còn 1 phút (bài thi từ 5 phút trở xuống thì không có cảnh báo 5 phút). Thi không có Kiểm tra đáp án. Khi tạm dừng, câu hỏi được che đi và đồng hồ dừng lại."
+        },
+        {
+          "id": "55b11ab7-daed-4119-ba79-d4936d06e67c",
+          "type": "single",
+          "text": "Đang làm bài ở chế độ Thi thì **hết giờ**. Điều gì xảy ra tiếp theo?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Bài được nộp ngay và hiện kết quả"
+            },
+            {
+              "id": "B",
+              "text": "Đồng hồ tự cộng thêm 5 phút để bạn làm tiếp"
+            },
+            {
+              "id": "C",
+              "text": "Bài làm bị huỷ, bạn phải làm lại từ đầu"
+            },
+            {
+              "id": "D",
+              "text": "App chuyển ngay sang màn Rà soát & nộp và báo đã hết giờ; đáp án bị khoá, bạn bấm Nộp bài để xem kết quả"
+            }
+          ],
+          "correct": [
+            "D"
+          ],
+          "explanation": "Hết giờ, app chuyển ngay sang màn **Rà soát & nộp** với dòng thông báo “Đã hết giờ. Xem lại rồi bấm Nộp bài”. Lúc này không sửa được đáp án, không quay lại làm bài và không tạm dừng được nữa, nhưng bạn vẫn xem được bảng rà soát trước khi bấm **Nộp bài**. App không tự nộp."
+        },
+        {
+          "id": "ec9b3e3d-bcf6-464a-9e47-15161bef3019",
+          "type": "single",
+          "text": "Bài thi có 10 câu và bạn làm đúng 7 câu. Màn kết quả hiển thị điểm thế nào?",
+          "options": [
+            {
+              "id": "A",
+              "text": "70% và 700 điểm trên thang 1000"
+            },
+            {
+              "id": "B",
+              "text": "7% và 70 điểm trên thang 1000"
+            },
+            {
+              "id": "C",
+              "text": "70% và 70 điểm trên thang 1000"
+            },
+            {
+              "id": "D",
+              "text": "7 điểm trên thang 10, không có phần trăm"
+            }
+          ],
+          "correct": [
+            "A"
+          ],
+          "explanation": "Điểm thang 1000 = số câu đúng × 1000 ÷ tổng số câu, lấy phần nguyên: 7 × 1000 ÷ 10 = 700. Phần trăm tính tương tự: 7 × 100 ÷ 10 = 70%. Màn **Kết quả** hiện cả hai, dạng “70% · 700/1000”."
+        },
+        {
+          "id": "562f1897-dfa7-428d-a471-5c6dd4114cb5",
+          "type": "single",
+          "text": "Đề có **ngưỡng đậu 60%** và bài thi có 10 câu. Bạn cần đúng ít nhất bao nhiêu câu để đậu?",
+          "options": [
+            {
+              "id": "A",
+              "text": "5 câu"
+            },
+            {
+              "id": "B",
+              "text": "6 câu"
+            },
+            {
+              "id": "C",
+              "text": "7 câu"
+            },
+            {
+              "id": "D",
+              "text": "Cả 10 câu"
+            }
+          ],
+          "correct": [
+            "B"
+          ],
+          "explanation": "Đậu khi điểm thang 1000 đạt ít nhất ngưỡng đậu × 10, tức 600 điểm. Đúng 6 câu được 600 điểm (60%) nên đậu; đúng 5 câu chỉ được 500 điểm. Đề làm quen này cũng có ngưỡng đậu 60%."
+        },
+        {
+          "id": "eefa8811-f9ef-461a-85fa-30666c217c37",
+          "type": "single",
+          "text": "Một câu nhiều đáp án có đáp án đúng là **A** và **C**. Bạn chọn A, C và D. Câu này được chấm thế nào?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Đúng, vì đã chọn đủ A và C"
+            },
+            {
+              "id": "B",
+              "text": "Đúng một phần, được nửa số điểm của câu"
+            },
+            {
+              "id": "C",
+              "text": "Sai, vì chọn thừa D"
+            }
+          ],
+          "correct": [
+            "C"
+          ],
+          "explanation": "Mỗi câu chỉ có đúng hoặc sai, không có điểm từng phần. Câu nhiều đáp án chỉ được tính đúng khi bạn chọn **đúng và đủ** các đáp án đúng: không thiếu, không thừa. Câu bỏ trống cũng tính là sai."
+        }
+      ]
+    },
+    {
+      "id": "28e5f19c-a61f-4255-b884-92979d85f4e4",
+      "title": "Thao tác",
+      "questions": [
+        {
+          "id": "119d7aca-cce4-498c-a294-16bc11f47ee7",
+          "type": "single",
+          "text": "Theo bảng phím tắt trong hình, khi đang làm bài bạn bấm phím nào để **tạm dừng** (câu hỏi được che đi, đồng hồ dừng lại)?",
+          "image": "media/0772eb0b19ebea97.png",
+          "options": [
+            {
+              "id": "A",
+              "text": "⌘D (Command + D)"
+            },
+            {
+              "id": "B",
+              "text": "⌘. (Command + dấu chấm)"
+            },
+            {
+              "id": "C",
+              "text": "Return"
+            },
+            {
+              "id": "D",
+              "text": "⌘Return (Command + Return)"
+            }
+          ],
+          "correct": [
+            "B"
+          ],
+          "explanation": "`⌘.` (Command + dấu chấm) dùng để tạm dừng và tiếp tục, như nút **Tạm dừng** trên thanh công cụ; khi đang tạm dừng có nút **Tiếp tục** (Return hoặc `⌘.`). Khi tạm dừng, nội dung câu hỏi được che và đồng hồ không chạy. Nếu máy Mac sắp ngủ, bài cũng tự tạm dừng và thời gian ngủ không bị tính. `⌘D` đánh dấu câu, `Return` sang câu tiếp theo, `⌘Return` mở màn **Rà soát & nộp**; bài chỉ được nộp khi bạn bấm **Nộp bài** ở màn đó."
+        },
+        {
+          "id": "9dd94c09-60e5-4cb2-86b3-cc8719be0e29",
+          "type": "single",
+          "text": "Bạn đã làm hết các câu nhưng còn vài câu muốn xem lại. Bấm `⌘Return` thì điều gì xảy ra?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Bài được nộp ngay lập tức"
+            },
+            {
+              "id": "B",
+              "text": "Chuyển sang câu tiếp theo"
+            },
+            {
+              "id": "C",
+              "text": "Thoát khỏi bài thi mà không lưu"
+            },
+            {
+              "id": "D",
+              "text": "Mở màn Rà soát & nộp: bạn xem lại bài, có thể quay lại sửa từng câu, rồi mới bấm Nộp bài"
+            }
+          ],
+          "correct": [
+            "D"
+          ],
+          "explanation": "`⌘Return` (hoặc nút **Rà soát & nộp** ở thanh dưới) mở màn **Rà soát & nộp**. Từ đây bạn bấm **Quay lại làm bài** (Esc) để làm tiếp, hoặc bấm số của một câu chưa làm hay đã đánh dấu để tới thẳng câu đó. Bài chỉ được nộp khi bạn bấm **Nộp bài**; nếu còn câu chưa làm, app hỏi lại trước khi nộp. Phím `Return` (không có ⌘) mới là sang câu tiếp theo."
+        },
+        {
+          "id": "268f2ebb-7349-4231-82a6-6b7dc440dca4",
+          "type": "single",
+          "text": "Sau khi nộp bài, bạn muốn luyện riêng những câu đã làm sai. Dùng chức năng nào?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Làm lại"
+            },
+            {
+              "id": "B",
+              "text": "Luyện lại câu sai"
+            },
+            {
+              "id": "C",
+              "text": "Khôi phục đề mẫu"
+            },
+            {
+              "id": "D",
+              "text": "Xoá đề khỏi thư viện rồi thêm lại"
+            }
+          ],
+          "correct": [
+            "B"
+          ],
+          "explanation": "**Luyện lại câu sai** (ở màn **Xem lại bài**, mở từ màn Kết quả) tạo một phiên Luyện tập chỉ gồm các câu bạn làm sai hoặc chưa làm. **Làm lại** (ở màn **Kết quả**) mở lại màn Trước khi thi với đúng lựa chọn của lần vừa làm, để làm lại với cùng cách chọn câu."
+        },
+        {
+          "id": "2b432e7f-52b4-4406-99d6-63a58622f9a3",
+          "type": "multiple",
+          "text": "Những cách nào sau đây thêm được file đề `.exam` vào thư viện? (Chọn tất cả đáp án đúng.)",
+          "options": [
+            {
+              "id": "A",
+              "text": "Bấm nút Thêm đề trên thanh công cụ (hoặc ⌘O) rồi chọn file"
+            },
+            {
+              "id": "B",
+              "text": "Kéo thả file .exam vào cửa sổ Thư viện"
+            },
+            {
+              "id": "C",
+              "text": "Gõ tên đề vào ô tìm kiếm (⌘F)"
+            },
+            {
+              "id": "D",
+              "text": "Ở bản Học viên: nhấp đúp file .exam trong Finder"
+            }
+          ],
+          "correct": [
+            "A",
+            "B",
+            "D"
+          ],
+          "explanation": "Có ba cách: nút **Thêm đề** trên thanh công cụ (hoặc ⌘O, menu File > Thêm đề…), kéo thả file vào cửa sổ, và ở bản Học viên thì nhấp đúp file trong Finder (bản Admin mở file từ Finder trong cửa sổ soạn đề). Ô tìm kiếm chỉ lọc những đề đã có trong thư viện. App dùng file tại chỗ, không chép file vào app."
+        },
+        {
+          "id": "c74e0674-d7e5-4ddb-a0ff-46a6aade1531",
+          "type": "single",
+          "text": "Bạn chọn **Xoá khỏi thư viện** cho một đề. Điều gì xảy ra?",
+          "options": [
+            {
+              "id": "A",
+              "text": "File .exam trên máy bị xoá vĩnh viễn"
+            },
+            {
+              "id": "B",
+              "text": "File được chuyển vào Thùng rác"
+            },
+            {
+              "id": "C",
+              "text": "Đề không còn trong thư viện, nhưng file và lịch sử thi vẫn còn; có thể hoàn tác ngay sau đó"
+            },
+            {
+              "id": "D",
+              "text": "Lịch sử các lần thi của đề đó bị xoá theo"
+            }
+          ],
+          "correct": [
+            "C"
+          ],
+          "explanation": "Xoá khỏi thư viện chỉ bỏ đề khỏi danh sách: **không xoá file, không xoá lịch sử thi**. Ngay sau đó có thông báo kèm nút **Hoàn tác** (hoặc bấm ⌘Z). Đề mẫu đã xoá có thể lấy lại bằng mục **Khôi phục đề mẫu** trong menu Trợ giúp."
+        },
+        {
+          "id": "8e53b23e-c31c-4409-a3f7-efe5f2d268d3",
+          "type": "single",
+          "text": "Bạn muốn xem điểm các lần thi trước của mình. Tìm ở đâu?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Mục Lịch sử thi ở thanh bên của cửa sổ Thư viện"
+            },
+            {
+              "id": "B",
+              "text": "Menu Trợ giúp"
+            },
+            {
+              "id": "C",
+              "text": "Bên trong file .exam của đề"
+            },
+            {
+              "id": "D",
+              "text": "Không xem được, app không lưu kết quả"
+            }
+          ],
+          "correct": [
+            "A"
+          ],
+          "explanation": "Mục **Lịch sử thi** ở thanh bên liệt kê mọi lần thi, mới nhất trước, kèm chế độ, điểm và đậu hay trượt; chọn một lần thi (nhấp đúp hoặc Return) để mở lại **Kết quả** của lần đó. Thẻ đề cũng hiện lần thi gần nhất. Kết quả chỉ lưu trên máy của bạn, không ghi vào file đề."
+        }
+      ]
+    }
+  ]
+}

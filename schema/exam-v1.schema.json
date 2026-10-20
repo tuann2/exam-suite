@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/tuann2/exam-suite/schema/exam-v1.schema.json",
+  "title": "Exam Suite exam.json, formatVersion 1",
+  "description": "File exam.json nằm ở gốc gói zip .exam. Ảnh nằm trong thư mục media/ của gói và được tham chiếu bằng đường dẫn tương đối. Các ràng buộc liên trường (đáp án đúng phải nằm trong options, id lựa chọn không trùng, id câu không trùng) do ExamKit kiểm tra; xem docs/product/exam-format.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["formatVersion", "id", "title", "passPercent", "timeLimitMinutes", "sections"],
+  "properties": {
+    "formatVersion": {
+      "description": "Phiên bản định dạng. App từ chối file có phiên bản lớn hơn phiên bản nó hiểu.",
+      "const": 1
+    },
+    "id": { "$ref": "#/$defs/uuid" },
+    "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "code": {
+      "description": "Mã đề ngắn hiển thị trong thư viện, ví dụ KTC01.",
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._-]{1,32}$"
+    },
+    "passPercent": {
+      "description": "Ngưỡng đậu theo phần trăm câu đúng, số nguyên 0–100. Đậu khi điểm thang 1000 >= passPercent × 10 (docs/product/scoring.md).",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "timeLimitMinutes": {
+      "description": "Thời gian mặc định cho chế độ Exam, phút. Người dùng có thể đổi ở màn Trước khi thi.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 600
+    },
+    "hideAnswers": {
+      "description": "true: khoá chế độ Practice và không hiện đáp án/giải thích khi xem lại.",
+      "type": "boolean",
+      "default": false
+    },
+    "instructions": {
+      "description": "Hướng dẫn hiện ở màn Trước khi thi. Markdown cơ bản (đậm, nghiêng, code).",
+      "type": "string",
+      "maxLength": 4000
+    },
+    "sections": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/section" }
+    }
+  },
+  "$defs": {
+    "uuid": {
+      "type": "string",
+      "format": "uuid",
+      "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+    },
+    "optionId": {
+      "description": "Chữ cái A–Z, theo thứ tự xuất hiện trong options.",
+      "type": "string",
+      "pattern": "^[A-Z]$"
+    },
+    "section": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "questions"],
+      "properties": {
+        "id": { "$ref": "#/$defs/uuid" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "questions": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/question" }
+        }
+      }
+    },
+    "question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "text", "options", "correct"],
+      "properties": {
+        "id": { "$ref": "#/$defs/uuid" },
+        "type": {
+          "description": "single: đúng một đáp án; multiple: phải chọn đúng toàn bộ tập đáp án.",
+          "type": "string",
+          "enum": ["single", "multiple"]
+        },
+        "text": {
+          "description": "Nội dung câu hỏi, Markdown cơ bản.",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 10000
+        },
+        "image": {
+          "description": "Đường dẫn tương đối trong gói, dạng media/<hash>.<ext>.",
+          "type": "string",
+          "pattern": "^media/[a-f0-9]{16,64}\\.(png|jpg|jpeg|gif|webp|heic)$"
+        },
+        "options": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 26,
+          "items": { "$ref": "#/$defs/option" }
+        },
+        "correct": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/optionId" }
+        },
+        "explanation": {
+          "description": "Lời giải thích hiện sau Check answer hoặc khi xem lại. Markdown cơ bản.",
+          "type": "string",
+          "maxLength": 10000
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "const": "single" } } },
+          "then": { "properties": { "correct": { "maxItems": 1 } } }
+        }
+      ]
+    },
+    "option": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "text"],
+      "properties": {
+        "id": { "$ref": "#/$defs/optionId" },
+        "text": { "type": "string", "minLength": 1, "maxLength": 4000 }
+      }
+    }
+  }
+}

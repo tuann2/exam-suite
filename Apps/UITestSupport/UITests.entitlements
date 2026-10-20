@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Dùng chung cho ExamSuiteUITests (Học viên) và ExamSuiteAdminUITests (Admin). Trình chạy UI test bị sandbox: thư mục tạm của nó nằm trong container riêng, app (không sandbox) đọc
+	     vào đó có thể bị macOS hỏi quyền "truy cập dữ liệu của app khác". Vì vậy mỗi test tạo thư mục tạm
+	     riêng dưới /private/tmp/ (IsolatedApp) và chỉ được ghi ở đó. -->
+	<key>com.apple.security.temporary-exception.files.absolute-path.read-write</key>
+	<array>
+		<string>/private/tmp/</string>
+	</array>
+</dict>
+</plist>

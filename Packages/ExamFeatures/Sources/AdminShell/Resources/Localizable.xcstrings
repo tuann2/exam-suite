@@ -1,0 +1,56 @@
+{
+  "sourceLanguage" : "vi",
+  "strings" : {
+    "Đề mới" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New Exam"
+          }
+        }
+      }
+    },
+    "Đề mới (⌘N)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "New Exam (⌘N)"
+          }
+        }
+      }
+    },
+    "Mở để sửa…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open for Editing…"
+          }
+        }
+      }
+    },
+    "Mở gần đây" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Recent"
+          }
+        }
+      }
+    },
+    "Xoá danh sách" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear Menu"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

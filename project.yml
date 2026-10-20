@@ -1,0 +1,200 @@
+# Xcode project cho hai bản app, sinh bằng XcodeGen: `xcodegen generate`.
+# Không commit *.xcodeproj. Ranh giới hai bản app: docs/decisions/0003.
+name: ExamSuite
+options:
+  bundleIdPrefix: vn.io.nt0
+  deploymentTarget:
+    macOS: "15.0"
+  createIntermediateGroups: true
+  generateEmptyDirectories: true
+  # Tiếng Việt là ngôn ngữ nguồn (docs/product/accessibility-localization.md): developmentRegion = vi, knownRegions
+  # gồm vi và en (en có vì InfoPlist.xcstrings của mỗi app có bản en). Mỗi app phải có cả vi.lproj và en.lproj ở bundle
+  # chính: chữ của package đi theo ngôn ngữ mà bundle chính chọn (spike giai đoạn 5, docs/notes/g5-spike-pdf-l10n.md).
+  developmentLanguage: vi
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    SWIFT_STRICT_CONCURRENCY: complete
+    MACOSX_DEPLOYMENT_TARGET: "15.0"
+    ARCHS: arm64
+    EXCLUDED_ARCHS: x86_64
+    ENABLE_HARDENED_RUNTIME: YES
+    # Ký ad-hoc cho beta riêng; đổi sang Developer ID khi có tài khoản (ADR 0004).
+    CODE_SIGN_STYLE: Manual
+    CODE_SIGN_IDENTITY: "-"
+    DEVELOPMENT_TEAM: ""
+    # Đuôi bundle ID của hai bản app: rỗng ở mọi build thường. Chỉ UI test build với
+    # `EXAMSUITE_BUNDLE_ID_SUFFIX=.uitest` (scripts/verify_local.sh --uitest), để AppKit ghi vị trí cửa sổ,
+    # thanh chia, đề mở gần đây… vào defaults `vn.io.nt0.examsuite.uitest` / `vn.io.nt0.examsuite.admin.uitest`
+    # thay vì defaults của bản thật. App ở chế độ cô lập (`-ExamSuiteUITest`) từ chối chạy dưới bundle ID thật,
+    # và bản build có đuôi mà thiếu tham số cô lập thì dừng (LibraryData/AppLaunchStorage.swift; AppLaunchStorageTests
+    # kiểm hai dòng PRODUCT_BUNDLE_IDENTIFIER bên dưới).
+    EXAMSUITE_BUNDLE_ID_SUFFIX: ""
+    # Vai của app với file `.exam` (LSHandlerRank trong Info.plist): build thường lấy
+    # EXAMSUITE_DOC_HANDLER_RANK_NORMAL của từng target (Học viên Alternate, Admin Owner); build UI test (đuôi
+    # `.uitest`, `:identifier` đổi thành `_uitest`) lấy EXAMSUITE_DOC_HANDLER_RANK_NORMAL_uitest = None, để bản `.uitest`
+    # trong DerivedData không bao giờ được LaunchServices chọn mở `.exam` từ Finder (nó sẽ dừng vì thiếu tham số).
+    EXAMSUITE_DOC_HANDLER_RANK: $(EXAMSUITE_DOC_HANDLER_RANK_NORMAL$(EXAMSUITE_BUNDLE_ID_SUFFIX:identifier))
+    EXAMSUITE_DOC_HANDLER_RANK_NORMAL_uitest: None
+packages:
+  ExamFeatures:
+    path: Packages/ExamFeatures
+targets:
+  ExamSuite:
+    type: application
+    platform: macOS
+    sources:
+      - Apps/Student
+    dependencies:
+      # Chỉ StudentShell (ADR 0003); scripts/check_boundaries.py kiểm khối này.
+      - package: ExamFeatures
+        product: StudentShell
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: vn.io.nt0.examsuite$(EXAMSUITE_BUNDLE_ID_SUFFIX)
+        EXAMSUITE_DOC_HANDLER_RANK_NORMAL: Alternate
+        PRODUCT_NAME: Exam Suite
+        MARKETING_VERSION: "0.1.1"
+        # Số build: 1 khi build tay; scripts/make_dmg.sh truyền 1000 + số commit của HEAD (`git rev-list --count HEAD`) lúc
+        # build bản đóng DMG, không sửa repo mỗi lần (plan giai đoạn 6, bước 1; độ lệch 1000 từ repo public 2026-10-20).
+        CURRENT_PROJECT_VERSION: "1"
+        # Biểu tượng tạm (teal, chữ E) trong Apps/Student/Assets.xcassets, vẽ bằng scripts/make_icons.swift.
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    info:
+      path: Apps/Student/Info.plist
+      properties:
+        # Chuỗi hiện cho người dùng của Info.plist có bản vi/en trong Apps/<app>/InfoPlist.xcstrings (giá trị ở đây là
+        # bản gốc và là khoá của catalog): tên kiểu tài liệu vi "Đề Exam Suite", en "Exam Suite Exam"; tên app không dịch
+        # (scripts/check_localization.py --built-apps kiểm app đã build theo catalog).
+        CFBundleDevelopmentRegion: $(DEVELOPMENT_LANGUAGE)
+        CFBundleDisplayName: Exam Suite
+        CFBundleName: Exam Suite
+        # Phiên bản và số build lấy từ cài đặt build (XcodeGen mặc định ghi cứng "1.0" và "1"): MARKETING_VERSION,
+        # CURRENT_PROJECT_VERSION (scripts/make_dmg.sh truyền 1000 + số commit của HEAD).
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSMinimumSystemVersion: "15.0"
+        NSHumanReadableCopyright: "© 2026 Nt0"
+        # Bản Học viên: chỉ xem (Viewer). Kiểu `.exam` do bản Admin export; ở đây import.
+        CFBundleDocumentTypes:
+          - CFBundleTypeName: Exam Suite Exam
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: $(EXAMSUITE_DOC_HANDLER_RANK)
+            LSItemContentTypes:
+              - vn.io.nt0.exam
+        UTImportedTypeDeclarations:
+          - UTTypeIdentifier: vn.io.nt0.exam
+            UTTypeDescription: Exam Suite Exam
+            UTTypeConformsTo:
+              - com.pkware.zip-archive
+            UTTypeTagSpecification:
+              public.filename-extension:
+                - exam
+  # XCUITest cho bản Học viên: luồng bàn phím 1–3 của docs/product/overview.md. Lái app ở chế độ cô lập (kho,
+  # đề mẫu, cài đặt trong thư mục tạm; chỉ build Debug). Chạy trên Mac của người điều phối bằng
+  # `scripts/verify_local.sh --uitest`, không vào CI. Cần quyền Accessibility/Automation cho trình chạy test.
+  ExamSuiteUITests:
+    type: bundle.ui-testing
+    platform: macOS
+    sources:
+      - Apps/StudentUITests
+      # Dùng chung với ExamSuiteAdminUITests: IsolatedApp, lái bàn phím, đề mẫu.
+      - Apps/UITestSupport
+    dependencies:
+      - target: ExamSuite
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: vn.io.nt0.examsuite.uitests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: ExamSuite
+        # Trình chạy test (sandbox) chỉ ghi thêm được /private/tmp/, nơi mỗi test tạo thư mục tạm riêng.
+        CODE_SIGN_ENTITLEMENTS: Apps/UITestSupport/UITests.entitlements
+        # Ký ad-hoc không có Team ID: hardened runtime (library validation) chặn trình chạy nạp bundle test.
+        ENABLE_HARDENED_RUNTIME: NO
+  ExamSuiteAdmin:
+    type: application
+    platform: macOS
+    sources:
+      - Apps/Admin
+    dependencies:
+      - package: ExamFeatures
+        product: AdminShell
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: vn.io.nt0.examsuite.admin$(EXAMSUITE_BUNDLE_ID_SUFFIX)
+        EXAMSUITE_DOC_HANDLER_RANK_NORMAL: Owner
+        PRODUCT_NAME: Exam Suite Admin
+        MARKETING_VERSION: "0.1.1"
+        # Số build: như bản Học viên (scripts/make_dmg.sh).
+        CURRENT_PROJECT_VERSION: "1"
+        # Biểu tượng tạm (burgundy, chữ A) trong Apps/Admin/Assets.xcassets, vẽ bằng scripts/make_icons.swift.
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    info:
+      path: Apps/Admin/Info.plist
+      properties:
+        # Chuỗi hiện cho người dùng của Info.plist có bản vi/en trong Apps/<app>/InfoPlist.xcstrings (giá trị ở đây là
+        # bản gốc và là khoá của catalog): tên kiểu tài liệu vi "Đề Exam Suite", en "Exam Suite Exam"; tên app không dịch
+        # (scripts/check_localization.py --built-apps kiểm app đã build theo catalog).
+        CFBundleDevelopmentRegion: $(DEVELOPMENT_LANGUAGE)
+        CFBundleDisplayName: Exam Suite Admin
+        CFBundleName: Exam Suite Admin
+        # Phiên bản và số build lấy từ cài đặt build (XcodeGen mặc định ghi cứng "1.0" và "1"): MARKETING_VERSION,
+        # CURRENT_PROJECT_VERSION (scripts/make_dmg.sh truyền 1000 + số commit của HEAD).
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSMinimumSystemVersion: "15.0"
+        NSHumanReadableCopyright: "© 2026 Nt0"
+        # Bản Admin: chủ sở hữu kiểu file, vai Editor.
+        CFBundleDocumentTypes:
+          - CFBundleTypeName: Exam Suite Exam
+            CFBundleTypeRole: Editor
+            LSHandlerRank: $(EXAMSUITE_DOC_HANDLER_RANK)
+            LSItemContentTypes:
+              - vn.io.nt0.exam
+        UTExportedTypeDeclarations:
+          - UTTypeIdentifier: vn.io.nt0.exam
+            UTTypeDescription: Exam Suite Exam
+            UTTypeConformsTo:
+              - com.pkware.zip-archive
+            UTTypeTagSpecification:
+              public.filename-extension:
+                - exam
+  # XCUITest cho bản Admin, cùng cách chạy với ExamSuiteUITests (chế độ cô lập, chỉ build Debug, bundle ID
+  # `vn.io.nt0.examsuite.admin.uitest`; `scripts/verify_local.sh --uitest`, không vào CI): mở app cô lập, luồng 4, 5
+  # của docs/product/overview.md, Import đề… với file tự soạn (Apps/AdminUITests/Fixtures, chép vào bundle test).
+  ExamSuiteAdminUITests:
+    type: bundle.ui-testing
+    platform: macOS
+    sources:
+      - Apps/AdminUITests
+      - Apps/UITestSupport
+    dependencies:
+      - target: ExamSuiteAdmin
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: vn.io.nt0.examsuite.admin.uitests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: ExamSuiteAdmin
+        CODE_SIGN_ENTITLEMENTS: Apps/UITestSupport/UITests.entitlements
+        ENABLE_HARDENED_RUNTIME: NO
+schemes:
+  ExamSuite:
+    build:
+      targets:
+        ExamSuite: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - ExamSuiteUITests
+  ExamSuiteAdmin:
+    build:
+      targets:
+        ExamSuiteAdmin: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - ExamSuiteAdminUITests

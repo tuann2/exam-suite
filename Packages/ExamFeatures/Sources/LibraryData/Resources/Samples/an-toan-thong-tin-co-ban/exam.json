@@ -1,0 +1,655 @@
+{
+  "formatVersion": 1,
+  "id": "c1ad3171-dafe-4291-a8b7-12537edbd94d",
+  "title": "An toàn thông tin cơ bản",
+  "code": "ATTT01",
+  "passPercent": 70,
+  "timeLimitMinutes": 20,
+  "hideAnswers": false,
+  "instructions": "Kiến thức phổ thông về an toàn thông tin cho nhân viên văn phòng, gồm 3 phần: mật khẩu và đăng nhập, thư điện tử và lừa đảo, thiết bị và dữ liệu. Câu có nhiều đáp án đúng ghi rõ *Chọn tất cả đáp án đúng*; câu đó chỉ được tính điểm khi bạn chọn **đúng và đủ**, không thiếu, không thừa. Tên miền và địa chỉ trong đề (đuôi `.example`, `.test`) chỉ để minh hoạ. Khi quy định của công ty bạn khác với nội dung ở đây, hãy làm theo quy định của công ty.",
+  "sections": [
+    {
+      "id": "d1d720f8-fe9d-493a-88e5-79d68c378315",
+      "title": "Mật khẩu và đăng nhập",
+      "questions": [
+        {
+          "id": "625f6bfb-891b-43c0-a08b-98341ad7f5e5",
+          "type": "single",
+          "text": "Mật khẩu nào sau đây **mạnh nhất**?",
+          "options": [
+            {
+              "id": "A",
+              "text": "12345678"
+            },
+            {
+              "id": "B",
+              "text": "Password1!"
+            },
+            {
+              "id": "C",
+              "text": "Minh@1990"
+            },
+            {
+              "id": "D",
+              "text": "dua-hau-tim-ban-phim-mua-dong-ca-voi"
+            }
+          ],
+          "correct": [
+            "D"
+          ],
+          "explanation": "Độ dài là yếu tố quan trọng nhất. Một cụm mật khẩu dài ghép từ nhiều từ ngẫu nhiên, không liên quan tới bạn, khó đoán hơn nhiều so với mật khẩu ngắn, mật khẩu phổ biến như `Password1!` hay tên ghép năm sinh. Đừng dùng lại đúng ví dụ trong đề."
+        },
+        {
+          "id": "35a47824-996e-4c76-9821-d704563b1304",
+          "type": "single",
+          "text": "Bạn có tài khoản ở hơn chục trang web và ứng dụng. Cách quản lý mật khẩu nào **an toàn nhất**?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Dùng chung một mật khẩu thật mạnh cho mọi tài khoản"
+            },
+            {
+              "id": "B",
+              "text": "Dùng một mật khẩu gốc, mỗi trang thêm một con số ở cuối"
+            },
+            {
+              "id": "C",
+              "text": "Dùng trình quản lý mật khẩu để tạo và lưu một mật khẩu mạnh, riêng cho từng tài khoản"
+            },
+            {
+              "id": "D",
+              "text": "Ghi tất cả mật khẩu vào tờ giấy dán cạnh màn hình"
+            }
+          ],
+          "correct": [
+            "C"
+          ],
+          "explanation": "Khi một trang bị lộ dữ liệu, kẻ gian sẽ thử ngay mật khẩu đó và các biến thể dễ đoán của nó ở những trang khác. Trình quản lý mật khẩu tạo và ghi nhớ mật khẩu riêng cho từng nơi; bạn chỉ cần nhớ một mật khẩu chính thật mạnh. Ở công ty, hãy dùng công cụ được bộ phận CNTT cho phép."
+        },
+        {
+          "id": "b9a0042a-14b9-4c14-80e0-138bcbc6aa86",
+          "type": "single",
+          "text": "**Xác thực đa yếu tố** (MFA) là gì?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Đăng nhập bằng mật khẩu, rồi xác nhận thêm bằng một yếu tố khác như mã trên điện thoại, khoá bảo mật hoặc vân tay"
+            },
+            {
+              "id": "B",
+              "text": "Dùng hai mật khẩu khác nhau cho cùng một tài khoản"
+            },
+            {
+              "id": "C",
+              "text": "Đổi mật khẩu mỗi tháng một lần"
+            },
+            {
+              "id": "D",
+              "text": "Đăng nhập cùng lúc trên nhiều thiết bị"
+            }
+          ],
+          "correct": [
+            "A"
+          ],
+          "explanation": "MFA kết hợp ít nhất hai loại yếu tố khác nhau: thứ bạn biết (mật khẩu), thứ bạn có (điện thoại, khoá bảo mật) và đặc điểm của bạn (vân tay, khuôn mặt). Hai mật khẩu vẫn chỉ là một loại yếu tố. Nhờ MFA, kẻ gian biết mật khẩu của bạn vẫn khó đăng nhập."
+        },
+        {
+          "id": "c7190dac-e554-44f7-942c-3f01677efb63",
+          "type": "single",
+          "text": "Điện thoại của bạn liên tục hiện yêu cầu **xác nhận đăng nhập** (MFA) trong khi bạn không đăng nhập ở đâu cả. Bạn nên làm gì?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Bấm chấp nhận để thông báo ngừng hiện"
+            },
+            {
+              "id": "B",
+              "text": "Từ chối, đổi mật khẩu tài khoản đó và báo ngay cho bộ phận CNTT"
+            },
+            {
+              "id": "C",
+              "text": "Tắt MFA để không bị làm phiền nữa"
+            },
+            {
+              "id": "D",
+              "text": "Bỏ qua, vì đã có MFA thì không sao"
+            }
+          ],
+          "correct": [
+            "B"
+          ],
+          "explanation": "Yêu cầu xác nhận mà bạn không tự tạo ra thường là dấu hiệu có người đã biết mật khẩu của bạn và đang thử đăng nhập, có khi cố tình gửi liên tục để bạn bấm nhầm. Đừng chấp nhận; hãy đổi mật khẩu và báo cho bộ phận CNTT."
+        },
+        {
+          "id": "9965e358-af24-4294-92c0-915eccfea7d6",
+          "type": "multiple",
+          "text": "Những thông tin nào **không nên** dùng để đặt mật khẩu? (Chọn tất cả đáp án đúng.)",
+          "options": [
+            {
+              "id": "A",
+              "text": "Ngày sinh của bạn hoặc người thân"
+            },
+            {
+              "id": "B",
+              "text": "Một cụm nhiều từ ngẫu nhiên, không liên quan đến bạn"
+            },
+            {
+              "id": "C",
+              "text": "Tên con, tên thú cưng"
+            },
+            {
+              "id": "D",
+              "text": "Số điện thoại"
+            }
+          ],
+          "correct": [
+            "A",
+            "C",
+            "D"
+          ],
+          "explanation": "Thông tin cá nhân dễ tìm thấy trên mạng xã hội hoặc đoán ra được, nên kẻ gian thử chúng đầu tiên. Cụm từ ngẫu nhiên, đủ dài, không gắn với bạn mới là lựa chọn tốt."
+        },
+        {
+          "id": "fe0c3556-31ed-4104-a876-39f018470d80",
+          "type": "single",
+          "text": "Trường hợp nào bạn **cần đổi mật khẩu ngay**?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Mỗi lần khởi động lại máy tính"
+            },
+            {
+              "id": "B",
+              "text": "Khi nghi mật khẩu đã bị lộ, ví dụ lỡ nhập vào một trang giả hoặc dịch vụ bạn dùng báo bị rò rỉ dữ liệu"
+            },
+            {
+              "id": "C",
+              "text": "Không bao giờ, nếu mật khẩu đã đủ dài"
+            }
+          ],
+          "correct": [
+            "B"
+          ],
+          "explanation": "Các dấu hiệu lộ mật khẩu cần xử lý ngay: lỡ nhập vào trang giả, dịch vụ báo rò rỉ dữ liệu, thấy đăng nhập lạ. Nếu từng dùng mật khẩu đó ở nơi khác, đổi luôn ở những nơi đó. Mật khẩu dài đến đâu mà đã lộ thì cũng phải đổi."
+        },
+        {
+          "id": "95835c45-c209-4997-a8f3-f133776852b0",
+          "type": "single",
+          "text": "Đồng nghiệp xin mật khẩu tài khoản công việc của bạn để xử lý giúp việc gấp trong lúc bạn nghỉ phép. Bạn nên làm gì?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Gửi mật khẩu qua tin nhắn, đi làm lại thì đổi"
+            },
+            {
+              "id": "B",
+              "text": "Viết mật khẩu ra giấy để trên bàn cho đồng nghiệp"
+            },
+            {
+              "id": "C",
+              "text": "Chia sẻ, vì là người cùng công ty"
+            },
+            {
+              "id": "D",
+              "text": "Không chia sẻ mật khẩu; đề nghị người quản lý hoặc bộ phận CNTT cấp quyền phù hợp cho đồng nghiệp"
+            }
+          ],
+          "correct": [
+            "D"
+          ],
+          "explanation": "Mọi thao tác bằng tài khoản của bạn đều được ghi nhận là do bạn làm. Khi cần người làm thay, hãy nhờ cấp quyền hoặc chia sẻ đúng tài liệu cần thiết, không chia sẻ mật khẩu."
+        }
+      ]
+    },
+    {
+      "id": "4ea9089d-eaca-4cad-8b8a-a564f80c9437",
+      "title": "Thư điện tử và lừa đảo",
+      "questions": [
+        {
+          "id": "3a5c3ced-52c6-4bcf-a0af-afd684354932",
+          "type": "multiple",
+          "text": "Công ty bạn dùng tên miền `congty.example`. Bạn nhận được email như trong hình. Những dấu hiệu nào cho thấy đây có thể là email **lừa đảo**? (Chọn tất cả đáp án đúng.)",
+          "image": "media/c46d4163dd7243ee.png",
+          "options": [
+            {
+              "id": "A",
+              "text": "Email được gửi tới đúng địa chỉ công việc của bạn"
+            },
+            {
+              "id": "B",
+              "text": "Địa chỉ người gửi thuộc tên miền congty-baomat.test, không phải congty.example"
+            },
+            {
+              "id": "C",
+              "text": "Email thúc ép làm gấp và doạ khoá hộp thư"
+            },
+            {
+              "id": "D",
+              "text": "Nút Xác minh ngay dẫn tới một trang lạ, không thuộc congty.example"
+            }
+          ],
+          "correct": [
+            "B",
+            "C",
+            "D"
+          ],
+          "explanation": "Ba dấu hiệu điển hình: tên miền người gửi lạ (tên hiển thị như “Bộ phận CNTT” thì ai cũng tự đặt được), giọng thúc ép, doạ dẫm, và liên kết dẫn tới trang lạ để lấy mật khẩu. Email gửi đúng địa chỉ của bạn không chứng minh điều gì, vì địa chỉ email công việc rất dễ đoán hoặc tìm ra."
+        },
+        {
+          "id": "3493ed20-cd08-4d69-8463-5e61128e6aad",
+          "type": "single",
+          "text": "Bạn nghi một email là lừa đảo. Cách xử lý nào **đúng**?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Bấm thử vào liên kết để xem trang có thật không"
+            },
+            {
+              "id": "B",
+              "text": "Trả lời email để hỏi người gửi có đúng là họ không"
+            },
+            {
+              "id": "C",
+              "text": "Không bấm liên kết, không mở tệp đính kèm; báo cho bộ phận CNTT theo hướng dẫn của công ty"
+            },
+            {
+              "id": "D",
+              "text": "Chuyển tiếp cho cả phòng để mọi người cùng cảnh giác"
+            }
+          ],
+          "correct": [
+            "C"
+          ],
+          "explanation": "Bấm thử có thể dẫn tới trang lấy mật khẩu hoặc tải mã độc; trả lời thì cho kẻ gian biết địa chỉ của bạn đang hoạt động. Hãy báo cho bộ phận CNTT theo cách công ty hướng dẫn. Chuyển tiếp email cho nhiều người chỉ làm tăng khả năng có người bấm nhầm."
+        },
+        {
+          "id": "ec17a1e8-c49b-4a61-8f77-9da1706d8773",
+          "type": "single",
+          "text": "Email từ một địa chỉ lạ kèm tệp `HoaDon_thang10.pdf.exe`. Nhận định nào **đúng**?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Đây là tệp PDF bình thường, mở được an toàn"
+            },
+            {
+              "id": "B",
+              "text": "Đuôi thật của tệp là .exe: đây là chương trình chạy được giả làm tài liệu, không nên mở"
+            },
+            {
+              "id": "C",
+              "text": "Tệp an toàn vì email có logo và chữ ký của công ty"
+            },
+            {
+              "id": "D",
+              "text": "Tệp an toàn nếu máy đã cài phần mềm diệt virus"
+            }
+          ],
+          "correct": [
+            "B"
+          ],
+          "explanation": "Kẻ gian hay đặt tên tệp có hai đuôi để giả làm tài liệu; loại tệp thật được quyết định bởi đuôi cuối cùng. Không mở tệp chạy được nhận qua email mà bạn không chờ đợi. Logo, chữ ký rất dễ làm giả, và phần mềm diệt virus không chặn được mọi mã độc."
+        },
+        {
+          "id": "d2e8eecc-b3ca-456d-afad-74c487a518e5",
+          "type": "single",
+          "text": "Một người gọi điện xưng là nhân viên ngân hàng, nói đúng họ tên của bạn và đề nghị bạn đọc **mã OTP** vừa nhận qua tin nhắn để “huỷ một giao dịch lạ”. Bạn nên làm gì?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Đọc mã, vì người gọi đã biết đúng họ tên của bạn"
+            },
+            {
+              "id": "B",
+              "text": "Chỉ đọc một nửa mã cho an toàn"
+            },
+            {
+              "id": "C",
+              "text": "Gửi mã qua tin nhắn thay vì đọc qua điện thoại"
+            },
+            {
+              "id": "D",
+              "text": "Không đọc mã; gác máy rồi tự gọi số tổng đài chính thức của ngân hàng (in trên thẻ hoặc trên trang web chính thức)"
+            }
+          ],
+          "correct": [
+            "D"
+          ],
+          "explanation": "Ngân hàng hay bộ phận CNTT thật không bao giờ đề nghị bạn đọc mã OTP hay mật khẩu. Kẻ gian thường biết sẵn vài thông tin cá nhân để tạo lòng tin. Muốn kiểm tra, hãy tự gọi số chính thức, không gọi lại số vừa gọi đến."
+        },
+        {
+          "id": "46cd8bd0-faa4-45cf-82b1-6ddd9f31164f",
+          "type": "single",
+          "text": "Trước khi bấm một liên kết trong email, cách đơn giản để biết nó thực sự dẫn tới đâu là gì?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Rê chuột lên liên kết (không bấm) để xem địa chỉ thật hiện ra"
+            },
+            {
+              "id": "B",
+              "text": "Bấm thử rồi đóng ngay nếu thấy trang lạ"
+            },
+            {
+              "id": "C",
+              "text": "Xem liên kết có màu xanh và gạch chân không"
+            },
+            {
+              "id": "D",
+              "text": "Kiểm tra email có logo của công ty không"
+            }
+          ],
+          "correct": [
+            "A"
+          ],
+          "explanation": "Chữ hiển thị của liên kết có thể khác hẳn địa chỉ thật. Rê chuột để xem địa chỉ rồi kiểm tra kỹ tên miền. Đừng bấm thử: chỉ mở trang lừa đảo thôi cũng có thể đã gây hại."
+        },
+        {
+          "id": "a9819fa3-5fc6-4917-96ab-eca876801575",
+          "type": "single",
+          "text": "Địa chỉ nào sau đây thực sự thuộc tên miền `congty.example`?",
+          "options": [
+            {
+              "id": "A",
+              "text": "congty.example.dang-nhap.test/xac-minh"
+            },
+            {
+              "id": "B",
+              "text": "dang-nhap.congty.example/xac-minh"
+            },
+            {
+              "id": "C",
+              "text": "congty-example.test/dang-nhap"
+            },
+            {
+              "id": "D",
+              "text": "congtv.example/dang-nhap"
+            }
+          ],
+          "correct": [
+            "B"
+          ],
+          "explanation": "Tên miền nằm sau `://` (nếu có) và trước dấu `/`, `?` hoặc `#` đầu tiên; nếu đoạn đó có `@` thì chỉ tính phần sau dấu `@` cuối cùng, và bỏ số cổng ở cuối (như `:8443`). Ví dụ `https://congty.example@x.test/` thực chất dẫn tới `x.test`. Hãy đọc tên miền từ phải sang trái: `dang-nhap.congty.example` là tên miền con của `congty.example`. Kẻ gian hay đặt tên công ty ở đầu địa chỉ (`congty.example.dang-nhap.test` thực chất thuộc `dang-nhap.test`), dùng tên na ná (`congty-example.test`) hoặc thay một chữ cái (`congtv.example`)."
+        },
+        {
+          "id": "a20ec937-87de-4357-9588-993abe1f5982",
+          "type": "multiple",
+          "text": "Bạn nhận email có vẻ từ giám đốc: “Anh đang họp, em chuyển gấp 200 triệu cho đối tác theo số tài khoản bên dưới. Việc này cần giữ kín, đừng gọi lại.” Bạn nên làm gì? (Chọn tất cả đáp án đúng.)",
+          "options": [
+            {
+              "id": "A",
+              "text": "Chuyển ngay vì là chỉ đạo của giám đốc"
+            },
+            {
+              "id": "B",
+              "text": "Xác minh trực tiếp với giám đốc qua số điện thoại hoặc kênh liên lạc bạn đã biết từ trước"
+            },
+            {
+              "id": "C",
+              "text": "Làm đúng quy trình duyệt chi của công ty, dù được yêu cầu gấp"
+            },
+            {
+              "id": "D",
+              "text": "Trả lời chính email đó để hỏi lại cho chắc"
+            }
+          ],
+          "correct": [
+            "B",
+            "C"
+          ],
+          "explanation": "Đây là kiểu lừa đảo giả danh lãnh đạo: gấp, đòi giữ bí mật, né quy trình. Hãy xác minh qua một kênh độc lập và giữ đúng quy trình duyệt chi. Trả lời email đó rất có thể là đang nói chuyện với chính kẻ gian."
+        }
+      ]
+    },
+    {
+      "id": "2b25b72c-5bfe-4b43-acc4-5dd443cd23c4",
+      "title": "Thiết bị và dữ liệu",
+      "questions": [
+        {
+          "id": "d0833c43-85aa-44a2-b3b0-5d82ac1743f6",
+          "type": "single",
+          "text": "Máy tính thông báo có **bản cập nhật bảo mật** cho hệ điều hành. Bạn nên làm gì?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Lưu công việc rồi cài đặt sớm, vì bản cập nhật vá các lỗ hổng bảo mật"
+            },
+            {
+              "id": "B",
+              "text": "Tắt cập nhật tự động để máy chạy ổn định"
+            },
+            {
+              "id": "C",
+              "text": "Để vài tháng rồi cập nhật một thể"
+            },
+            {
+              "id": "D",
+              "text": "Chỉ cập nhật khi máy đã bị nhiễm mã độc"
+            }
+          ],
+          "correct": [
+            "A"
+          ],
+          "explanation": "Bản cập nhật bảo mật vá những lỗ hổng mà kẻ gian có thể đã biết và đang khai thác. Cập nhật sớm hệ điều hành, trình duyệt và ứng dụng là một trong những cách phòng vệ hiệu quả nhất. Nếu máy do công ty quản lý, hãy làm theo lịch cập nhật của bộ phận CNTT."
+        },
+        {
+          "id": "2d85d364-a69f-40cd-b45f-c676849b9238",
+          "type": "single",
+          "text": "Bạn rời bàn làm việc vài phút để đi lấy nước. Nên làm gì với máy tính?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Để nguyên, vì chỉ đi một lát"
+            },
+            {
+              "id": "B",
+              "text": "Khoá màn hình trước khi rời đi"
+            },
+            {
+              "id": "C",
+              "text": "Tắt nguồn màn hình rời là đủ"
+            },
+            {
+              "id": "D",
+              "text": "Giảm độ sáng màn hình xuống thấp nhất"
+            }
+          ],
+          "correct": [
+            "B"
+          ],
+          "explanation": "Chỉ vài phút là đủ để người khác đọc email, cài phần mềm hay gửi tin nhắn dưới tên bạn. Tắt màn hình rời không khoá máy. Hãy tập thói quen khoá màn hình bằng phím tắt mỗi khi rời chỗ và đặt máy tự khoá sau vài phút không dùng."
+        },
+        {
+          "id": "8a519c83-1ddd-4d7c-9fd0-2d7f6f2b4070",
+          "type": "single",
+          "text": "Quy tắc sao lưu **3-2-1** nghĩa là gì?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Giữ 3 bản dữ liệu, trên 2 loại phương tiện lưu trữ khác nhau, trong đó 1 bản để ở nơi khác"
+            },
+            {
+              "id": "B",
+              "text": "Sao lưu 3 lần mỗi ngày, giữ trong 2 ngày, sau 1 tuần thì xoá"
+            },
+            {
+              "id": "C",
+              "text": "Dùng 3 mật khẩu, 2 tài khoản, 1 máy tính"
+            },
+            {
+              "id": "D",
+              "text": "Chỉ sao lưu 3 thư mục quan trọng nhất, 2 tuần một lần, vào 1 ổ USB"
+            }
+          ],
+          "correct": [
+            "A"
+          ],
+          "explanation": "Giữ ít nhất 3 bản dữ liệu (bản gốc và 2 bản sao lưu), trên 2 loại phương tiện khác nhau (ví dụ ổ cứng ngoài và dịch vụ lưu trữ trực tuyến), trong đó 1 bản ở nơi khác. Nhờ vậy một sự cố như hỏng ổ, mất máy, hoả hoạn hay mã độc tống tiền không làm mất hết dữ liệu."
+        },
+        {
+          "id": "c4b97e7d-4b86-4917-94bf-294d111126e5",
+          "type": "single",
+          "text": "Vì sao nên **rút ổ cứng sao lưu** ra khỏi máy tính sau khi sao lưu xong?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Vì mã độc tống tiền có thể mã hoá cả ổ sao lưu đang cắm vào máy"
+            },
+            {
+              "id": "B",
+              "text": "Vì cắm lâu sẽ làm đầy ổ cứng của máy tính"
+            },
+            {
+              "id": "C",
+              "text": "Vì bản sao lưu tự xoá nếu ổ được cắm quá 24 giờ"
+            },
+            {
+              "id": "D",
+              "text": "Không cần rút, vì ổ sao lưu không thể bị ảnh hưởng"
+            }
+          ],
+          "correct": [
+            "A"
+          ],
+          "explanation": "Mã độc tống tiền mã hoá mọi dữ liệu nó truy cập được, kể cả ổ sao lưu đang kết nối. Hãy giữ ít nhất một bản sao lưu tách rời khỏi máy để còn khôi phục được, và thỉnh thoảng thử khôi phục để chắc bản sao lưu dùng được."
+        },
+        {
+          "id": "b799a68a-017f-447e-b09f-5807fec6ece3",
+          "type": "single",
+          "text": "Bạn cần làm việc với dữ liệu công ty khi đang ở quán cà phê có **Wi-Fi công cộng**. Cách làm nào an toàn hơn?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Kết nối vào bất kỳ mạng nào có tên giống tên quán"
+            },
+            {
+              "id": "B",
+              "text": "Tắt tường lửa để kết nối nhanh hơn"
+            },
+            {
+              "id": "C",
+              "text": "Bật chia sẻ thư mục để đồng nghiệp ngồi cùng bàn lấy tài liệu"
+            },
+            {
+              "id": "D",
+              "text": "Dùng VPN (mạng riêng ảo) do công ty cung cấp, hoặc phát mạng từ điện thoại của chính bạn"
+            }
+          ],
+          "correct": [
+            "D"
+          ],
+          "explanation": "Wi-Fi công cộng có thể bị giả mạo (kẻ gian phát mạng trùng tên quán) hoặc bị người cùng mạng theo dõi. VPN của công ty mã hoá đường truyền, còn mạng di động của chính bạn an toàn hơn mạng lạ. Luôn kiểm tra trang web dùng `https://` và tắt chia sẻ tệp khi ở nơi công cộng."
+        },
+        {
+          "id": "d6e04517-2e13-47ba-a985-b08a12e3bfb9",
+          "type": "single",
+          "text": "Bạn nhặt được một chiếc USB ở bãi gửi xe của công ty. Nên làm gì?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Cắm vào máy mình để xem của ai rồi trả lại"
+            },
+            {
+              "id": "B",
+              "text": "Cắm vào máy nhưng không mở tệp nào"
+            },
+            {
+              "id": "C",
+              "text": "Không cắm vào máy nào; giao cho bộ phận CNTT hoặc bảo vệ"
+            },
+            {
+              "id": "D",
+              "text": "Cắm vào máy dùng chung ở phòng họp cho an toàn"
+            }
+          ],
+          "correct": [
+            "C"
+          ],
+          "explanation": "USB lạ có thể chứa mã độc, hoặc là thiết bị giả làm bàn phím tự gõ lệnh ngay khi cắm vào, không cần bạn mở tệp nào. Kẻ gian đôi khi cố ý để USB ở nơi dễ nhặt. Hãy giao cho bộ phận CNTT xử lý."
+        },
+        {
+          "id": "1564959b-6994-4c36-9e06-afbd5cde18f0",
+          "type": "multiple",
+          "text": "Những việc nào giúp **hạn chế thiệt hại** nếu máy tính xách tay của bạn bị mất hoặc bị trộm? (Chọn tất cả đáp án đúng.)",
+          "options": [
+            {
+              "id": "A",
+              "text": "Bật mã hoá toàn bộ ổ đĩa"
+            },
+            {
+              "id": "B",
+              "text": "Đặt mật khẩu đăng nhập và cho máy tự khoá màn hình"
+            },
+            {
+              "id": "C",
+              "text": "Dán mật khẩu dưới đáy máy để khỏi quên"
+            },
+            {
+              "id": "D",
+              "text": "Sao lưu dữ liệu thường xuyên"
+            }
+          ],
+          "correct": [
+            "A",
+            "B",
+            "D"
+          ],
+          "explanation": "Mã hoá ổ đĩa và mật khẩu đăng nhập khiến người lấy được máy khó đọc dữ liệu; sao lưu giúp bạn không mất dữ liệu. Dán mật khẩu lên máy là vô hiệu hoá mọi lớp bảo vệ. Mất máy công ty thì báo ngay cho bộ phận CNTT."
+        },
+        {
+          "id": "218a7947-073b-44e6-84b2-4e3e46600c63",
+          "type": "single",
+          "text": "Bạn muốn mang một tệp có dữ liệu khách hàng về nhà để làm tiếp. Cách làm nào phù hợp?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Gửi tệp về hộp thư cá nhân"
+            },
+            {
+              "id": "B",
+              "text": "Chép vào USB cá nhân không mã hoá"
+            },
+            {
+              "id": "C",
+              "text": "Tải lên một trang chia sẻ tệp công khai rồi mở ở nhà"
+            },
+            {
+              "id": "D",
+              "text": "Dùng cách làm việc từ xa mà công ty cho phép, ví dụ VPN hoặc kho lưu trữ của công ty"
+            }
+          ],
+          "correct": [
+            "D"
+          ],
+          "explanation": "Dữ liệu khách hàng chỉ nên nằm trên hệ thống mà công ty quản lý. Hộp thư cá nhân, USB không mã hoá hay trang chia sẻ công khai đều dễ làm lộ dữ liệu và thường vi phạm quy định. Chưa rõ cách nào được phép thì hỏi người quản lý hoặc bộ phận CNTT."
+        },
+        {
+          "id": "dd647605-67bc-4c84-851d-8b177efca5fa",
+          "type": "single",
+          "text": "Bạn cần một phần mềm để chỉnh sửa tệp PDF cho công việc. Cách làm nào đúng?",
+          "options": [
+            {
+              "id": "A",
+              "text": "Tải bản bẻ khoá (crack) miễn phí trên mạng"
+            },
+            {
+              "id": "B",
+              "text": "Tải theo đường liên kết trong một email quảng cáo"
+            },
+            {
+              "id": "C",
+              "text": "Dùng phần mềm công ty cung cấp, hoặc nhờ bộ phận CNTT cài đặt"
+            },
+            {
+              "id": "D",
+              "text": "Nhờ người quen gửi bộ cài qua tin nhắn"
+            }
+          ],
+          "correct": [
+            "C"
+          ],
+          "explanation": "Phần mềm bẻ khoá hoặc từ nguồn không rõ ràng thường bị cài kèm mã độc, lại vi phạm bản quyền. Chỉ cài phần mềm từ nguồn chính thức và được công ty cho phép."
+        }
+      ]
+    }
+  ]
+}
