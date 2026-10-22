@@ -55,7 +55,10 @@ thuộc đã merge; không xếp chồng quá một tầng.
       `ExamComposer` (SplitMix64), `ExamSession` + phiên dở (`snapshot`/`restore`, `SnapshotCodec`), `AttemptPayload`,
       `QuestionFingerprint`, `ReviewItems`, Markdown cơ bản; oracle chung `fixtures/vectors/`, `fixtures/invalid-json/`,
       khoá `issueCodes` của `expected-verdicts.json`, test Swift đọc từ đó; 187 ca JUnit (85 ca oracle).
-- [ ] A2 `:data`
+- [x] A2 `:data` (PR này, rủi ro cao): kho Room v1 (`exam_entry`, `attempt`, `draft_session`; schema `data/schemas/.../1.json`),
+      `LibraryStore` (kho hỏng đổi tên), `ExamLibrary` (nhập nguyên tử, Cập nhật đề, xoá có Hoàn tác, dọn lúc mở app, đề mẫu,
+      lần thi, phiên dở), `LibraryQuery` (tìm không dấu, sắp xếp), `LibrarySettings` (DataStore); 29 ca Robolectric. Cùng
+      PR: `verify_local.sh` chọn mức kiểm theo file đổi (Decisions).
 - [ ] A3b Giao diện làm bài (chờ Nt0 chốt mức cỡ chữ, mobile.md Câu hỏi mở)
 - [ ] A3a Thư viện và nối luồng (chờ Nt0 chốt làm đề khác khi có phiên dở); cổng GA2
 - [ ] A4 Hoàn thiện và beta; cổng GA3
@@ -167,6 +170,62 @@ thuộc đã merge; không xếp chồng quá một tầng.
     `android/**` hay `fixtures/**`: đổi lõi Swift ở chỗ oracle chưa phủ không làm CI Kotlin đỏ, nên mọi đổi luật lõi đi
     qua oracle trước (ADR 0011). JSON mẫu payload phụ thuộc `fixtures/exams/kien-thuc-chung`: sửa fixture đó phải sinh lại
     JSON mẫu. A2 không thêm lần kiểm thứ ba "đề mẫu không có warning".
+
+- 2026-10-22, Nt0 (sau khi merge PR #2): `local/verify` không chạy lại toàn bộ app macOS cho PR Android. `verify_local.sh`
+  chọn mức theo file đổi (`scripts/verify_scope.py`): none (chỉ `android/`, tài liệu: chỉ kiểm danh tính git), core (oracle
+  và test lõi Swift mà test giao diện không đọc: `check.sh --core` + Linux, khoảng 1,5 phút), full (mọi thứ khác, file lạ,
+  cổng). Thử trên worktree tạm: commit chỉ tài liệu ra none (0,2 giây), commit chỉ `fixtures/README.md` ra core (85 giây).
+  Với bảng này A0 là none và A1 là core (trước đây cả hai chạy đủ bộ 6–9 phút). Làm trong PR của A2 (không mở PR riêng).
+
+- 2026-10-22, Nt0: khôi phục phiên dở đang hết giờ hay rà soát khoá thì giữ nguyên trạng thái (mobile.md, bảng Khác macOS).
+- 2026-10-22, A2, phiên bản: Room 2.8.5 (KSP 2.3.12, plugin `androidx.room` để xuất schema), sqlite-framework 2.6.2 (cùng
+  Room kéo theo, khai báo tường minh), DataStore Preferences 1.2.1 (1.3.0 mới phát hành, chưa đủ hai tuần), coroutines
+  1.11.0. Đều thuộc danh sách ADR 0012.
+- 2026-10-22, A2, JDK: **giữ JDK 17**, Robolectric chạy ở API 34 (kết luận spike A0). Tầng dữ liệu không dùng hành vi của
+  API 35+; nâng JDK 21 cả máy lẫn CI không đáng ở bước này.
+- 2026-10-22, A2, file đề: `files/exams/<examId>.exam`; nhập qua `exams/.incoming/<ngẫu nhiên>.part` có trần (1 GiB + 64
+  MiB: gói lớn hơn không thể đọc nghiêm được), đọc nghiêm, rồi đổi tên nguyên tử; ghi kho sau đổi tên. `recoverOnStart`
+  dọn file tạm, file không có mục, mục không còn file (bị can thiệp ngoài app: bỏ mục, lịch sử giữ lại) và đề chờ Hoàn tác
+  của lần trước. A3a gọi nó khi mở app.
+- 2026-10-22, A2, quy tắc dữ liệu (theo library.md, mobile.md; chỗ hai tài liệu không nói là lựa chọn kỹ thuật):
+  - Cùng id đề luôn trả `NeedsUpdateConfirmation`, kể cả cùng nội dung (mobile.md: luôn hỏi). Cập nhật đề giữ ngày thêm và
+    lịch sử thi, bỏ cờ đề mẫu (file là của người dùng).
+  - Xoá khỏi Thư viện: đánh dấu chờ Hoàn tác; `purgeRemoved` (A3a gọi khi hết thời gian Hoàn tác và lúc mở app) xoá file,
+    mục và phiên dở của đề đó; lịch sử thi giữ lại. Nhập lại đề đang chờ Hoàn tác thì xoá hẳn mục cũ rồi thêm như mới.
+  - Lưu lần thi xoá phiên dở của đề đó. Tên đề, mã đề lúc thi lưu ở lần thi (library.md: "tên đề lúc thi").
+  - Đề mẫu: mỗi thư mục assets đóng thành gói rồi đọc nghiêm như file của người dùng; đề đã có (cùng id) thì bỏ qua. Cờ
+    "đã tạo đề mẫu" ở `LibrarySettings`; A3a gọi `seedSamples` khi cờ chưa bật rồi bật cờ (xoá đề mẫu không tự tạo lại).
+- 2026-10-22, A2, kho hỏng (library.md, Lưu trữ): Android mặc định **xoá** kho SQLite hỏng. `LibraryStore` đổi tên thành
+  `library.db.broken-<thời điểm>` (cùng `-wal`, `-shm`) qua ba đường: đầu file không phải SQLite, truy vấn thử lỗi, và
+  `onCorruption` của bộ mở kho (thay cách xoá mặc định). Test phủ đường đầu file.
+- 2026-10-22, A2, schema: plugin Room ghi đè `1.json` mỗi lần build nên đổi bảng mà không tăng phiên bản không làm test
+  mở kho đỏ. Test khoá thêm dấu vân tay schema v1 (`V1_IDENTITY_HASH`); đối chứng âm: thêm một cột thì Room viết lại
+  `1.json` và test đỏ.
+- 2026-10-22, A2, review độc lập PR #3 (REQUEST CHANGES, hai lỗi chặn), đã sửa trong cùng PR:
+  - **C1**: `verify_scope.py` dùng `git diff` mặc định nhận đổi tên, nên chuyển đề mẫu hay file Swift vào `android/` bị xếp
+    mức none. Sửa: `--no-renames` và `core.quotePath=false`; tự kiểm dựng repo git tạm chuyển đề mẫu vào `android/` (đối
+    chứng âm: bỏ `--no-renames` thì đỏ; nội dung thử phải đủ dài, git không nhận file vài byte là đổi tên).
+  - **C2**: kho hỏng thì kho mới rỗng và `recoverOnStart` xoá mọi bản sao đề. Sửa: file đề chưa có mục mà đọc nghiêm được thì
+    nạp lại thành mục, chỉ xoá file không đọc được; `LibraryStore` chỉ cách ly khi SQLite báo kho hỏng hoặc Room không nhận
+    schema (kho của bản app khác), lỗi tạm thời ném `LibraryStoreException` cho giao diện báo; đổi tên thất bại thì không tạo
+    kho mới; kho hỏng phát hiện lúc chạy ghi `<tên>.recovered` để lần mở sau báo. Test: chuỗi kho hỏng rồi `recoverOnStart`
+    giữ đề.
+  - Không chặn, đã làm: Cập nhật đề ghi dấu `<examId>.updating`, `recoverOnStart` làm mới mục khi tắt giữa chừng; `Mutex`
+    cho mọi thao tác ghi (đối chứng âm: bỏ khoá ở `import` thì test nhập đồng thời đỏ 3/3 lần); đề mẫu lỗi không dừng cả
+    lượt; lần thi có chế độ lạ bị bỏ thay vì làm hỏng danh sách; mô tả status luôn mở đầu bằng tên mức; bỏ đoạn test lặp
+    luật khôi phục của lõi. Còn lại: `.broken-*` chưa tự dọn (cần quyết định giữ bao lâu); `Collator` tiếng Việt chỉ test
+    trên JVM, ICU của Android kiểm ở test emulator A3a.
+- 2026-10-22, A2, re-review trên dced5b3 (phiên agent mới): **APPROVE**. Gợi ý không chặn đã làm: dấu `.recovered` chỉ xoá
+  sau khi mở kho thành công và báo ngay ở lần mở phát hiện hỏng (N1); nhận đủ thông báo lệch schema của Room, test kho SQLite
+  thiếu bảng của Room và đối chứng âm lỗi tạm thời (N2); `recoverOnStart` chỉ xoá file đề khi lõi báo gói hỏng (N2); dấu
+  Cập nhật đề mà file chưa đổi (cùng SHA-256) thì không đổi gì (N3); xoá file thất bại thì giữ mục chờ xoá (N4). Còn lại:
+  đề mẫu được nạp lại sau khi kho hỏng mất cờ đề mẫu (N5, ảnh hưởng Khôi phục đề mẫu ở v1.1); `.broken-*` chưa tự dọn (N6);
+  `saveDraft` không nằm trong khoá ghi nên `loadDraft` ở A3a phải chịu được phiên dở của đề đã xoá.
+- 2026-10-22, Nt0: PR #3 **không chạy `local/verify` mức full** dù sửa script kiểm; lần chạy full đầu tiên làm ở PR macOS kế
+  tiếp (kiểm cả đường full mới của `verify_local.sh`). Bằng chứng của PR #3: check `android` của CI, danh tính git
+  (`verify_local.sh --check-identity`), hai lượt review độc lập.
+- 2026-10-22, A2, Robolectric: `AssetManager.list` của Robolectric trả đường dẫn đệ quy, của Android trả tên con trực
+  tiếp; `AssetSampleSource` lấy đoạn đầu rồi thử mở `exam.json` để đúng ở cả hai.
 
 ## Validation
 

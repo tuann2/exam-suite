@@ -30,8 +30,9 @@ thường. Flutter và Kotlin Multiplatform đều vẫn phải viết lại lõ
   (`Packages/ExamFeatures/Sources/LibraryData/Resources/Samples/`) tại chỗ, không chép.
 - **Bằng chứng merge** (Q8): workflow `.github/workflows/android.yml` chạy theo PR chạm `android/` hoặc oracle; check
   `android` xanh trên SHA cuối thay cho kiểm tại chỗ phần lint + test. PR chạm `android/app/**` và mọi cổng cần thêm
-  status `local/verify-android` (test Compose trên emulator, `android/scripts/check_android.sh --ui`). PR chạm cả phần
-  Swift cần thêm `local/verify` như cũ. Workflow `CI` của macOS không đổi.
+  status `local/verify-android` (test Compose trên emulator, `android/scripts/check_android.sh --ui`). Mọi PR vẫn có
+  `local/verify`, ở mức theo file đổi (2026-10-22, `scripts/verify_scope.py`): PR chỉ chạm `android/` và tài liệu chỉ kiểm
+  danh tính git, không chạy bước macOS. Workflow `CI` của macOS không đổi.
 - **Android trước, iOS sau** (Q13); iOS dùng lại lõi Swift (docs/product/plan-ios-v1.md).
 
 ## Alternatives Considered

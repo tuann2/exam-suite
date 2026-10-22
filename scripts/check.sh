@@ -46,7 +46,7 @@ $PY scripts/validate_exam.py "$LARGE_EXAM_DIR"/de-chuan-*/
 
 echo "== 3/5 ranh giới kiến trúc; chữ giao diện tra catalog của module (bundle: .module), catalog nguồn vi đủ bản en;"
 echo "       sheet không chặn thoát app; màu tự định nghĩa chỉ ở bảng màu; bộ đọc dòng Timing của measure_large.sh;"
-echo "       bảng map lớp UI test theo file đổi (uitest_plan.py)"
+echo "       bảng map lớp UI test theo file đổi (uitest_plan.py); mức kiểm của verify_local.sh (verify_scope.py)"
 $PY scripts/check_boundaries.py
 # --require-en (bật từ giai đoạn 5 bước 7c): mọi khoá của mọi catalog có bản en đã dịch, đúng đối số, plural đủ one/other.
 $PY scripts/check_localization.py --require-en
@@ -54,6 +54,7 @@ $PY scripts/check_quit_sheets.py
 $PY scripts/check_colors.py
 scripts/measure_large.sh --check-parser
 $PY scripts/uitest_plan.py --self-test
+$PY scripts/verify_scope.py --self-test
 
 if [[ "${1:-}" == "--core" || "$(uname -s)" != "Darwin" ]]; then
   echo "== 4/5 bỏ qua swift test Packages/ExamFeatures (chỉ macOS)"
