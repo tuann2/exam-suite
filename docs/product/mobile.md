@@ -20,13 +20,14 @@ ghi ở đây thì theo tài liệu macOS. Áp cho Android (docs/product/plan-an
 | Chủ đề | macOS (tài liệu gốc) | Mobile |
 | --- | --- | --- |
 | File đề trong Thư viện | Tham chiếu tại chỗ bằng bookmark; Không tìm thấy file, Tìm file…, Làm mới (library.md) | **Sao chép vào bộ nhớ riêng của app** khi thêm. Không có trạng thái mất file, Tìm file…, Làm mới. Xoá khỏi thư viện thì xoá bản sao, lịch sử giữ lại (như macOS) |
-| Thêm file cùng id đề | Cùng file: chọn đề đã có; khác file: Dùng file mới / Huỷ (library.md phương án 1) | Luôn hỏi **Cập nhật đề** / **Huỷ**; Cập nhật thay bản sao, lịch sử giữ lại; mỗi id đề một mục |
+| Thêm file cùng id đề | Cùng file: chọn đề đã có; khác file: Dùng file mới / Huỷ (library.md phương án 1) | Luôn hỏi **Cập nhật đề** / **Huỷ**; Cập nhật thay bản sao, lịch sử giữ lại; mỗi id đề một mục. Đề đó đang có bài làm dở thì hộp hỏi thêm dòng "Bài đang làm dở của đề này sẽ bị bỏ" và **Cập nhật đề luôn bỏ phiên dở** (Nt0 chốt 2026-10-22) |
 | Mở `.exam` từ app khác | Finder | Hộp chia sẻ và "Mở bằng" của hệ điều hành (Zalo, Drive, Files…). App nhận kiểu `application/octet-stream` (Android gán cho đuôi `.exam`) và zip, rồi tự kiểm đuôi và nội dung; file không phải đề thì báo, không thêm |
 | App xuống nền khi đang làm bài | Không tự tạm dừng (exam-taking.md phương án 11); đóng cửa sổ thì hỏi rồi bỏ bài, không lưu phiên dở (phương án 2) | **Tự tạm dừng** khi app xuống nền (cuộc gọi, khoá màn hình, chuyển app) ở cả Luyện tập và Thi; thời gian ở nền không bị trừ. **Lưu phiên dở**; mở lại app (kể cả sau khi hệ điều hành dừng app) thì về đúng câu ở trạng thái Tạm dừng. Nút Quay lại ở màn làm bài hỏi "Bỏ bài?" như macOS; Bỏ bài thì xoá phiên dở, không lưu gì |
 | Phiên dở khi khôi phục | Không có (không lưu phiên dở) | Phiên đang làm hay đang rà soát chưa khoá thì về **Tạm dừng**; phiên đã hết giờ hay đang rà soát khoá thì **giữ nguyên** trạng thái đó; thời gian đã làm đúng như lúc lưu (Nt0 chốt 2026-10-22) |
+| Làm đề khác khi đang có bài dở | Mỗi lúc một phiên; đưa cửa sổ đang làm lên trước (exam-taking.md phương án 6) | Mỗi lúc một phiên. Đang có bài dở của đề A mà bắt đầu đề B thì hỏi "Bạn đang làm dở đề A" với **Tiếp tục đề A** / **Bỏ bài và làm đề B** / **Huỷ** (Nt0 chốt 2026-10-22) |
 | Bảng câu hỏi | Inspector bên phải | Bảng kéo lên từ dưới (bottom sheet); cột bên ở máy tính bảng từ v1.1 |
 | Phím tắt | Bảng phím đầy đủ (exam-session.md) | Không có |
-| Cỡ chữ | Menu Xem › Phóng to/Thu nhỏ/Cỡ thật, 100–150% (accessibility-localization.md) | Theo cỡ chữ hệ thống, không có lệnh riêng |
+| Cỡ chữ | Menu Xem › Phóng to/Thu nhỏ/Cỡ thật, 100–150% (accessibility-localization.md) | Theo cỡ chữ hệ thống, không có lệnh riêng. Bố cục màn làm bài, Kết quả, Xem lại bài phải còn dùng được tới cỡ chữ hệ thống **150%** như bản macOS (Nt0 chốt 2026-10-22); kiểm bằng ảnh chụp 150% |
 | Nền đọc | Năm bộ màu (accessibility-localization.md) | Không có; theo sáng/tối của hệ thống |
 | Sao lưu dữ liệu app | Không có (dữ liệu chỉ trên máy) | **Không sao lưu lên đám mây, không chuyển sang máy mới** (Nt0 chốt 2026-10-22): Thư viện, file đề đã sao chép, lịch sử thi, phiên dở và cài đặt chỉ nằm trên máy; gỡ app hay đổi máy là mất |
 | Ngôn ngữ | Theo macOS, không có ô chọn trong app | Theo hệ thống và "Ngôn ngữ của ứng dụng" của hệ điều hành; không có ô chọn trong app. Thuật ngữ theo bảng đã duyệt |
@@ -35,8 +36,5 @@ ghi ở đây thì theo tài liệu macOS. Áp cho Android (docs/product/plan-an
 
 ## Câu hỏi mở
 
-- **Làm đề khác khi đang có phiên dở** (macOS: mỗi lúc một phiên, đưa cửa sổ đang làm lên trước, exam-taking.md phương
-  án 6): mở lại phiên dở hay hỏi Bỏ bài? Nt0 chốt trước bước A3a của Android.
-- **Cập nhật đề khi đang có phiên dở của đề đó**: câu đã sửa thì lõi không khôi phục phiên dở (đáp án cũ có thể trỏ nhầm,
-  cùng lý do với exam-taking.md phương án 13), app bỏ phiên dở. Có hỏi trước khi Cập nhật không: Nt0 chốt trước A3a.
-- **Cỡ chữ hệ thống lớn tới đâu thì bố cục phải giữ** (macOS kiểm tới 150%): Nt0 chốt trước bước A3b của Android.
+Không còn (ba câu của plan Android Nt0 chốt 2026-10-22: cỡ chữ, làm đề khác khi có bài dở, Cập nhật đề khi có bài dở;
+ghi vào bảng trên).

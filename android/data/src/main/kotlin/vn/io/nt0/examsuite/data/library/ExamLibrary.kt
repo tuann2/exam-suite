@@ -19,6 +19,7 @@ import vn.io.nt0.examsuite.core.model.StrictUuid
 import vn.io.nt0.examsuite.core.session.ExamSession
 import vn.io.nt0.examsuite.core.session.SessionMode
 import vn.io.nt0.examsuite.core.session.SessionPhase
+import vn.io.nt0.examsuite.core.session.SessionSnapshot
 import vn.io.nt0.examsuite.core.session.SnapshotCodec
 import vn.io.nt0.examsuite.data.db.AttemptEntity
 import vn.io.nt0.examsuite.data.db.DraftEntity
@@ -291,8 +292,11 @@ class ExamLibrary(
     // ---------- Phiên dở ----------
 
     /** Lưu phiên dở (app xuống nền, mỗi lần đổi đáp án; mobile.md Q7). Mỗi lúc một phiên: ghi đè phiên cũ. */
-    suspend fun saveDraft(session: ExamSession) {
-        db.drafts().upsert(DraftEntity(0, session.exam.id.toString(), SnapshotCodec.encode(session.snapshot()), now()))
+    suspend fun saveDraft(session: ExamSession) = saveDraft(session.snapshot())
+
+    /** Lưu phiên dở đã chụp: giao diện chụp ngay lúc xuống nền, ghi sau (phiên có thể đã đổi khi lệnh ghi chạy). */
+    suspend fun saveDraft(snapshot: SessionSnapshot) {
+        db.drafts().upsert(DraftEntity(0, snapshot.examId.toString(), SnapshotCodec.encode(snapshot), now()))
     }
 
     suspend fun loadDraft(): DraftRecord? {

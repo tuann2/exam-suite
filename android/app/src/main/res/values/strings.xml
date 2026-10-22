@@ -5,4 +5,127 @@
     <string name="app_name" translatable="false">Exam Suite</string>
     <string name="library_title">Thư viện</string>
     <string name="library_empty">Chưa có đề nào. Mở file .exam để thêm đề.</string>
+
+    <!-- Màn làm bài, Rà soát & nộp, Kết quả, Xem lại bài (A3b). Thuật ngữ theo String Catalog của bản macOS. -->
+    <string name="interface_language">vi</string>
+    <string name="mode_practice">Luyện tập</string>
+    <string name="mode_exam">Thi</string>
+    <string name="navigate_back">Quay lại</string>
+    <string name="clock_remaining">Còn %1$s</string>
+    <string name="clock_elapsed">Đã làm %1$s</string>
+    <string name="pause">Tạm dừng</string>
+    <string name="resume">Tiếp tục</string>
+    <string name="paused_title">Đã tạm dừng</string>
+    <string name="paused_background">Đã tạm dừng vì bạn rời app</string>
+    <string name="paused_body">Câu hỏi được che trong lúc tạm dừng. Đồng hồ đã dừng.</string>
+    <string name="question_number">Câu %1$s/%2$s</string>
+    <string name="question_announcement">Câu %1$s trên %2$s, %3$s</string>
+    <string name="section_named">Phần %1$s</string>
+    <string name="flag">Đánh dấu</string>
+    <string name="unflag">Bỏ đánh dấu</string>
+    <string name="flagged">Đã đánh dấu</string>
+    <string name="previous_question">Câu trước</string>
+    <string name="next_question">Câu sau</string>
+    <string name="question_navigator">Bảng câu hỏi</string>
+    <string name="review_and_submit">Rà soát &amp; nộp</string>
+    <string name="check_answer">Kiểm tra đáp án</string>
+    <string name="options_single">Các lựa chọn, chọn một đáp án</string>
+    <string name="options_multiple">Các lựa chọn, chọn nhiều đáp án</string>
+    <string name="mark_correct">Đúng</string>
+    <string name="mark_incorrect">Sai</string>
+    <string name="check_incorrect">Chưa đúng</string>
+    <string name="explanation">Giải thích</string>
+    <string name="answered_progress">Đã làm %1$s/%2$s</string>
+    <string name="question_image">Ảnh của câu hỏi</string>
+    <string name="question_image_enlarge">Chạm để phóng to</string>
+    <string name="question_image_enlarged">Ảnh của câu hỏi, phóng to</string>
+    <string name="image_unavailable">Không hiện được ảnh của câu này</string>
+    <string name="close">Đóng</string>
+    <string name="time_up_banner">Đã hết giờ. Xem lại rồi bấm Nộp bài</string>
+    <string name="dismiss_banner">Đóng thông báo</string>
+    <string name="cell_number">Câu %1$s</string>
+    <string name="answered">Đã làm</string>
+    <string name="unanswered">Chưa làm</string>
+    <string name="current">Đang xem</string>
+    <string name="list_separator" translatable="false">, </string>
+    <string name="discard_title">Bài chưa nộp sẽ mất. Bỏ bài?</string>
+    <string name="discard_message">Bỏ bài thì không lưu gì và lần này không có trong Lịch sử thi.</string>
+    <string name="keep_working">Tiếp tục làm</string>
+    <string name="discard">Bỏ bài</string>
+    <string name="unanswered_questions">Câu chưa làm</string>
+    <string name="flagged_questions">Câu đã đánh dấu</string>
+    <string name="no_unanswered">Không còn câu chưa làm.</string>
+    <string name="no_flagged">Không có câu đánh dấu.</string>
+    <string name="all_questions">Tất cả câu</string>
+    <string name="back_to_questions">Quay lại làm bài</string>
+    <string name="submit">Nộp bài</string>
+    <string name="go_back">Quay lại</string>
+    <string name="time_up_locked">Đã hết giờ: không sửa được đáp án.</string>
+    <string name="results_title">Kết quả</string>
+    <string name="pass">Đậu</string>
+    <string name="fail">Trượt</string>
+    <string name="score_line" translatable="false">%1$s · %2$s/1000</string>
+    <string name="passing_score">Ngưỡng đậu %1$s</string>
+    <string name="candidate">Thí sinh</string>
+    <string name="exam_code">Mã đề</string>
+    <string name="mode">Chế độ</string>
+    <string name="submitted_at">Nộp lúc</string>
+    <string name="time_taken">Thời gian làm</string>
+    <string name="time_of_limit" translatable="false">%1$s / %2$s</string>
+    <string name="correct_answers">Số câu đúng</string>
+    <string name="fraction" translatable="false">%1$s/%2$s</string>
+    <string name="compared_previous">So với lần trước: %1$s</string>
+    <string name="delta_same">bằng</string>
+    <string name="delta_plus" translatable="false">+%1$s</string>
+    <string name="delta_minus" translatable="false">−%1$s</string>
+    <string name="by_section">Theo phần</string>
+    <string name="no_questions">Không có câu</string>
+    <string name="weakest_section">Phần yếu nhất</string>
+    <string name="section_score" translatable="false">%1$s/%2$s · %3$s</string>
+    <string name="save_failed">Không lưu được lần thi vào Lịch sử thi.</string>
+    <string name="review_answers">Xem lại bài</string>
+    <string name="review_incorrect">Xem câu sai</string>
+    <string name="retake">Làm lại</string>
+    <string name="back_to_library">Về thư viện</string>
+    <string name="result_announcement">Đã nộp bài. %1$s, %2$s.</string>
+    <string name="filter_all">Tất cả</string>
+    <string name="filter_with_count" translatable="false">%1$s (%2$s)</string>
+    <string name="filter_empty">Bộ lọc này không có câu nào.</string>
+    <string name="hide_answers_notice">Đề này ẩn đáp án: chỉ hiện lựa chọn của bạn và kết quả đúng/sai.</string>
+    <string name="your_answer">Bạn chọn</string>
+    <string name="correct_answer">Đáp án đúng</string>
+    <string name="edited">Đã sửa</string>
+    <string name="deleted">Đã xoá</string>
+    <string name="question_edited">Câu này đã được sửa sau lần thi</string>
+    <string name="answer_hidden_edited">Không hiện lựa chọn của bạn vì câu đã sửa sau lần thi</string>
+    <string name="question_deleted">Câu này đã bị xoá khỏi đề</string>
+    <string name="practice_incorrect">Luyện lại câu sai</string>
+    <string name="back_to_results">Về màn Kết quả</string>
+    <string name="previous_in_filter">Câu trước trong bộ lọc</string>
+    <string name="next_in_filter">Câu sau trong bộ lọc</string>
+    <string name="filter">Bộ lọc</string>
+    <plurals name="duration_hours">
+        <item quantity="one">%1$s giờ</item>
+        <item quantity="other">%1$s giờ</item>
+    </plurals>
+    <plurals name="duration_minutes">
+        <item quantity="one">%1$s phút</item>
+        <item quantity="other">%1$s phút</item>
+    </plurals>
+    <plurals name="duration_seconds">
+        <item quantity="one">%1$s giây</item>
+        <item quantity="other">%1$s giây</item>
+    </plurals>
+    <plurals name="choose_answers">
+        <item quantity="one">Chọn %1$s đáp án</item>
+        <item quantity="other">Chọn %1$s đáp án</item>
+    </plurals>
+    <plurals name="minutes_left">
+        <item quantity="one">Còn %1$s phút</item>
+        <item quantity="other">Còn %1$s phút</item>
+    </plurals>
+    <plurals name="submit_confirm">
+        <item quantity="one">Còn %1$s câu chưa làm. Vẫn nộp?</item>
+        <item quantity="other">Còn %1$s câu chưa làm. Vẫn nộp?</item>
+    </plurals>
 </resources>

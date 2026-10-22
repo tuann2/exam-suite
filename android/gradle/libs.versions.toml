@@ -5,6 +5,8 @@ agp = "9.4.1"
 kotlin = "2.4.20"
 composeBom = "2026.09.00"
 activityCompose = "1.13.0"
+# Cùng phiên bản Compose BOM kéo theo (lifecycle-runtime-compose 2.9.4 đã có trong cây phụ thuộc).
+lifecycle = "2.9.4"
 kotlinxSerialization = "1.11.0"
 junitJupiter = "6.1.3"
 junit4 = "4.13.2"
@@ -24,6 +26,8 @@ sqlite = "2.6.2"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
 androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
 androidx-compose-ui = { module = "androidx.compose.ui:ui" }
