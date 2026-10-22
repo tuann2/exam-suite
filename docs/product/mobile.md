@@ -23,6 +23,7 @@ ghi ở đây thì theo tài liệu macOS. Áp cho Android (docs/product/plan-an
 | Thêm file cùng id đề | Cùng file: chọn đề đã có; khác file: Dùng file mới / Huỷ (library.md phương án 1) | Luôn hỏi **Cập nhật đề** / **Huỷ**; Cập nhật thay bản sao, lịch sử giữ lại; mỗi id đề một mục |
 | Mở `.exam` từ app khác | Finder | Hộp chia sẻ và "Mở bằng" của hệ điều hành (Zalo, Drive, Files…). App nhận kiểu `application/octet-stream` (Android gán cho đuôi `.exam`) và zip, rồi tự kiểm đuôi và nội dung; file không phải đề thì báo, không thêm |
 | App xuống nền khi đang làm bài | Không tự tạm dừng (exam-taking.md phương án 11); đóng cửa sổ thì hỏi rồi bỏ bài, không lưu phiên dở (phương án 2) | **Tự tạm dừng** khi app xuống nền (cuộc gọi, khoá màn hình, chuyển app) ở cả Luyện tập và Thi; thời gian ở nền không bị trừ. **Lưu phiên dở**; mở lại app (kể cả sau khi hệ điều hành dừng app) thì về đúng câu ở trạng thái Tạm dừng. Nút Quay lại ở màn làm bài hỏi "Bỏ bài?" như macOS; Bỏ bài thì xoá phiên dở, không lưu gì |
+| Phiên dở khi khôi phục | Không có (không lưu phiên dở) | Phiên đang làm hay đang rà soát chưa khoá thì về **Tạm dừng**; phiên đã hết giờ hay đang rà soát khoá thì **giữ nguyên** trạng thái đó; thời gian đã làm đúng như lúc lưu (Nt0 chốt 2026-10-22) |
 | Bảng câu hỏi | Inspector bên phải | Bảng kéo lên từ dưới (bottom sheet); cột bên ở máy tính bảng từ v1.1 |
 | Phím tắt | Bảng phím đầy đủ (exam-session.md) | Không có |
 | Cỡ chữ | Menu Xem › Phóng to/Thu nhỏ/Cỡ thật, 100–150% (accessibility-localization.md) | Theo cỡ chữ hệ thống, không có lệnh riêng |
@@ -36,8 +37,6 @@ ghi ở đây thì theo tài liệu macOS. Áp cho Android (docs/product/plan-an
 
 - **Làm đề khác khi đang có phiên dở** (macOS: mỗi lúc một phiên, đưa cửa sổ đang làm lên trước, exam-taking.md phương
   án 6): mở lại phiên dở hay hỏi Bỏ bài? Nt0 chốt trước bước A3a của Android.
-- **Phiên dở khi khôi phục** (lõi Android A1 đang làm như sau, Nt0 xác nhận trước A2): phiên đang làm hay đang rà soát
-  chưa khoá thì về Tạm dừng; phiên đã hết giờ hay đang rà soát khoá thì giữ nguyên, thời gian giữ đúng lúc chụp.
 - **Cập nhật đề khi đang có phiên dở của đề đó**: câu đã sửa thì lõi không khôi phục phiên dở (đáp án cũ có thể trỏ nhầm,
   cùng lý do với exam-taking.md phương án 13), app bỏ phiên dở. Có hỏi trước khi Cập nhật không: Nt0 chốt trước A3a.
 - **Cỡ chữ hệ thống lớn tới đâu thì bố cục phải giữ** (macOS kiểm tới 150%): Nt0 chốt trước bước A3b của Android.

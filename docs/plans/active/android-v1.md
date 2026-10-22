@@ -55,7 +55,10 @@ thuộc đã merge; không xếp chồng quá một tầng.
       `ExamComposer` (SplitMix64), `ExamSession` + phiên dở (`snapshot`/`restore`, `SnapshotCodec`), `AttemptPayload`,
       `QuestionFingerprint`, `ReviewItems`, Markdown cơ bản; oracle chung `fixtures/vectors/`, `fixtures/invalid-json/`,
       khoá `issueCodes` của `expected-verdicts.json`, test Swift đọc từ đó; 187 ca JUnit (85 ca oracle).
-- [ ] A2 `:data` (PR này, đang làm). Đã có trong nhánh: `verify_local.sh` chọn mức kiểm theo file đổi (Decisions).
+- [x] A2 `:data` (PR này, rủi ro cao): kho Room v1 (`exam_entry`, `attempt`, `draft_session`; schema `data/schemas/.../1.json`),
+      `LibraryStore` (kho hỏng đổi tên), `ExamLibrary` (nhập nguyên tử, Cập nhật đề, xoá có Hoàn tác, dọn lúc mở app, đề mẫu,
+      lần thi, phiên dở), `LibraryQuery` (tìm không dấu, sắp xếp), `LibrarySettings` (DataStore); 21 ca Robolectric. Cùng
+      PR: `verify_local.sh` chọn mức kiểm theo file đổi (Decisions).
 - [ ] A3b Giao diện làm bài (chờ Nt0 chốt mức cỡ chữ, mobile.md Câu hỏi mở)
 - [ ] A3a Thư viện và nối luồng (chờ Nt0 chốt làm đề khác khi có phiên dở); cổng GA2
 - [ ] A4 Hoàn thiện và beta; cổng GA3
@@ -173,6 +176,33 @@ thuộc đã merge; không xếp chồng quá một tầng.
   và test lõi Swift mà test giao diện không đọc: `check.sh --core` + Linux, khoảng 1,5 phút), full (mọi thứ khác, file lạ,
   cổng). Thử trên worktree tạm: commit chỉ tài liệu ra none (0,2 giây), commit chỉ `fixtures/README.md` ra core (85 giây).
   Với bảng này A0 là none và A1 là core (trước đây cả hai chạy đủ bộ 6–9 phút). Làm trong PR của A2 (không mở PR riêng).
+
+- 2026-10-22, Nt0: khôi phục phiên dở đang hết giờ hay rà soát khoá thì giữ nguyên trạng thái (mobile.md, bảng Khác macOS).
+- 2026-10-22, A2, phiên bản: Room 2.8.5 (KSP 2.3.12, plugin `androidx.room` để xuất schema), sqlite-framework 2.6.2 (cùng
+  Room kéo theo, khai báo tường minh), DataStore Preferences 1.2.1 (1.3.0 mới phát hành, chưa đủ hai tuần), coroutines
+  1.11.0. Đều thuộc danh sách ADR 0012.
+- 2026-10-22, A2, JDK: **giữ JDK 17**, Robolectric chạy ở API 34 (kết luận spike A0). Tầng dữ liệu không dùng hành vi của
+  API 35+; nâng JDK 21 cả máy lẫn CI không đáng ở bước này.
+- 2026-10-22, A2, file đề: `files/exams/<examId>.exam`; nhập qua `exams/.incoming/<ngẫu nhiên>.part` có trần (1 GiB + 64
+  MiB: gói lớn hơn không thể đọc nghiêm được), đọc nghiêm, rồi đổi tên nguyên tử; ghi kho sau đổi tên. `recoverOnStart`
+  dọn file tạm, file không có mục, mục không còn file (bị can thiệp ngoài app: bỏ mục, lịch sử giữ lại) và đề chờ Hoàn tác
+  của lần trước. A3a gọi nó khi mở app.
+- 2026-10-22, A2, quy tắc dữ liệu (theo library.md, mobile.md; chỗ hai tài liệu không nói là lựa chọn kỹ thuật):
+  - Cùng id đề luôn trả `NeedsUpdateConfirmation`, kể cả cùng nội dung (mobile.md: luôn hỏi). Cập nhật đề giữ ngày thêm và
+    lịch sử thi, bỏ cờ đề mẫu (file là của người dùng).
+  - Xoá khỏi Thư viện: đánh dấu chờ Hoàn tác; `purgeRemoved` (A3a gọi khi hết thời gian Hoàn tác và lúc mở app) xoá file,
+    mục và phiên dở của đề đó; lịch sử thi giữ lại. Nhập lại đề đang chờ Hoàn tác thì xoá hẳn mục cũ rồi thêm như mới.
+  - Lưu lần thi xoá phiên dở của đề đó. Tên đề, mã đề lúc thi lưu ở lần thi (library.md: "tên đề lúc thi").
+  - Đề mẫu: mỗi thư mục assets đóng thành gói rồi đọc nghiêm như file của người dùng; đề đã có (cùng id) thì bỏ qua. Cờ
+    "đã tạo đề mẫu" ở `LibrarySettings`; A3a gọi `seedSamples` khi cờ chưa bật rồi bật cờ (xoá đề mẫu không tự tạo lại).
+- 2026-10-22, A2, kho hỏng (library.md, Lưu trữ): Android mặc định **xoá** kho SQLite hỏng. `LibraryStore` đổi tên thành
+  `library.db.broken-<thời điểm>` (cùng `-wal`, `-shm`) qua ba đường: đầu file không phải SQLite, truy vấn thử lỗi, và
+  `onCorruption` của bộ mở kho (thay cách xoá mặc định). Test phủ đường đầu file.
+- 2026-10-22, A2, schema: plugin Room ghi đè `1.json` mỗi lần build nên đổi bảng mà không tăng phiên bản không làm test
+  mở kho đỏ. Test khoá thêm dấu vân tay schema v1 (`V1_IDENTITY_HASH`); đối chứng âm: thêm một cột thì Room viết lại
+  `1.json` và test đỏ.
+- 2026-10-22, A2, Robolectric: `AssetManager.list` của Robolectric trả đường dẫn đệ quy, của Android trả tên con trực
+  tiếp; `AssetSampleSource` lấy đoạn đầu rồi thử mở `exam.json` để đúng ở cả hai.
 
 ## Validation
 
