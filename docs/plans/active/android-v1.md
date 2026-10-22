@@ -96,8 +96,9 @@ thuộc đã merge; không xếp chồng quá một tầng.
   Compose (rule `v2`); đối chứng âm (nút 10dp không nhãn) thất bại với `SpeakableTextPresentCheck`. Không lớp kiểm riêng.
 - 2026-10-22, A0, spike screenshot: Compose Preview Screenshot Testing (plugin `0.0.1-alpha16`) chạy với AGP 9.4.1
   (`updateDebugScreenshotTest`, `validateDebugScreenshotTest`). layoutlib dựng ở `en-US` nên mỗi preview chụp phải ghi
-  `locale` (tiếng Việt là nguồn); chữ có dấu hiển thị đúng. Ảnh tham chiếu ghi trên macOS; lần chạy đầu của job
-  `android` trên Linux là đối chứng khác nền (kết quả ghi ở Validation).
+  `locale` (tiếng Việt là nguồn); chữ có dấu hiển thị đúng. Ảnh tham chiếu ghi trên macOS và **so đạt trên runner Linux** của job
+  `android` (lần chạy đầu, run 39725459093 trên 954852f): giữ cách ghi ảnh trên Mac. Màn có nhiều chữ hơn mà lệch giữa hai
+  nền thì ghi lại ảnh bằng Docker Linux (A3b quyết khi gặp).
 - 2026-10-22, A0, tạm thời: sao lưu dữ liệu app tắt (`dataExtractionRules` loại trừ mọi miền, `allowBackup=false`),
   chờ Nt0 chốt trước A2 (mobile.md Câu hỏi mở). Biểu tượng app là biểu tượng **tạm** (vector), Nt0 thay sau.
 - 2026-10-22, A0: các script macOS không quét `android/` (đã kiểm: `uitest_plan.py` coi file trong `android/` là không
@@ -112,6 +113,9 @@ A0:
   `./gradlew lint`, `:app:validateDebugScreenshotTest`, `check_android_rules.py` (tự kiểm âm/dương và đối chứng âm trên
   repo: thêm OkHttp vào danh mục thì đỏ).
 - End-to-end: `:app:connectedDebugAndroidTest` trên AVD `examsuite` (Android 15 arm64), kiểm trợ năng bật.
+- Kết quả trên 954852f (PR #1): check `android` của CI xanh (163 s: luật riêng, lint, `:core:test`,
+  `:data:testDebugUnitTest`, `:lint-rules:test`, `validateDebugScreenshotTest`); `local/verify-android` xanh (1 test
+  Compose, emulator Android 15); `scripts/check.sh` macOS đạt. SHA cuối và status ghi ở mô tả PR.
 - Repository-required checks: check `android` của `.github/workflows/android.yml` trên SHA cuối; `local/verify-android`
   (`check_android.sh --ui`, PR chạm `android/app/**`); `local/verify` (`scripts/verify_local.sh`, PR chạm tài liệu và
   workflow của repo: UI test macOS bỏ qua theo bảng map).
