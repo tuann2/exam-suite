@@ -21,7 +21,7 @@ accessibility-localization, large-exams); chỗ mobile khác macOS ghi trong m�
 
 | Hạng mục | Đề xuất |
 | --- | --- |
-| Công nghệ | Kotlin 2.x, Jetpack Compose + Material 3, Room, DataStore, kotlinx.serialization; minSdk 31 (Android 12, Q4), targetSdk mới nhất |
+| Công nghệ | Kotlin 2.x, Jetpack Compose + Material 3, Room, DataStore, kotlinx.serialization; minSdk 31 (Android 12, Q4), targetSdk mới nhất (A0: compileSdk và targetSdk 37, Compose 1.12 đòi compileSdk 37) |
 | Lõi | Viết lại ExamKit/ExamFile bằng **Kotlin thuần (module JVM, không Android)**, kiểm **cùng kết luận với bản Swift** qua các "oracle" đã có trong repo (schema, fixtures, `expected-verdicts.json`, vector SplitMix64, dấu vân tay câu, `large-exam.digest`); payload lần thi là định dạng riêng của Android (Q11) |
 | Repo | Cùng repo, thư mục `android/` (dự án Gradle độc lập), dùng chung `schema/`, `fixtures/`, đề mẫu, `docs/product/`, harness |
 | Quy mô | **v1: 6 PR code, 3 cổng, 1 cặp bước song song; v1.1: 3 PR, 1 cổng** (so với 52 PR của macOS, trong đó 16 PR chỉ tài liệu) |
@@ -107,13 +107,14 @@ android/
 │                (chép/xoá file đề), SampleExams (assets trỏ thẳng vào Packages/…/Resources/Samples), DraftSession
 ├── app/         Compose: ui/library, ui/preexam, ui/attempt, ui/results, ui/review, ui/history; ViewModel thuần
 │                Kotlin (chỉ :core + coroutines) để test JVM; nhận Intent .exam   (v1.1 thêm ui/report, :benchmark)
-└── scripts/check_android.sh   lint + test (+ --ui: connectedCheck trên emulator) → status local/verify-android
+├── lint-rules/  luật lint riêng ComposeHardcodedText (chữ cứng trong Compose; A0)
+└── scripts/check_android.sh   luật riêng + lint + test (+ --ui: connectedDebugAndroidTest trên emulator) → status local/verify-android
 ```
 
 - `:core` test bằng JUnit trên Linux/macOS, không cần emulator: đây là phần agent cloud làm trọn được (như ADR 0008).
 - Oracle dùng chung với bản Swift, đọc qua đường dẫn tương đối (`sourceSets.test.resources.srcDir("../../fixtures")`),
   **không chép**: `schema/exam-v1.schema.json`, `fixtures/exams/*`, `fixtures/invalid/*`, `fixtures/expected-verdicts.json`
-  (kể cả khoá `whiteSpace` liệt kê 25 code point), `fixtures/large-exam.digest`. Vector cố định hiện nằm trong test
+  (kể cả khoá `whiteSpace`: 25 code point ghi thành 10 dải, ví dụ `2000-200A`), `fixtures/large-exam.digest`. Vector cố định hiện nằm trong test
   Swift (SplitMix64 seed 0, `QuestionFingerprintTests`) → A1 chuyển chúng thành file
   `fixtures/vectors/*.json` dùng chung (JSON mẫu `AttemptSamples` của macOS **không** chuyển: payload Android riêng theo
   Q11, có JSON mẫu riêng trong test của `:core` để chặn đổi khoá ngầm) và sửa test Swift đọc từ đó (thay đổi nhỏ, không đổi giá trị). Ca JSON sai cú
@@ -204,7 +205,7 @@ của nhau (A2 chỉ `android/data/**`, A3b chỉ `android/app/**` + `fixtures/`
 | Giao diện | Compose UI Test trên emulator (headless, Test Orchestrator `clearPackageData`) | Mac của Nt0 (`local/verify-android`) | **3 lần mở app**: luồng 1, luồng 2 (mở đầu bằng Intent `.exam`, đồng hồ nhanh), luồng 3 (Back, xuống nền); v1.1 nối Xuất PDF vào luồng 1 | Không test từng màn riêng lẻ; không thêm lần mở app cho tính năng mới nếu nối được vào luồng có sẵn; không cần quyền Accessibility, không so kho thật |
 | Trợ năng | Kiểm trợ năng của Compose UI Test bật trong ba test trên | Cùng emulator | Nhãn thiếu, vùng chạm nhỏ, tương phản của phần tử | Không lớp riêng, không test thêm |
 | Hiển thị | Compose Preview Screenshot Testing (sáng/tối, v1 chỉ phone) | Mọi nơi (không cần emulator) | 5 màn × 2 theme ≈ 10 ảnh; ảnh ≤ 300 KB trong git; tablet ở v1.1 | Không thêm screenshot cho màn đã có Compose test đi qua nếu không có bố cục đặc biệt; không chụp hai cỡ máy trong v1 |
-| Chuỗi và locale | Android Lint (`MissingTranslation`, `ExtraTranslation`, `DefaultLocale`) + luật lint chữ cứng Compose (chốt ở A0) | Mọi nơi | Đủ `en`, không chuỗi cứng, định dạng có locale | Không viết máy quét riêng ngoài `gradlew lint`, không test catalog từng module |
+| Chuỗi và locale | Android Lint (`MissingTranslation`, `ExtraTranslation`, `DefaultLocale`) + luật lint `ComposeHardcodedText` (`:lint-rules`, A0); `values/strings.xml` không `tools:locale` (lint khi đó bỏ qua MissingTranslation) | Mọi nơi | Đủ `en`, không chuỗi cứng, định dạng có locale | Không viết máy quét riêng ngoài `gradlew lint`, không test catalog từng module |
 | Hiệu năng | v1: đo tay trên máy thật, ghi số; v1.1: `:benchmark` chạy tay | Máy thật | Bảng ngân sách large-exams.md | Không chặn merge |
 
 ### Quy tắc chống test trùng (rút từ [notes/ra-soat-cach-lam-macos.md](../notes/ra-soat-cach-lam-macos.md) mục 3; áp cho mọi PR Android và iOS)

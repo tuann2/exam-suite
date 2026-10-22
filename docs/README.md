@@ -15,6 +15,7 @@ Start with the smallest authoritative surface.
 - [`product/export-print.md`](product/export-print.md): xuất PDF và in kết quả (hai bản), PDF và in đề (bản Admin).
 - [`product/accessibility-localization.md`](product/accessibility-localization.md): VoiceOver theo màn, Dark Mode và tương phản, cỡ chữ, tiếng Việt/Anh (String Catalog).
 - [`product/large-exams.md`](product/large-exams.md): đề chuẩn 2.000 câu, ngân sách hiệu năng, cách đo.
+- [`product/mobile.md`](product/mobile.md): bản mobile (Học viên): phạm vi v1/v1.1 và chỗ khác bản macOS (file đề sao chép vào app, tự tạm dừng và lưu phiên dở khi xuống nền…).
 - [`product/plan-macos-v1.md`](product/plan-macos-v1.md): kế hoạch đầy đủ (phạm vi, kiến trúc, UX, lộ trình, rủi ro).
 - [`product/plan-android-v1.md`](product/plan-android-v1.md): kế hoạch app Android bản Học viên (v1 / v1.1); Nt0 chốt quyết định 2026-10-22, làm trước iOS.
 - [`product/plan-ios-v1.md`](product/plan-ios-v1.md): **draft** kế hoạch app iOS bản Học viên, cùng phạm vi và `mobile.md` với bản Android; làm sau Android.
@@ -23,7 +24,7 @@ Start with the smallest authoritative surface.
 - [`notes/g5-spike-pdf-l10n.md`](notes/g5-spike-pdf-l10n.md): spike giai đoạn 5: số đo PDF bằng `ImageRenderer`, String Catalog trong Swift package (cho bước 4, 5).
 - [`notes/g5-ui-test-trung-lap.md`](notes/g5-ui-test-trung-lap.md): UI test trùng lặp, số đo thời gian, việc cần sửa ở `verify_local.sh --uitest`.
 - [`notes/ra-soat-cach-lam-macos.md`](notes/ra-soat-cach-lam-macos.md): rà soát cách làm bản macOS (tốc độ, bước chia quá nhỏ, lớp test trùng, song song); căn cứ cho nhịp làm việc và hai plan mobile.
-- [`decisions/`](decisions/README.md): ADR 0001–0010, future work must inherit.
+- [`decisions/`](decisions/README.md): ADR 0001–0012, future work must inherit.
 - [`plans/`](plans/README.md): exec-plan theo giai đoạn; `active/` đang làm, `completed/` đã qua cổng.
 - [`process/review-and-merge.md`](process/review-and-merge.md): quyền của agent, bằng chứng gắn commit, review độc lập theo rủi ro.
 - `../schema/`, `../fixtures/`, `../scripts/`: schema, đề mẫu, kiểm tra máy. Lệnh tổng: `scripts/check.sh`.

@@ -20,5 +20,7 @@ the active execution plan and do not require a separate decision.
 | [0008](0008-loi-foundation-only.md) | Lõi ExamKit/ExamFile chỉ dùng Foundation (+ZIPFoundation), test trên Linux | Accepted |
 | [0009](0009-doc-dinh-dang-vce.md) | Đọc trực tiếp file `.vce` khi import đề (spike trước, điều kiện pháp lý) | Accepted |
 | [0010](0010-snapshot-testing.md) | Snapshot test giao diện bằng swift-snapshot-testing, chỉ trong test | Accepted |
+| [0011](0011-android-kotlin-compose.md) | Bản Android: Kotlin + Compose, lõi viết lại bằng Kotlin (oracle chung), cùng repo `android/`, CI theo PR cho `android/` | Accepted |
+| [0012](0012-android-thu-vien.md) | Thư viện của bản Android: nền tảng AndroidX/Kotlin và công cụ test; ngoài danh sách phải có ADR | Accepted |
 
-Quyết định tiếp theo lấy số 0011.
+Quyết định tiếp theo lấy số 0013.
