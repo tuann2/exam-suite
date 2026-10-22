@@ -13,6 +13,8 @@ struct SharedInvalidJSONTests {
         struct Case: Decodable {
             let error: String?
             let paths: [String]?
+            /// Foundation trên Linux kết luận khác macOS (số mũ cực lớn); chỉ kiểm trên macOS.
+            let macOSOnly: Bool?
         }
 
         let cases: [String: Case]
@@ -67,6 +69,9 @@ struct SharedInvalidJSONTests {
     @Test("Đọc nghiêm ra đúng lỗi và đường dẫn", arguments: expected.keys.sorted())
     func strictOutcome(name: String) throws {
         let expected = try #require(Self.expected[name])
+        #if !os(macOS)
+        if expected.macOSOnly == true { return }
+        #endif
         let data = try Self.pack(name)
         do {
             _ = try ExamPackageReader.read(data, mode: .strict)

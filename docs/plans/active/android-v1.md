@@ -143,6 +143,7 @@ thuộc đã merge; không xếp chồng quá một tầng.
   - Số cực lớn: Foundation từ chối khi phân tích `1e309`, số nguyên rất dài, `0e10000`, `0e-1000` nhưng nhận `-1e400` (đo
     ở re-review). Kotlin từ chối số mà Double ra vô cực và số mũ từ 4 chữ số: cùng kết luận nhận/từ chối trên mọi ca đã đo
     (fixture `number-*`); chỉ khác loại lỗi ở số không có trong đề thật (`-1e400`, số nguyên 167–308 chữ số).
+    Foundation trên Linux lại nhận `0e10000`, `0e-1000`: hai ca này đánh dấu `macOSOnly`, test Swift bỏ qua trên Linux.
   - `fixtures/invalid-json` thêm 18 ca (số, UUID, kiểu sai, thiếu khoá, khoá trùng lồng nhau, escape của bộ quét, dấu phẩy
     thừa có khoảng trắng), thay ca inline ở test Swift và Kotlin. Phát hiện: `JSONDecoder` báo "số không vừa Int" với
     đường dẫn rỗng (`<gốc>`); oracle ghi đúng như vậy, Kotlin báo giống hệt.
