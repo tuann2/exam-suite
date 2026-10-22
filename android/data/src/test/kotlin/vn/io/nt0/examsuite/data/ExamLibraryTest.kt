@@ -264,4 +264,13 @@ class ExamLibraryTest {
         library.recoverOnStart()
         library.confirmUpdate(ask.pending)
     }
+
+    @Test
+    fun updateMarkerWithoutFileMoveChangesNothing() = runBlocking {
+        val first = add()
+        File(library.examsDir, "${first.examId}.updating").writeText("")
+        clock.millis += 5_000
+        assertEquals(0, library.recoverOnStart().entriesRefreshed)
+        assertEquals(first, library.item(first.examId))
+    }
 }

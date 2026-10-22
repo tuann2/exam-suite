@@ -157,7 +157,14 @@ class ExamLibrary(
         examsDir.listFiles()?.filter { it.isFile && it.name.endsWith(".exam") }?.forEach { file ->
             val id = file.name.removeSuffix(".exam")
             if (id in entries) return@forEach
-            val package_ = runCatching { ExamPackageReader.readStrict(file, limits) }.getOrNull()
+            // Chỉ xoá khi lõi báo gói hỏng; lỗi tạm thời (đọc ghi, hết bộ nhớ) thì giữ file cho lần sau.
+            val package_ = try {
+                ExamPackageReader.readStrict(file, limits)
+            } catch (_: ExamFileError) {
+                null
+            } catch (_: Exception) {
+                return@forEach
+            }
             if (package_ != null && package_.exam.id.toString() == id) {
                 upsertEntry(package_, file, sha256(file), sampleKey = null, previous = null)
                 restored++
@@ -171,9 +178,14 @@ class ExamLibrary(
             val file = File(examsDir, "$id.exam")
             val previous = db.entries().get(id)
             val package_ = runCatching { ExamPackageReader.readStrict(file, limits) }.getOrNull()
+            // Tắt trước khi đổi tên thì file vẫn là bản cũ (cùng SHA-256): không đổi gì. Đã đổi tên thì làm mới mục như
+            // Cập nhật đề thường (bỏ cờ đề mẫu, giữ ngày thêm).
             if (previous != null && package_ != null) {
-                upsertEntry(package_, file, sha256(file), previous.sampleKey, previous)
-                refreshed++
+                val sha = sha256(file)
+                if (sha != previous.fileSha256) {
+                    upsertEntry(package_, file, sha, sampleKey = null, previous = previous)
+                    refreshed++
+                }
             }
             marker.delete()
         }
@@ -335,8 +347,13 @@ class ExamLibrary(
         return entity
     }
 
+    /** Xoá hẳn một đề. Xoá file thất bại thì giữ mục (chờ xoá) để lần sau thử lại, không để `recoverOnStart` nạp lại đề. */
     private suspend fun purge(entry: ExamEntryEntity) {
-        File(examsDir, "${entry.examId}.exam").delete()
+        val file = File(examsDir, "${entry.examId}.exam")
+        if (file.exists() && !file.delete()) {
+            if (entry.removedAtMillis == null) db.entries().markRemoved(entry.examId, now())
+            return
+        }
         db.withTransaction {
             db.entries().delete(entry.examId)
             if (db.drafts().get()?.examId == entry.examId) db.drafts().clear()

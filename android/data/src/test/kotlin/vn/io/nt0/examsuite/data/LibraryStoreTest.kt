@@ -69,6 +69,33 @@ class LibraryStoreTest {
         opened.database.close()
     }
 
+    @Test
+    fun sqliteFileWithoutRoomTablesIsQuarantinedAndReportedOnTheSameOpen() = runBlocking {
+        file.parentFile!!.mkdirs()
+        SQLiteDatabase.openOrCreateDatabase(file, null).use { sql ->
+            sql.execSQL("CREATE TABLE ghi_chu (x TEXT)")
+            sql.execSQL("INSERT INTO ghi_chu VALUES ('dữ liệu cũ')")
+            sql.version = 1
+        }
+        val opened = LibraryStore.open(context) { 555L }
+        assertEquals("${LibraryStore.FILE_NAME}.broken-555", opened.recoveredFrom!!.name)
+        assertTrue(opened.recoveredFrom!!.exists())
+        assertEquals(0, opened.database.entries().active().size)
+        opened.database.close()
+        assertNull(LibraryStore.open(context).also { it.database.close() }.recoveredFrom)
+    }
+
+    @Test
+    fun transientSqliteErrorsAreNotTreatedAsCorruption() {
+        assertTrue(LibraryStore.isCorruptOrIncompatible(android.database.sqlite.SQLiteDatabaseCorruptException("hỏng")))
+        assertTrue(LibraryStore.isCorruptOrIncompatible(IllegalStateException("Pre-packaged database has an invalid schema: x")))
+        assertTrue(LibraryStore.isCorruptOrIncompatible(RuntimeException(IllegalStateException("Migration didn't properly handle"))))
+        for (transient in listOf(android.database.sqlite.SQLiteFullException("đầy"), android.database.sqlite.SQLiteDiskIOException("io"),
+            android.database.sqlite.SQLiteDatabaseLockedException("khoá"), IllegalStateException("Cannot access database on the main thread"))) {
+            assertTrue(!LibraryStore.isCorruptOrIncompatible(transient))
+        }
+    }
+
     /**
      * Kho v1 dựng đúng từ file schema đã commit (`schemas/.../1.json`) phải mở được bằng code hiện tại: đổi bảng hay cột
      * mà không tăng phiên bản làm Room báo lệch dấu vân tay schema và test này đỏ.

@@ -106,8 +106,7 @@ object LibraryStore {
     fun open(context: Context, now: () -> Long = System::currentTimeMillis): Opened {
         val file = context.getDatabasePath(FILE_NAME)
         val marker = File(file.path + ".recovered")
-        var recovered: File? = marker.takeIf { it.exists() }?.readText()?.let(::File)
-        marker.delete()
+        var recovered: File? = null
         if (file.exists() && !hasSqliteHeader(file)) recovered = quarantine(file, now())
         var database = build(context) { quarantineAtRuntime(file, marker, now()) }
         try {
@@ -124,6 +123,10 @@ object LibraryStore {
                 throw LibraryStoreException("không tạo được kho Thư viện mới", again)
             }
         }
+        // Dấu kho hỏng (ghi lúc chạy lần trước, hoặc ngay trong lần mở này khi SQLite báo hỏng lúc probe): đọc sau khi mở
+        // kho thành công mới xoá, để lời báo không mất khi mở thất bại và không trễ một lần mở.
+        if (recovered == null && marker.exists()) recovered = File(marker.readText())
+        marker.delete()
         return Opened(database, recovered)
     }
 
@@ -131,16 +134,23 @@ object LibraryStore {
         database.openHelper.writableDatabase.query("SELECT count(*) FROM exam_entry").use { it.moveToFirst() }
     }
 
-    /** Kho hỏng (SQLite) hoặc Room không chấp nhận schema của kho (kho do bản app khác ghi, hạ phiên bản). */
-    private fun isCorruptOrIncompatible(e: Throwable): Boolean {
+    /**
+     * Kho hỏng (SQLite) hoặc Room không chấp nhận schema của kho (kho do bản app khác ghi, hạ phiên bản, thiếu bảng của
+     * Room: "Room cannot verify…", "A migration from…", "Migration didn't…", "Pre-packaged database has an invalid
+     * schema"). Lỗi tạm thời (khoá, đầy bộ nhớ, đọc ghi) là `SQLiteException` khác, không khớp.
+     */
+    internal fun isCorruptOrIncompatible(e: Throwable): Boolean {
         var cause: Throwable? = e
         while (cause != null) {
             if (cause is android.database.sqlite.SQLiteDatabaseCorruptException) return true
-            if (cause is IllegalStateException && (cause.message?.contains("Room") == true || cause.message?.contains("migration") == true)) return true
+            val message = cause.message?.lowercase().orEmpty()
+            if (cause is IllegalStateException && ROOM_SCHEMA_MESSAGES.any { it in message }) return true
             cause = cause.cause
         }
         return false
     }
+
+    private val ROOM_SCHEMA_MESSAGES = listOf("room cannot verify", "migration", "invalid schema", "room_master_table")
 
     private fun build(context: Context, onCorruption: () -> Unit): LibraryDatabase =
         Room.databaseBuilder(context.applicationContext, LibraryDatabase::class.java, FILE_NAME)

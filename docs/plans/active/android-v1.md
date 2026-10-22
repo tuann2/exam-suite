@@ -57,7 +57,7 @@ thuộc đã merge; không xếp chồng quá một tầng.
       khoá `issueCodes` của `expected-verdicts.json`, test Swift đọc từ đó; 187 ca JUnit (85 ca oracle).
 - [x] A2 `:data` (PR này, rủi ro cao): kho Room v1 (`exam_entry`, `attempt`, `draft_session`; schema `data/schemas/.../1.json`),
       `LibraryStore` (kho hỏng đổi tên), `ExamLibrary` (nhập nguyên tử, Cập nhật đề, xoá có Hoàn tác, dọn lúc mở app, đề mẫu,
-      lần thi, phiên dở), `LibraryQuery` (tìm không dấu, sắp xếp), `LibrarySettings` (DataStore); 26 ca Robolectric. Cùng
+      lần thi, phiên dở), `LibraryQuery` (tìm không dấu, sắp xếp), `LibrarySettings` (DataStore); 29 ca Robolectric. Cùng
       PR: `verify_local.sh` chọn mức kiểm theo file đổi (Decisions).
 - [ ] A3b Giao diện làm bài (chờ Nt0 chốt mức cỡ chữ, mobile.md Câu hỏi mở)
 - [ ] A3a Thư viện và nối luồng (chờ Nt0 chốt làm đề khác khi có phiên dở); cổng GA2
@@ -215,6 +215,15 @@ thuộc đã merge; không xếp chồng quá một tầng.
     lượt; lần thi có chế độ lạ bị bỏ thay vì làm hỏng danh sách; mô tả status luôn mở đầu bằng tên mức; bỏ đoạn test lặp
     luật khôi phục của lõi. Còn lại: `.broken-*` chưa tự dọn (cần quyết định giữ bao lâu); `Collator` tiếng Việt chỉ test
     trên JVM, ICU của Android kiểm ở test emulator A3a.
+- 2026-10-22, A2, re-review trên dced5b3 (phiên agent mới): **APPROVE**. Gợi ý không chặn đã làm: dấu `.recovered` chỉ xoá
+  sau khi mở kho thành công và báo ngay ở lần mở phát hiện hỏng (N1); nhận đủ thông báo lệch schema của Room, test kho SQLite
+  thiếu bảng của Room và đối chứng âm lỗi tạm thời (N2); `recoverOnStart` chỉ xoá file đề khi lõi báo gói hỏng (N2); dấu
+  Cập nhật đề mà file chưa đổi (cùng SHA-256) thì không đổi gì (N3); xoá file thất bại thì giữ mục chờ xoá (N4). Còn lại:
+  đề mẫu được nạp lại sau khi kho hỏng mất cờ đề mẫu (N5, ảnh hưởng Khôi phục đề mẫu ở v1.1); `.broken-*` chưa tự dọn (N6);
+  `saveDraft` không nằm trong khoá ghi nên `loadDraft` ở A3a phải chịu được phiên dở của đề đã xoá.
+- 2026-10-22, Nt0: PR #3 **không chạy `local/verify` mức full** dù sửa script kiểm; lần chạy full đầu tiên làm ở PR macOS kế
+  tiếp (kiểm cả đường full mới của `verify_local.sh`). Bằng chứng của PR #3: check `android` của CI, danh tính git
+  (`verify_local.sh --check-identity`), hai lượt review độc lập.
 - 2026-10-22, A2, Robolectric: `AssetManager.list` của Robolectric trả đường dẫn đệ quy, của Android trả tên con trực
   tiếp; `AssetSampleSource` lấy đoạn đầu rồi thử mở `exam.json` để đúng ở cả hai.
 
