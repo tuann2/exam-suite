@@ -132,6 +132,8 @@ fun AttemptFlow(state: AttemptUiState, actions: AttemptActions, onExit: () -> Un
     var askDiscard by rememberSaveable { mutableStateOf(false) }
     var showNavigator by rememberSaveable { mutableStateOf(false) }
     val screen = state.screen
+    // Tạm dừng, hết giờ, nộp: bảng câu hỏi đóng, không tự mở lại khi Tiếp tục.
+    LaunchedEffect(screen is AttemptScreen.Answering) { if (screen !is AttemptScreen.Answering) showNavigator = false }
 
     BackHandler {
         when (screen) {

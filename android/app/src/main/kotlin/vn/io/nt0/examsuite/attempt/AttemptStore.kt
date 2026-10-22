@@ -30,7 +30,7 @@ class LibraryAttemptStore(private val library: ExamLibrary) : AttemptStore {
     override suspend fun clearDraft() = library.clearDraft()
 
     override suspend fun previousPercent(examId: UUID, mode: SessionMode): Int? =
-        library.attemptsFor(examId).filter { it.mode == mode }.maxByOrNull { it.submittedAtMillis }?.percent
+        AttemptPresentation.previousAttempt(library.attemptsFor(examId), examId, mode)?.percent
 
     override suspend fun saveAttempt(session: ExamSession) {
         library.saveAttempt(session)

@@ -121,7 +121,7 @@ private fun model(
     val paper = ExamComposer.compose(exam, CompositionOptions(QuestionSelection.All, seed = 1uL))
     val session = ExamSession.start(exam, paper, mode, null, "Nguyễn Thị Minh Anh", clock)
     session.setUp()
-    return AttemptModel(session, NoStore, CoroutineScope(Dispatchers.Unconfined)) { 1uL }.apply(then)
+    return AttemptModel(session, NoStore, CoroutineScope(Dispatchers.Unconfined), { 1uL }).apply(then)
 }
 
 @Composable
@@ -154,25 +154,27 @@ private fun longQuestionModel(): AttemptModel {
 @Composable
 fun LongQuestionScreenshot() = Screen(longQuestionModel())
 
-// ---------- Ảnh lớn, đã Kiểm tra đáp án (Luyện tập) ----------
+// ---------- Ảnh lớn (vừa bề rộng màn), đã Kiểm tra đáp án (Luyện tập) ----------
 
 private const val IMAGE_PATH = "media/0000000000000000000000000000000000000000000000000000000000000000.png"
 
+/**
+ * Ảnh thử dựng đúng bằng cỡ hiện trên màn (bề rộng nội dung 328dp ở mật độ 2,625 của ảnh chụp = 861px), chỉ hình chữ nhật
+ * không khử răng cưa: ảnh không bị co nên Mac và runner Linux của CI vẽ giống hệt (lần đầu co ảnh 1600px thì lệch).
+ */
 private object PreviewImages : QuestionImages {
     val bitmap: ImageBitmap by lazy {
-        val bmp = Bitmap.createBitmap(1600, 1100, Bitmap.Config.ARGB_8888)
+        val bmp = Bitmap.createBitmap(861, 592, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bmp)
         canvas.drawColor(0xFFE8F1F2.toInt())
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+        val paint = Paint()
         paint.color = 0xFF017777.toInt()
-        canvas.drawRect(120f, 160f, 620f, 460f, paint)
-        canvas.drawRect(980f, 160f, 1480f, 460f, paint)
-        canvas.drawRect(550f, 700f, 1050f, 1000f, paint)
-        paint.strokeWidth = 18f
+        canvas.drawRect(64f, 86f, 334f, 248f, paint)
+        canvas.drawRect(527f, 86f, 797f, 248f, paint)
+        canvas.drawRect(296f, 376f, 566f, 538f, paint)
         paint.color = 0xFF934A00.toInt()
-        canvas.drawLine(620f, 310f, 980f, 310f, paint)
-        canvas.drawLine(370f, 460f, 800f, 700f, paint)
-        canvas.drawLine(1230f, 460f, 800f, 700f, paint)
+        canvas.drawRect(334f, 160f, 527f, 172f, paint)
+        canvas.drawRect(425f, 248f, 437f, 376f, paint)
         bmp.asImageBitmap()
     }
 
@@ -261,5 +263,6 @@ private fun hiddenReviewModel(): AttemptModel {
 @PreviewTest
 @Preview(name = "sang", locale = "vi", showBackground = true, widthDp = W, heightDp = H)
 @Preview(name = "toi", locale = "vi", showBackground = true, widthDp = W, heightDp = H, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(name = "sang-150", locale = "vi", showBackground = true, widthDp = W, heightDp = H, fontScale = 1.5f)
 @Composable
 fun HiddenAnswersReviewScreenshot() = Screen(hiddenReviewModel())

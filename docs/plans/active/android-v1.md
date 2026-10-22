@@ -64,7 +64,7 @@ thuộc đã merge; không xếp chồng quá một tầng.
       lưu phiên dở khi xuống nền, lưu lần thi khi nộp (`AttemptStore`, nối `ExamLibrary` thật); màn Làm bài (ảnh phóng to,
       bảng câu hỏi bottom sheet, dải cảnh báo 5/1 phút, hết giờ sang Rà soát khoá, che khi tạm dừng, Kiểm tra đáp án), Rà
       soát & nộp, Kết quả, Xem lại bài (bộ lọc, `ReviewItems`), Làm lại, Luyện lại câu sai (trả `NextAttempt` cho A3a);
-      chuỗi vi/en; 35 ca JVM; 10 ảnh chụp (4 màn × sáng/tối, câu dài và Kết quả ở cỡ chữ 150%).
+      chuỗi vi/en; 37 ca JVM; 11 ảnh chụp (4 màn × sáng/tối, câu dài, Kết quả, Xem lại ở cỡ chữ 150%).
 - [ ] A3a Thư viện và nối luồng (Nt0 đã chốt hai câu hỏi, mobile.md); cổng GA2
 - [ ] A4 Hoàn thiện và beta; cổng GA3
 
@@ -261,6 +261,22 @@ thuộc đã merge; không xếp chồng quá một tầng.
 - 2026-10-22, A3b, biểu tượng: vector theo Material Icons (Apache-2.0) trong `res/drawable`, không thêm thư viện biểu
   tượng; A4 ghi vào THIRD_PARTY_NOTICES cùng giấy phép thư viện. Màu Đúng/Sai/cảnh báo cùng giá trị `LibraryPalette` của
   macOS (`ExamPalette`); test tương phản ở A4.
+- 2026-10-22, A3b, review độc lập PR #4 (REQUEST CHANGES, năm lỗi chặn), đã sửa trong cùng PR:
+  - **B1**: check `android` đỏ: ảnh "ảnh lớn" lệch vài điểm ảnh giữa Mac và runner Linux (co ảnh 1600px khi vẽ). Sửa: ảnh thử
+    dựng đúng bằng cỡ hiện (861px), chỉ hình chữ nhật không khử răng cưa, nên không co. Ảnh co trên màn thật không chụp.
+  - **B2**: Bỏ bài rồi `ON_STOP` (rời màn hình, đóng Activity) lưu lại phiên dở vừa xoá. Sửa: model đã Bỏ bài bỏ qua mọi lệnh
+    kể cả xuống nền; test chiều Bỏ bài → xuống nền.
+  - **B3**: lỗi ghi phiên dở (đầy bộ nhớ, kho hỏng) làm app dừng. Sửa: lệnh ghi bắt lỗi (trừ huỷ); test với nơi lưu ném lỗi.
+  - **B4**: thêm ảnh Xem lại bài ở cỡ chữ 150% (mobile.md đòi cả ba màn).
+  - **B5**: luật "lần trước cùng đề, cùng chế độ" thành hàm thuần `AttemptPresentation.previousAttempt` (có `beforeMillis` cho
+    Lịch sử thi ở A3a), có test.
+  - Không chặn, đã làm: bỏ test kể lại luật lõi (chọn nhiều đáp án, danh sách câu Luyện lại câu sai, đồng hồ sau khôi phục,
+    số đếm của bộ lọc) (N1); khoá ghi chung cả app `StoreWrites` (N2); KDoc `ExamLibrary.saveDraft` và rủi ro của
+    plan-android-v1.md Phần 5 ghi đúng là lưu khi xuống nền, không lưu mỗi lần đổi đáp án (N3); hai chỗ khác exam-taking.md
+    (Kiểm tra đáp án ở cuối nội dung câu, bảng câu hỏi đóng khi tạm dừng) vào bảng Khác macOS của mobile.md (N4); bảng câu
+    hỏi không tự mở lại sau Tiếp tục (N8). Để A3a/A4: việc nặng trên luồng chính với đề 2.000 câu (N5, đo ở A4), thông báo
+    trình đọc màn hình bằng `liveRegion` thử trên emulator (N6), lưu lần thi lỗi thì phiên dở cũ còn (N7, A3a chốt), tương
+    phản bảng màu trên nền Material 3 (N9, A4).
 - 2026-10-22, A3b, chưa làm (A3a): nối điều hướng, tạo `AttemptViewModel` từ Trước khi thi hay phiên dở khôi phục,
   `NextAttempt` mở Trước khi thi, đồng hồ nhanh tiêm cho test Compose, chạy thử màn làm bài trên emulator (ba luồng của
   A3a). Màn làm bài chưa mở được từ app ở PR này.
@@ -290,9 +306,9 @@ A1 (PR #2, trên SHA cuối, ghi ở mô tả PR):
 
 A3b (PR này):
 
-- `:app` 35 ca JVM (`AttemptPresentationTest` 15, `AttemptModelTest` 20; không kể lại luật của `ExamSession`, `Scorer`,
-  `ReviewItems`); `:data` vẫn đạt; 10 ảnh chụp mới (`AttemptScreenshots`: câu dài 10 lựa chọn, ảnh lớn đã Kiểm tra đáp án,
-  Kết quả ba phần, Xem lại đề `hideAnswers`; sáng/tối; câu dài và Kết quả ở `fontScale` 1,5), đã xem từng ảnh.
+- `:app` 37 ca JVM (`AttemptPresentationTest` 16, `AttemptModelTest` 21; không kể lại luật của `ExamSession`, `Scorer`,
+  `ReviewItems`); `:data` vẫn đạt; 11 ảnh chụp mới (`AttemptScreenshots`: câu dài 10 lựa chọn, ảnh lớn đã Kiểm tra đáp án,
+  Kết quả ba phần, Xem lại đề `hideAnswers`; sáng/tối; ba màn ở `fontScale` 1,5), đã xem từng ảnh.
 - `android/scripts/check_android.sh` đạt tại chỗ (luật riêng, lint gồm `ComposeHardcodedText`, `MissingTranslation`,
   `UnusedResources`, test, so ảnh).
 - Bằng chứng merge: check `android` (CI), `local/verify-android` (PR chạm `android/app/**`), `local/verify` mức none (danh

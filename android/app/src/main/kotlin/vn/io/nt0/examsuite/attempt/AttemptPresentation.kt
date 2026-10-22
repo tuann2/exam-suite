@@ -9,6 +9,7 @@ import vn.io.nt0.examsuite.core.session.ExamSession
 import vn.io.nt0.examsuite.core.session.PauseReason
 import vn.io.nt0.examsuite.core.session.SessionMode
 import vn.io.nt0.examsuite.core.session.SessionPhase
+import vn.io.nt0.examsuite.data.library.AttemptSummary
 import java.text.Normalizer
 import java.time.Instant
 import java.util.Locale
@@ -268,6 +269,14 @@ object AttemptPresentation {
         if (scored.size < 2) return null
         return scored.minWith(compareBy { Scorer.percent(it.correct, it.total) }).sectionId
     }
+
+    /**
+     * Lần trước để so (exam-taking.md phương án 8): cùng đề, **cùng chế độ**, nộp trước `beforeMillis` (null: mọi lần đã
+     * lưu, dùng khi chưa lưu lần vừa nộp), mới nhất trước.
+     */
+    fun previousAttempt(attempts: List<AttemptSummary>, examId: UUID, mode: SessionMode, beforeMillis: Long? = null): AttemptSummary? =
+        attempts.filter { it.examId == examId && it.mode == mode && (beforeMillis == null || it.submittedAtMillis < beforeMillis) }
+            .maxByOrNull { it.submittedAtMillis }
 
     fun results(session: ExamSession, previousPercent: Int?, saveState: SaveState): ResultsView {
         val result = checkNotNull(session.result) { "phiên chưa nộp" }

@@ -291,7 +291,7 @@ class ExamLibrary(
 
     // ---------- Phiên dở ----------
 
-    /** Lưu phiên dở (app xuống nền, mỗi lần đổi đáp án; mobile.md Q7). Mỗi lúc một phiên: ghi đè phiên cũ. */
+    /** Lưu phiên dở (khi app xuống nền; mobile.md Q7). Mỗi lúc một phiên: ghi đè phiên cũ. */
     suspend fun saveDraft(session: ExamSession) = saveDraft(session.snapshot())
 
     /** Lưu phiên dở đã chụp: giao diện chụp ngay lúc xuống nền, ghi sau (phiên có thể đã đổi khi lệnh ghi chạy). */

@@ -242,7 +242,7 @@ Room schema và `ExamStore` trong `android/data/**`, `fixtures/**`, `schema/**`.
 | Rủi ro | Cách xử lý |
 | --- | --- |
 | Hai lõi (Swift, Kotlin) lệch nhau theo thời gian | Oracle dùng chung trong `fixtures/`; quy tắc: đổi hành vi lõi thì **sửa fixture/vector trước**, rồi hai bên cùng xanh; test Swift đọc cùng file vector và `invalid-json` từ A1 |
-| Android giết tiến trình khi đang làm bài | `DraftSession` lưu khi tạm dừng và mỗi lần đổi đáp án; khôi phục ở trạng thái Tạm dừng (Q7) |
+| Android giết tiến trình khi đang làm bài | `DraftSession` lưu khi app xuống nền (`ON_STOP`, luôn trước khi hệ điều hành dừng app ở nền); khôi phục ở trạng thái Tạm dừng (Q7) |
 | Hộp chọn file không hiện `.exam` vì không có MIME | Spike A0; lọc `*/*` rồi kiểm đuôi/magic zip trong app |
 | Ảnh lớn, đề 2.000 câu trên máy yếu | Giải mã ảnh theo kích thước hiển thị (`BitmapFactory.Options.inSampleSize`), `LazyColumn`; đo tay ở A4 trên điện thoại của Nt0 (Q12), ghi đời máy cùng số đo; vượt ngân sách thì B3 thêm `:benchmark` |
 | Agent chép danh sách test của macOS sang và kể lại luật lõi ở ViewModel | Quy tắc 1 của Phần 4; người duyệt A3b đối chiếu tên test với `ExamSessionTests` |

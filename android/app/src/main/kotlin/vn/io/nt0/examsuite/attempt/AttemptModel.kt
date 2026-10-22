@@ -130,6 +130,8 @@ class AttemptModel(
     private val store: AttemptStore,
     private val storeScope: CoroutineScope,
     private val newSeed: () -> ULong,
+    /** Khoá chung của mọi lệnh ghi của màn làm bài trong app (mỗi lúc một phiên, kể cả khi hai model nối nhau). */
+    private val writeLock: Mutex = StoreWrites.lock,
 ) : AttemptActions {
     val examId: UUID get() = session.exam.id
 
@@ -141,7 +143,8 @@ class AttemptModel(
     private var answerReview: Boolean = false
     private var reviewFilter = ReviewFilter.ALL
     private var reviewIndex: Int? = null
-    private val storeLock = Mutex()
+    /** Đã Bỏ bài: phiên không còn dùng, mọi lệnh (kể cả xuống nền) không làm gì, để không lưu lại phiên dở vừa xoá. */
+    private var discarded = false
 
     private val _state: MutableStateFlow<AttemptUiState>
     val state: StateFlow<AttemptUiState>
@@ -215,6 +218,7 @@ class AttemptModel(
      * xoay màn hình (Activity dựng lại, model giữ nguyên).
      */
     fun onBackground() {
+        if (discarded) return
         if (session.phase == SessionPhase.InProgress || session.phase == SessionPhase.Reviewing(false)) {
             command { session.pause(PauseReason.BACKGROUND) }
         }
@@ -227,7 +231,9 @@ class AttemptModel(
 
     /** Bỏ bài: không lưu gì, xoá phiên dở (exam-taking.md, mobile.md). */
     override fun discard() {
-        if (!isSubmitted) write { store.clearDraft() }
+        if (isSubmitted || discarded) return
+        discarded = true
+        write { store.clearDraft() }
     }
 
     // ---------- Nộp, Kết quả ----------
@@ -319,6 +325,7 @@ class AttemptModel(
     // ---------- Nội bộ ----------
 
     private fun command(block: () -> Unit) {
+        if (discarded) return
         try {
             block()
         } catch (_: SessionException) {
@@ -338,8 +345,21 @@ class AttemptModel(
         }
     }
 
+    /**
+     * Lỗi ghi phiên dở (đầy bộ nhớ, kho hỏng) không được làm app dừng: phiên trong bộ nhớ vẫn còn. Lưu lần thi tự bắt lỗi
+     * để báo trên Kết quả.
+     */
     private fun write(block: suspend () -> Unit) {
-        storeScope.launch { storeLock.withLock { block() } }
+        storeScope.launch {
+            writeLock.withLock {
+                try {
+                    block()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (_: Exception) {
+                }
+            }
+        }
     }
 
     private fun publish() {

@@ -9,6 +9,7 @@ import vn.io.nt0.examsuite.core.composer.CompositionOptions
 import vn.io.nt0.examsuite.core.composer.QuestionSelection
 import vn.io.nt0.examsuite.core.scoring.SectionScore
 import vn.io.nt0.examsuite.core.session.SessionMode
+import vn.io.nt0.examsuite.data.library.AttemptSummary
 
 /** Phần trình bày mà màn làm bài thêm trên lõi; luật của phiên (đồng hồ, chuyển trạng thái, chấm) đã test ở `:core`. */
 class AttemptPresentationTest {
@@ -168,6 +169,28 @@ class AttemptPresentationTest {
         // Phần 0/0 không tính; còn một phần có câu thì không đánh dấu.
         assertNull(AttemptPresentation.weakestSectionId(listOf(s(1, 0, 0), s(2, 1, 2))))
         assertEquals(uuid(3), AttemptPresentation.weakestSectionId(listOf(s(1, 0, 0), s(2, 2, 2), s(3, 0, 2))))
+    }
+
+    @Test
+    fun previousAttemptIsLatestOfSameExamAndMode() {
+        fun a(n: Int, exam: Int, mode: SessionMode, at: Long, percent: Int) = AttemptSummary(
+            attemptId = uuid(500 + n), examId = uuid(exam), examTitle = "Đề", examCode = null, candidateName = "A", mode = mode,
+            startedAtMillis = at - 60_000, submittedAtMillis = at, elapsedSeconds = 60.0, timeLimitMinutes = null, total = 10,
+            correct = percent / 10, score1000 = percent * 10, percent = percent, passPercent = 70, passed = percent >= 70,
+        )
+        val attempts = listOf(
+            a(1, 1, SessionMode.PRACTICE, 1_000, 40),
+            a(2, 1, SessionMode.EXAM, 2_000, 50),
+            a(3, 1, SessionMode.PRACTICE, 3_000, 60),
+            a(4, 2, SessionMode.PRACTICE, 4_000, 90), // đề khác
+            a(5, 1, SessionMode.PRACTICE, 5_000, 80),
+        )
+        assertEquals(80, AttemptPresentation.previousAttempt(attempts, uuid(1), SessionMode.PRACTICE)?.percent)
+        assertEquals(50, AttemptPresentation.previousAttempt(attempts, uuid(1), SessionMode.EXAM)?.percent)
+        // Mở lần thi cũ từ Lịch sử thi: lần trước nó, không phải lần mới hơn.
+        assertEquals(60, AttemptPresentation.previousAttempt(attempts, uuid(1), SessionMode.PRACTICE, beforeMillis = 5_000)?.percent)
+        assertNull(AttemptPresentation.previousAttempt(attempts, uuid(1), SessionMode.PRACTICE, beforeMillis = 1_000))
+        assertNull(AttemptPresentation.previousAttempt(attempts, uuid(3), SessionMode.PRACTICE))
     }
 
     @Test
