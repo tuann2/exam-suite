@@ -30,20 +30,18 @@ struct JSONDepthTests {
         #expect(Self.limit == 32)
     }
 
-    @Test("Lồng 33 cấp: cả strict lẫn lenient báo tooDeep", arguments: [ReadMode.strict, .lenient])
-    func rejectsOverLimit(mode: ReadMode) throws {
+    // Lồng 32 và 33 cấp ở chế độ nghiêm: fixtures/invalid-json (depth-32, depth-33), dùng chung với lõi Kotlin.
+    @Test("Lồng 33 cấp ở chế độ lenient cũng báo tooDeep")
+    func rejectsOverLimitLenient() throws {
         let data = try Zip.make([("exam.json", examWithDeepField(arrays: Self.limit))])
         #expect(throws: ExamFileError.tooDeep(limit: Self.limit)) {
-            try ExamPackageReader.read(data, mode: mode)
+            try ExamPackageReader.read(data, mode: .lenient)
         }
     }
 
-    @Test("Lồng đúng 32 cấp: không lỗi độ sâu (strict báo trường lạ, lenient đọc được)")
-    func acceptsAtLimit() throws {
+    @Test("Lồng đúng 32 cấp: bản Admin (lenient) đọc được, ra đúng đề toi-thieu")
+    func lenientAcceptsAtLimit() throws {
         let data = try Zip.make([("exam.json", examWithDeepField(arrays: Self.limit - 1))])
-        #expect(throws: ExamFileError.unknownFields(["deep"])) {
-            try ExamPackageReader.read(data, mode: .strict)
-        }
         let package = try ExamPackageReader.read(data, mode: .lenient)
         #expect(package.exam == (try ExamJSON.decode(RepoPaths.examJSON("toi-thieu"))))
     }

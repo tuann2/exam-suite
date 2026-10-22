@@ -4,9 +4,10 @@ import Testing
 @testable import ExamFile
 
 // Dấu vân tay câu (docs/product/exam-taking.md, "Lịch sử thi"): đổi dạng chuẩn làm mọi lần thi
-// cũ báo "đã sửa", nên giá trị được khoá bằng vector cố định như SplitMix64. Vector tính độc lập
-// bằng Python: json.dumps(obj, ensure_ascii=False, separators=(",", ":"), sort_keys=True) trên
-// chuỗi NFC rồi hashlib.sha256. CI chạy cùng test trên Linux nên cùng giá trị trên hai nền tảng.
+// cũ báo "đã sửa", nên giá trị được khoá bằng vector cố định như SplitMix64. Vector dùng chung với lõi Kotlin của bản
+// Android: fixtures/vectors/question-fingerprints.json (tính độc lập bằng Python: json.dumps(obj, ensure_ascii=False,
+// separators=(",", ":"), sort_keys=True) trên chuỗi NFC rồi hashlib.sha256). CI chạy cùng test trên Linux nên cùng
+// giá trị trên hai nền tảng.
 
 private func opt(_ letter: Character) -> OptionID { OptionID(letter)! }
 
@@ -15,41 +16,41 @@ private func options(_ pairs: [(Character, String)]) -> [Option] {
 }
 
 private enum Vectors {
+    struct File: Decodable {
+        struct Vector: Decodable {
+            let name: String
+            let question: Question
+            let canonical: String?
+            let sha256: String
+        }
+
+        let vectors: [Vector]
+    }
+
+    /// Đọc hỏng thì dừng ngay với thông báo rõ: mọi test của file này dựa vào vector.
+    static let file: File = {
+        let url = RepoPaths.fixtures.appendingPathComponent("vectors/question-fingerprints.json")
+        do {
+            return try JSONDecoder().decode(File.self, from: Data(contentsOf: url))
+        } catch {
+            fatalError("Không đọc được fixtures/vectors/question-fingerprints.json: \(error)")
+        }
+    }()
+
     /// Câu tiếng Việt có ảnh và giải thích.
-    static let q1 = Question(
-        id: UUID(uuidString: "a91c2d3e-4f5a-4b6c-8d7e-9f0a1b2c3d4e")!,
-        type: .single,
-        text: "Đơn vị đo cường độ dòng điện là gì?",
-        image: "media/9d5dc894e10f060d.png",
-        options: options([("A", "Vôn"), ("B", "Ampe"), ("C", "Ôm"), ("D", "Oát")]),
-        correct: [opt("B")],
-        explanation: "Ampe (A) là đơn vị SI của cường độ dòng điện."
-    )
-    static let q1Canonical = #"{"correct":["B"],"explanation":"Ampe (A) là đơn vị SI của cường độ dòng điện.","image":"media/9d5dc894e10f060d.png","options":[{"id":"A","text":"Vôn"},{"id":"B","text":"Ampe"},{"id":"C","text":"Ôm"},{"id":"D","text":"Oát"}],"text":"Đơn vị đo cường độ dòng điện là gì?","type":"single"}"#
-    static let q1Hash = "bcd9aaae267336ff9c2f93ebb35e7950e44e5b602933e47b59fe04d79631a8f3"
+    static var q1: Question { file.vectors[0].question }
+    static var q1Canonical: String { file.vectors[0].canonical ?? "" }
+    static var q1Hash: String { file.vectors[0].sha256 }
 
     /// Câu nhiều đáp án, không ảnh, không giải thích; chuỗi có ký tự phải escape, `/`, DEL, U+2028;
     /// `correct` không theo thứ tự.
-    static let q2 = Question(
-        type: .multiple,
-        text: "Chọn \"đúng\" các mục:\n\t- a\\b / c\u{01}\u{7F}\u{2028}",
-        options: options([("A", "x"), ("B", "y"), ("C", "z")]),
-        correct: [opt("C"), opt("A")]
-    )
-    static let q2Canonical = "{\"correct\":[\"A\",\"C\"],\"explanation\":null,\"image\":null,"
-        + "\"options\":[{\"id\":\"A\",\"text\":\"x\"},{\"id\":\"B\",\"text\":\"y\"},{\"id\":\"C\",\"text\":\"z\"}],"
-        + "\"text\":\"Chọn \\\"đúng\\\" các mục:\\n\\t- a\\\\b / c\\u0001\u{7F}\u{2028}\",\"type\":\"multiple\"}"
-    static let q2Hash = "0b7ff91f43f9d90a62a4fbea1b0325a2290a6dbbb5cf9a88044751523dbd986e"
+    static var q2: Question { file.vectors[1].question }
+    static var q2Canonical: String { file.vectors[1].canonical ?? "" }
+    static var q2Hash: String { file.vectors[1].sha256 }
 
     /// Giải thích là chuỗi rỗng (khác không có).
-    static let q3 = Question(
-        type: .single,
-        text: "1 + 1 = ?",
-        options: options([("A", "2"), ("B", "3")]),
-        correct: [opt("A")],
-        explanation: ""
-    )
-    static let q3Hash = "1f021a9b169bc8b98031cdfcee2b25b1d1c621e692ac88fad91fdd120eae6950"
+    static var q3: Question { file.vectors[2].question }
+    static var q3Hash: String { file.vectors[2].sha256 }
 }
 
 @Suite("QuestionFingerprint: dạng chuẩn và vector cố định")
@@ -62,9 +63,14 @@ struct QuestionFingerprintVectorTests {
 
     @Test("Vector cố định (khoá giá trị; đổi là làm mọi lần thi cũ báo đã sửa)")
     func fixedVectors() {
-        #expect(QuestionFingerprint.fingerprint(of: Vectors.q1) == Vectors.q1Hash)
-        #expect(QuestionFingerprint.fingerprint(of: Vectors.q2) == Vectors.q2Hash)
-        #expect(QuestionFingerprint.fingerprint(of: Vectors.q3) == Vectors.q3Hash)
+        #expect(Vectors.file.vectors.count == 3)
+        #expect(Vectors.q1Hash == "bcd9aaae267336ff9c2f93ebb35e7950e44e5b602933e47b59fe04d79631a8f3")
+        for vector in Vectors.file.vectors {
+            #expect(QuestionFingerprint.fingerprint(of: vector.question) == vector.sha256, "\(vector.name)")
+            if let canonical = vector.canonical {
+                #expect(Array(QuestionFingerprint.canonicalJSON(of: vector.question).utf8) == Array(canonical.utf8))
+            }
+        }
     }
 
     @Test("Chuỗi NFD và NFC cho cùng dấu vân tay")

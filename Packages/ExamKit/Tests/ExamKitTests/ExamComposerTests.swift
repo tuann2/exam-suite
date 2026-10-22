@@ -7,56 +7,31 @@ import Testing
 
 @Suite("SeededGenerator: SplitMix64 tái lập được trên mọi nền tảng")
 struct SeededGeneratorTests {
-    // Vector tính bằng bản Python của thuật toán chuẩn splitmix64.c (Vigna) và đối chiếu
-    // giá trị công bố cho seed 0 (0xE220A8397B1DCDAF). Đổi các số này nghĩa là seed
+    // Vector dùng chung với lõi Kotlin (fixtures/vectors/composer.json): tính bằng bản Python của thuật toán chuẩn
+    // splitmix64.c (Vigna), đối chiếu giá trị công bố cho seed 0 (0xE220A8397B1DCDAF). Đổi các số này nghĩa là seed
     // đã lưu trong lịch sử làm bài sẽ ra đề khác.
-    @Test("5 giá trị đầu với seed 0")
-    func vectorSeedZero() {
-        var g = SeededGenerator(seed: 0)
-        let values = (0 ..< 5).map { _ in g.next() }
-        #expect(values == [
-            0xE220_A839_7B1D_CDAF,
-            0x6E78_9E6A_A1B9_65F4,
-            0x06C4_5D18_8009_454F,
-            0xF88B_B8A8_724C_81EC,
-            0x1B39_896A_51A8_749B,
-        ])
+    @Test("Đọc được fixtures/vectors/composer.json, đủ các nhóm")
+    func vectorFileLoaded() throws {
+        let file = try #require(ComposerVectors.file, "Không đọc được fixtures/vectors/composer.json")
+        #expect(file.splitmix64.count >= 2 && file.nextInt.count >= 2 && file.compositions.count >= 4)
+        #expect(file.splitmix64.first?.next.first == "0xe220a8397b1dcdaf")
     }
 
-    @Test("5 giá trị đầu với seed 0x0123456789ABCDEF")
-    func vectorOtherSeed() {
-        var g = SeededGenerator(seed: 0x0123_4567_89AB_CDEF)
-        let values = (0 ..< 5).map { _ in g.next() }
-        #expect(values == [
-            0x157A_3807_A48F_AA9D,
-            0xD573_529B_34A1_D093,
-            0x2F90_B72E_996D_CCBE,
-            0xA2D4_1933_4C46_67EC,
-            0x0140_4CE9_1493_8008,
-        ])
+    @Test("next(): giá trị đầu theo vector cố định", arguments: ComposerVectors.file?.splitmix64.indices.map { $0 } ?? [])
+    func vectorNext(index: Int) throws {
+        let vector = try #require(ComposerVectors.file).splitmix64[index]
+        var g = SeededGenerator(seed: ComposerVectors.hex(vector.seed))
+        #expect(vector.next.map { _ in g.next() } == vector.next.map(ComposerVectors.hex), "seed \(vector.seed)")
     }
 
-    @Test("nextInt(below:) khớp vector tham chiếu với cận nhỏ")
-    func nextIntVectorSmallBound() {
-        var g = SeededGenerator(seed: 0)
-        let values = (0 ..< 10).map { _ in g.nextInt(below: 6) }
-        #expect(values == [1, 0, 1, 4, 1, 0, 5, 2, 5, 2])
-    }
-
-    @Test("nextInt(below:) bỏ giá trị dưới ngưỡng (rejection sampling) đúng như tham chiếu")
-    func nextIntRejectionPath() {
-        // Cận 3·2^61: ngưỡng 2^64 mod cận = 2^62, nên giá trị thô thứ 3, 5, 7 của seed 0 bị bỏ.
-        var g = SeededGenerator(seed: 0)
-        let bound = 0x6000_0000_0000_0000
-        let values = (0 ..< 6).map { _ in g.nextInt(below: bound) }
-        #expect(values == [
-            0x2220_A839_7B1D_CDAF,
-            0x0E78_9E6A_A1B9_65F4,
-            0x388B_B8A8_724C_81EC,
-            0x53CB_9F0C_747E_A2EA,
-            0x0584_133A_C916_AB3C,
-            0x33B8_488C_368C_B0A6,
-        ])
+    @Test("nextInt(below:): vector cố định, kể cả nhánh bỏ giá trị dưới ngưỡng",
+          arguments: ComposerVectors.file?.nextInt.indices.map { $0 } ?? [])
+    func vectorNextInt(index: Int) throws {
+        // Cận 3·2^61 (vector thứ hai): ngưỡng 2^64 mod cận = 2^62, nên giá trị thô thứ 3, 5, 7 của seed 0 bị bỏ.
+        let vector = try #require(ComposerVectors.file).nextInt[index]
+        var g = SeededGenerator(seed: ComposerVectors.hex(vector.seed))
+        let bound = Int(ComposerVectors.hex(vector.bound))
+        #expect(vector.values.map { _ in UInt64(g.nextInt(below: bound)) } == vector.values.map(ComposerVectors.hex))
     }
 
     @Test("nextInt(below:) luôn trong khoảng", arguments: [1, 2, 3, 7, 100, 1_000_003, Int.max])
@@ -235,42 +210,20 @@ struct ExamComposerTests {
         }
     }
 
-    // Kết quả tính độc lập bằng bản Python của đúng thuật toán (SplitMix64, rejection
-    // sampling, Fisher–Yates Durstenfeld, thứ tự tiêu thụ 1→2→3). Khoá tính tái lập
-    // giữa macOS, Linux và các phiên bản Swift.
-    @Test("Vector cố định: random 3, seed 42, giữ thứ tự sau xáo")
-    func goldenRandom() throws {
-        let exam = try Self.sample()
-        let paper = try ExamComposer.compose(exam, options: .init(selection: .random(count: 3), seed: 42))
-        #expect(paper.questionIDs == [Self.q2, Self.q3, Self.q1])
-        #expect(paper.items.map(Self.letters) == ["ABCD", "ABC", "ABCD"])
-    }
-
-    @Test("Vector cố định: random 3 + xáo câu + xáo đáp án, seed 42")
-    func goldenRandomShuffleAll() throws {
-        let exam = try Self.sample()
-        let options = CompositionOptions(selection: .random(count: 3), shuffleQuestions: true, shuffleOptions: true, seed: 42)
-        let paper = try ExamComposer.compose(exam, options: options)
-        #expect(paper.questionIDs == [Self.q1, Self.q2, Self.q3])
-        #expect(paper.items.map(Self.letters) == ["ADCB", "BADC", "ABC"])
-    }
-
-    @Test("Vector cố định: tất cả + xáo câu + xáo đáp án, seed 7")
-    func goldenAllShuffleAll() throws {
-        let exam = try Self.sample()
-        let options = CompositionOptions(shuffleQuestions: true, shuffleOptions: true, seed: 7)
-        let paper = try ExamComposer.compose(exam, options: options)
-        #expect(paper.questionIDs == [Self.q5, Self.q2, Self.q4, Self.q1, Self.q3])
-        #expect(paper.items.map(Self.letters) == ["CADBE", "ADCB", "CAB", "BCDA", "ACB"])
-        #expect(paper.items.map(\.sectionID) == [Self.math, Self.physics, Self.math, Self.physics, Self.physics])
-    }
-
-    @Test("Vector cố định: chỉ xáo đáp án, seed 0, thứ tự câu giữ nguyên")
-    func goldenOptionsOnly() throws {
-        let exam = try Self.sample()
-        let paper = try ExamComposer.compose(exam, options: .init(shuffleOptions: true, seed: 0))
-        #expect(paper.questionIDs == [Self.q1, Self.q2, Self.q3, Self.q4, Self.q5])
-        #expect(paper.items.map(Self.letters) == ["CBAD", "CDBA", "BAC", "BAC", "DEACB"])
+    // Kết quả tính độc lập bằng bản Python của đúng thuật toán (SplitMix64, rejection sampling, Fisher–Yates
+    // Durstenfeld, thứ tự tiêu thụ 1→2→3), dùng chung với lõi Kotlin (fixtures/vectors/composer.json). Khoá tính
+    // tái lập giữa macOS, Linux, các phiên bản Swift và bản Android.
+    @Test("Vector cố định của chọn câu và xáo", arguments: ComposerVectors.file?.compositions.indices.map { $0 } ?? [])
+    func goldenComposition(index: Int) throws {
+        let vector = try #require(ComposerVectors.file).compositions[index]
+        let name = String(vector.exam.split(separator: "/").last ?? "")
+        let exam = try ExamJSON.decode(Fixtures.data(Fixtures.exam(name)))
+        let paper = try ExamComposer.compose(exam, options: vector.options.options)
+        #expect(paper.questionIDs.map { $0.uuidString.lowercased() } == vector.questionIDs, "\(vector.name)")
+        #expect(paper.items.map(Self.letters) == vector.optionOrders, "\(vector.name)")
+        if let sections = vector.sectionIDs {
+            #expect(paper.items.map { $0.sectionID.uuidString.lowercased() } == sections, "\(vector.name)")
+        }
     }
 
     // MARK: Tái lập

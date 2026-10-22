@@ -36,4 +36,8 @@ ghi ở đây thì theo tài liệu macOS. Áp cho Android (docs/product/plan-an
 
 - **Làm đề khác khi đang có phiên dở** (macOS: mỗi lúc một phiên, đưa cửa sổ đang làm lên trước, exam-taking.md phương
   án 6): mở lại phiên dở hay hỏi Bỏ bài? Nt0 chốt trước bước A3a của Android.
+- **Phiên dở khi khôi phục** (lõi Android A1 đang làm như sau, Nt0 xác nhận trước A2): phiên đang làm hay đang rà soát
+  chưa khoá thì về Tạm dừng; phiên đã hết giờ hay đang rà soát khoá thì giữ nguyên, thời gian giữ đúng lúc chụp.
+- **Cập nhật đề khi đang có phiên dở của đề đó**: câu đã sửa thì lõi không khôi phục phiên dở (đáp án cũ có thể trỏ nhầm,
+  cùng lý do với exam-taking.md phương án 13), app bỏ phiên dở. Có hỏi trước khi Cập nhật không: Nt0 chốt trước A3a.
 - **Cỡ chữ hệ thống lớn tới đâu thì bố cục phải giữ** (macOS kiểm tới 150%): Nt0 chốt trước bước A3b của Android.

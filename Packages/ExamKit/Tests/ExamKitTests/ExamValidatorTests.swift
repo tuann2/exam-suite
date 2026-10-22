@@ -615,20 +615,19 @@ struct ExamValidatorFixtureTests {
         #expect(ExamValidator.validate(exam, availableMedia: []).map(\.code) == [.imageNotFound])
     }
 
-    /// Fixture sai mà model giải mã được và validator phải bắt, với mã mong đợi.
-    static let caughtByValidator: [String: [IssueCode]] = [
-        "correct-not-in-options": [.correctAnswerNotInOptions],
-        "single-with-two-correct": [.singleHasMultipleCorrect],
-        "one-option": [.tooFewOptions, .correctAnswerNotInOptions],
-        "image-bad-name": [.imagePathInvalid],
-        "option-ids-out-of-order": [.optionIDOutOfOrder, .optionIDOutOfOrder],
-        "duplicate-question-id": [.duplicateID],
-        "duplicate-id-case": [.duplicateID],
-        "whitespace-only-title": [.titleEmpty],
-        "whitespace-only-option": [.optionTextEmpty],
-        "code-trailing-newline": [.codeInvalid],
-        "image-trailing-newline": [.imagePathInvalid],
-    ]
+    /// Fixture sai mà model giải mã được và validator phải bắt, với mã mong đợi theo thứ tự: khoá `issueCodes` của
+    /// fixtures/expected-verdicts.json, dùng chung với lõi Kotlin của bản Android. Đọc hỏng thì rỗng, test
+    /// `expectationsCoverAllFixtures` báo đỏ.
+    static let caughtByValidator: [String: [IssueCode]] = {
+        struct Doc: Decodable { let issueCodes: [String: [String]] }
+        let url = Fixtures.root.appendingPathComponent("expected-verdicts.json")
+        guard let data = try? Data(contentsOf: url), let doc = try? JSONDecoder().decode(Doc.self, from: data) else { return [:] }
+        var result: [String: [IssueCode]] = [:]
+        for (key, codes) in doc.issueCodes where key.hasPrefix("invalid/") {
+            result[String(key.dropFirst("invalid/".count))] = codes.compactMap(IssueCode.init(rawValue:))
+        }
+        return result
+    }()
     /// Model không giải mã được: bản Học viên đã từ chối ở bước đọc.
     static let rejectedByDecoder = ["missing-correct", "pass-percent-decimal"]
     /// Việc của ExamFile (bước 6): phiên bản mới hơn và trường lạ. Validator bỏ qua.
