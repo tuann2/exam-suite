@@ -27,6 +27,7 @@ ghi ở đây thì theo tài liệu macOS. Áp cho Android (docs/product/plan-an
 | Phím tắt | Bảng phím đầy đủ (exam-session.md) | Không có |
 | Cỡ chữ | Menu Xem › Phóng to/Thu nhỏ/Cỡ thật, 100–150% (accessibility-localization.md) | Theo cỡ chữ hệ thống, không có lệnh riêng |
 | Nền đọc | Năm bộ màu (accessibility-localization.md) | Không có; theo sáng/tối của hệ thống |
+| Sao lưu dữ liệu app | Không có (dữ liệu chỉ trên máy) | **Không sao lưu lên đám mây, không chuyển sang máy mới** (Nt0 chốt 2026-10-22): Thư viện, file đề đã sao chép, lịch sử thi, phiên dở và cài đặt chỉ nằm trên máy; gỡ app hay đổi máy là mất |
 | Ngôn ngữ | Theo macOS, không có ô chọn trong app | Theo hệ thống và "Ngôn ngữ của ứng dụng" của hệ điều hành; không có ô chọn trong app. Thuật ngữ theo bảng đã duyệt |
 | Lịch sử thi | Payload `AttemptRecord` v1 | Định dạng riêng của từng bản mobile (Q11), dấu vân tay câu cùng thuật toán với macOS nên quy tắc câu đã sửa/đã xoá giống hệt |
 | Xuất PDF (v1.1) | Hộp Lưu, hộp In | Hộp chia sẻ của hệ điều hành (lưu, gửi), In của hệ điều hành; ba mức xem lại như macOS. Ảnh trong PDF: chốt khi làm (Q9) |
@@ -36,5 +37,3 @@ ghi ở đây thì theo tài liệu macOS. Áp cho Android (docs/product/plan-an
 - **Làm đề khác khi đang có phiên dở** (macOS: mỗi lúc một phiên, đưa cửa sổ đang làm lên trước, exam-taking.md phương
   án 6): mở lại phiên dở hay hỏi Bỏ bài? Nt0 chốt trước bước A3a của Android.
 - **Cỡ chữ hệ thống lớn tới đâu thì bố cục phải giữ** (macOS kiểm tới 150%): Nt0 chốt trước bước A3b của Android.
-- **Sao lưu dữ liệu app** (sao lưu đám mây của hệ điều hành, chuyển sang máy mới): bản khung Android tạm **tắt cả hai**
-  (dữ liệu chỉ nằm trên máy, như macOS). Nt0 chốt trước bước A2 (lưu trữ) của Android.

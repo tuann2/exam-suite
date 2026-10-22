@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Tạm thời (A0): không sao lưu đám mây, không chuyển sang máy mới. Dữ liệu chỉ nằm trên máy, như bản macOS.
-     Chính sách chính thức chờ Nt0 chốt trước A2 (docs/plans/active/android-v1.md, Decisions). -->
+<!-- Không sao lưu lên đám mây, không chuyển sang máy mới (Nt0 chốt 2026-10-22, docs/product/mobile.md).
+     Mọi miền dữ liệu bị loại trừ ở cả hai; cùng với android:allowBackup="false" trong AndroidManifest.xml. -->
 <data-extraction-rules>
     <cloud-backup>
         <exclude domain="root" path="." />

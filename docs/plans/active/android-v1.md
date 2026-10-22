@@ -52,7 +52,7 @@ thuộc đã merge; không xếp chồng quá một tầng.
       khung Gradle `:core`, `:data`, `:app`, `:lint-rules` (một test mỗi module, luật lint có ba test);
       `android/scripts/check_android.sh`, `check_android_rules.py`; `.github/workflows/android.yml`; spike (Decisions).
 - [ ] A1 Lõi `:core`
-- [ ] A2 `:data` (chờ Nt0 chốt sao lưu dữ liệu, mobile.md Câu hỏi mở)
+- [ ] A2 `:data`
 - [ ] A3b Giao diện làm bài (chờ Nt0 chốt mức cỡ chữ, mobile.md Câu hỏi mở)
 - [ ] A3a Thư viện và nối luồng (chờ Nt0 chốt làm đề khác khi có phiên dở); cổng GA2
 - [ ] A4 Hoàn thiện và beta; cổng GA3
@@ -99,8 +99,9 @@ thuộc đã merge; không xếp chồng quá một tầng.
   `locale` (tiếng Việt là nguồn); chữ có dấu hiển thị đúng. Ảnh tham chiếu ghi trên macOS và **so đạt trên runner Linux** của job
   `android` (lần chạy đầu, run 39725459093 trên 954852f): giữ cách ghi ảnh trên Mac. Màn có nhiều chữ hơn mà lệch giữa hai
   nền thì ghi lại ảnh bằng Docker Linux (A3b quyết khi gặp).
-- 2026-10-22, A0, tạm thời: sao lưu dữ liệu app tắt (`dataExtractionRules` loại trừ mọi miền, `allowBackup=false`),
-  chờ Nt0 chốt trước A2 (mobile.md Câu hỏi mở). Biểu tượng app là biểu tượng **tạm** (vector), Nt0 thay sau.
+- 2026-10-22, Nt0 (duyệt PR #1): **không sao lưu lên đám mây, không chuyển sang máy mới** (mobile.md). Thực hiện bằng
+  `allowBackup=false` và `dataExtractionRules` loại trừ mọi miền ở cả `cloud-backup` và `device-transfer`. Biểu tượng
+  app là biểu tượng **tạm** (vector), Nt0 thay sau.
 - 2026-10-22, A0: các script macOS không quét `android/` (đã kiểm: `uitest_plan.py` coi file trong `android/` là không
   chạm giao diện, `check_localization.py`, `check_colors.py`, `check_quit_sheets.py`, `check_boundaries.py` chỉ quét mã
   Swift và Package/Apps); kết quả `scripts/check.sh` ghi ở Validation.
