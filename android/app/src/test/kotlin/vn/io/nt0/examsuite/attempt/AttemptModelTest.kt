@@ -1,5 +1,6 @@
 package vn.io.nt0.examsuite.attempt
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -58,6 +59,7 @@ private class FakeStore(
 }
 
 /** Phần model màn làm bài thêm trên `ExamSession`: dựng màn, xuống nền, lưu, Kết quả, Xem lại. */
+@OptIn(ExperimentalCoroutinesApi::class)
 class AttemptModelTest {
     private val clock = FakeClock()
 
@@ -107,7 +109,6 @@ class AttemptModelTest {
         assertTrue(m.state.value.navigator.isEmpty())
         advanceUntilIdle()
         val draft = store.draft!!
-        clock.advance(3_600.0) // thời gian ở nền không bị trừ
         val restored = ExamSession.restore(testExam(3), draft, clock)
         val again = AttemptModel(restored, store, this, { 1uL }, lock)
         assertEquals(AttemptScreen.Paused(PauseReason.BACKGROUND), again.screen)
@@ -243,12 +244,17 @@ class AttemptModelTest {
     }
 
     @Test
-    fun failedSaveIsReportedOnResults() = runTest {
-        val m = model(store = FakeStore(failSave = true))
+    fun failedSaveIsReportedOnResultsAndDropsEarlierDraft() = runTest {
+        val store = FakeStore(failSave = true)
+        val m = model(store = store)
+        m.onBackground()
+        m.resume()
         m.openReview()
         m.submit()
         advanceUntilIdle()
         assertEquals(SaveState.FAILED, (m.screen as AttemptScreen.Results).results.saveState)
+        assertEquals(listOf("saveDraft", "previous", "saveAttempt", "clearDraft"), store.log)
+        assertNull(store.draft)
     }
 
     @Test

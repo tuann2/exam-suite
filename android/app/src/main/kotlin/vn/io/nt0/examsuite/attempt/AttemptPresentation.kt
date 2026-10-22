@@ -3,6 +3,7 @@ package vn.io.nt0.examsuite.attempt
 import vn.io.nt0.examsuite.core.model.OptionId
 import vn.io.nt0.examsuite.core.model.QuestionType
 import vn.io.nt0.examsuite.core.scoring.QuestionOutcome
+import vn.io.nt0.examsuite.core.scoring.ScoreResult
 import vn.io.nt0.examsuite.core.scoring.Scorer
 import vn.io.nt0.examsuite.core.scoring.SectionScore
 import vn.io.nt0.examsuite.core.session.ExamSession
@@ -131,7 +132,14 @@ data class ResultsView(
     val saveState: SaveState,
     /** Số câu Sai (đã trả lời nhưng sai), cho nút **Xem câu sai**. */
     val incorrectCount: Int,
+    /** Lần thi cũ (Lịch sử thi): Xem lại bài mở được không. */
+    val review: ReviewAvailability = ReviewAvailability.AVAILABLE,
+    /** **Làm lại**: không có khi không biết lựa chọn của lần đó hay đề không còn (exam-taking.md phương án 12). */
+    val canRetake: Boolean = true,
 )
+
+/** Vì sao Xem lại bài của một lần thi cũ không mở được (exam-taking.md, Lịch sử thi và phương án 12). */
+enum class ReviewAvailability { AVAILABLE, DETAILS_UNREADABLE, EXAM_GONE, EXAM_UNREADABLE }
 
 /** Phần của câu đọc khi đổi câu: "Câu 3 trên 60, Phần Mạng". */
 data class QuestionAnnouncement(val number: Int, val total: Int, val sectionTitle: String, val needsSectionPrefix: Boolean)
@@ -300,6 +308,39 @@ object AttemptPresentation {
             },
             saveState = saveState,
             incorrectCount = result.outcomes.values.count { it == QuestionOutcome.INCORRECT },
+        )
+    }
+
+    /** Kết quả của một lần thi cũ: tóm tắt luôn có; phần, số câu sai từ payload khi đọc được. */
+    fun pastResults(
+        summary: AttemptSummary,
+        result: ScoreResult?,
+        previousPercent: Int?,
+        review: ReviewAvailability,
+        canRetake: Boolean,
+    ): ResultsView {
+        val weakest = result?.let { weakestSectionId(it.sections) }
+        return ResultsView(
+            passed = summary.passed,
+            percent = summary.percent,
+            score1000 = summary.score1000,
+            passPercent = summary.passPercent,
+            correct = summary.correct,
+            total = summary.total,
+            candidateName = summary.candidateName,
+            examCode = summary.examCode,
+            mode = summary.mode,
+            submittedAt = Instant.ofEpochMilli(summary.submittedAtMillis),
+            elapsedSeconds = Math.round(summary.elapsedSeconds),
+            timeLimitMinutes = summary.timeLimitMinutes,
+            previousDelta = previousPercent?.let { summary.percent - it },
+            sections = result?.sections.orEmpty().map { s ->
+                SectionRow(s.sectionId, s.title, s.correct, s.total, Scorer.percent(s.correct, s.total), s.sectionId == weakest)
+            },
+            saveState = SaveState.SAVED,
+            incorrectCount = result?.outcomes?.values?.count { it == QuestionOutcome.INCORRECT } ?: 0,
+            review = review,
+            canRetake = canRetake,
         )
     }
 

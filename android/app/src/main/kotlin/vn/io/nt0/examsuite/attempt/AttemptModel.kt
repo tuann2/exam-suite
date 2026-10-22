@@ -132,6 +132,8 @@ class AttemptModel(
     private val newSeed: () -> ULong,
     /** Khoá chung của mọi lệnh ghi của màn làm bài trong app (mỗi lúc một phiên, kể cả khi hai model nối nhau). */
     private val writeLock: Mutex = StoreWrites.lock,
+    /** Ghi nhật ký lỗi ghi (app: `Log.w`); test để trống. */
+    private val logWriteFailure: (String, Exception) -> Unit = { _, _ -> },
 ) : AttemptActions {
     val examId: UUID get() = session.exam.id
 
@@ -139,10 +141,8 @@ class AttemptModel(
     private var nextBannerId = 1
     private var previousPercent: Int? = null
     private var saveState = SaveState.SAVING
-    private var reviewItems: ReviewItems? = null
-    private var answerReview: Boolean = false
-    private var reviewFilter = ReviewFilter.ALL
-    private var reviewIndex: Int? = null
+    private var review: AnswerReviewController? = null
+
     /** Đã Bỏ bài: phiên không còn dùng, mọi lệnh (kể cả xuống nền) không làm gì, để không lưu lại phiên dở vừa xoá. */
     private var discarded = false
 
@@ -241,8 +241,9 @@ class AttemptModel(
     /** Nộp bài (Rà soát). Hỏi "Còn N câu chưa làm" là việc của giao diện (`ReviewSummary.needsSubmitConfirmation`). */
     override fun submit() {
         command { session.submit() }
-        if (!isSubmitted || reviewItems != null) return
-        reviewItems = ReviewItems(AttemptPayload.from(session, QuestionFingerprint.fingerprints(session.exam)), session.exam)
+        if (!isSubmitted || review != null) return
+        val items = ReviewItems(AttemptPayload.from(session, QuestionFingerprint.fingerprints(session.exam)), session.exam)
+        review = AnswerReviewController(items, canPracticeIncorrect = session.practiceIncorrectOptions(0u) != null)
         banner = null
         publish()
         write {
@@ -258,7 +259,17 @@ class AttemptModel(
                 SaveState.SAVED
             } catch (e: CancellationException) {
                 throw e
-            } catch (_: Exception) {
+            } catch (e: Exception) {
+                logWriteFailure("lưu lần thi", e)
+                // Như bản macOS: lần thi không lưu được thì chỉ còn xem tới khi rời màn Kết quả; phiên dở chụp trước khi nộp
+                // không được mở lại thành bài chưa nộp.
+                try {
+                    store.clearDraft()
+                } catch (e2: CancellationException) {
+                    throw e2
+                } catch (e2: Exception) {
+                    logWriteFailure("xoá phiên dở", e2)
+                }
                 SaveState.FAILED
             }
             publish()
@@ -279,47 +290,25 @@ class AttemptModel(
 
     // ---------- Xem lại bài ----------
 
-    /** Mở Xem lại từ Kết quả: **Xem lại bài** (Tất cả) hoặc **Xem câu sai** (Sai). */
-    override fun openAnswerReview(filter: ReviewFilter) {
-        if (reviewItems == null) return
-        answerReview = true
-        reviewFilter = filter
-        reviewIndex = null
-        publish()
+    override fun openAnswerReview(filter: ReviewFilter) = reviewCommand { it.open(filter) }
+
+    override fun setReviewFilter(filter: ReviewFilter) = reviewCommand { it.setFilter(filter) }
+
+    override fun openReviewQuestion(index: Int) = reviewCommand { it.openQuestion(index) }
+
+    override fun stepReviewQuestion(delta: Int) = reviewCommand { it.step(delta) }
+
+    override fun backFromAnswerReview(): Boolean {
+        val changed = review?.back() ?: false
+        if (changed) publish()
+        return changed
     }
 
-    override fun setReviewFilter(filter: ReviewFilter) {
-        reviewFilter = filter
-        reviewIndex = null
-        publish()
-    }
-
-    override fun openReviewQuestion(index: Int) {
-        reviewIndex = index
-        publish()
-    }
-
-    /** Câu trước / sau trong bộ lọc đang chọn. */
-    override fun stepReviewQuestion(delta: Int) {
-        val items = reviewItems ?: return
-        val current = reviewIndex ?: return
-        val indices = items.indices(reviewFilter)
-        val position = indices.indexOf(current)
-        indices.getOrNull(position + delta)?.let {
-            reviewIndex = it
+    private fun reviewCommand(block: (AnswerReviewController) -> Unit) {
+        review?.let {
+            block(it)
             publish()
         }
-    }
-
-    /** Quay lại một bậc: chi tiết → danh sách → Kết quả. Trả false khi đã ở Kết quả. */
-    override fun backFromAnswerReview(): Boolean {
-        when {
-            reviewIndex != null -> reviewIndex = null
-            answerReview -> answerReview = false
-            else -> return false
-        }
-        publish()
-        return true
     }
 
     // ---------- Nội bộ ----------
@@ -356,7 +345,8 @@ class AttemptModel(
                     block()
                 } catch (e: CancellationException) {
                     throw e
-                } catch (_: Exception) {
+                } catch (e: Exception) {
+                    logWriteFailure("ghi phiên dở", e)
                 }
             }
         }
@@ -378,14 +368,8 @@ class AttemptModel(
             )
             SessionPhase.Paused -> AttemptScreen.Paused(AttemptPresentation.pauseReason(session) ?: PauseReason.USER)
             SessionPhase.TimeUp, is SessionPhase.Reviewing -> AttemptScreen.Review(AttemptPresentation.reviewSummary(session))
-            SessionPhase.Submitted -> {
-                val items = reviewItems
-                if (answerReview && items != null) {
-                    AttemptScreen.AnswerReview(answerReviewState(items))
-                } else {
-                    AttemptScreen.Results(AttemptPresentation.results(session, previousPercent, saveState))
-                }
-            }
+            SessionPhase.Submitted -> review?.state()?.let { AttemptScreen.AnswerReview(it) }
+                ?: AttemptScreen.Results(AttemptPresentation.results(session, previousPercent, saveState))
         }
         val showsNavigator = screen is AttemptScreen.Answering || screen is AttemptScreen.Review
         return AttemptUiState(
@@ -395,23 +379,6 @@ class AttemptModel(
             banner = banner,
             navigator = if (showsNavigator) AttemptPresentation.navigator(session) else emptyList(),
             screen = screen,
-        )
-    }
-
-    private fun answerReviewState(items: ReviewItems): AnswerReviewState {
-        val indices = items.indices(reviewFilter)
-        val rows = indices.map { index ->
-            ReviewRow(index, index + 1, items.outcome(index), items.isFlagged(index), items.changes[index], items.preview(index))
-        }
-        val selected = reviewIndex
-        return AnswerReviewState(
-            filter = reviewFilter,
-            counts = ReviewFilter.entries.associateWith { items.count(it) },
-            rows = rows,
-            detail = selected?.let { items.detail(it) },
-            positionInFilter = selected?.let { indices.indexOf(it).takeIf { p -> p >= 0 } },
-            answersHidden = items.answersHidden,
-            canPracticeIncorrect = session.practiceIncorrectOptions(0u) != null,
         )
     }
 }

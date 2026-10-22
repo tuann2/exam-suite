@@ -51,6 +51,7 @@ import vn.io.nt0.examsuite.attempt.NavigatorCell
 import vn.io.nt0.examsuite.attempt.NavigatorSection
 import vn.io.nt0.examsuite.attempt.NextAttempt
 import vn.io.nt0.examsuite.attempt.ResultsView
+import vn.io.nt0.examsuite.attempt.ReviewAvailability
 import vn.io.nt0.examsuite.attempt.ReviewSummary
 import vn.io.nt0.examsuite.attempt.SaveState
 import vn.io.nt0.examsuite.attempt.SectionRow
@@ -141,16 +142,25 @@ fun ResultsScreen(results: ResultsView, examTitle: String, actions: AttemptActio
         ) {
             ResultsBody(results)
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Button(onClick = { actions.openAnswerReview(ReviewFilter.ALL) }, modifier = Modifier.fillMaxWidth()) {
-                    Text(stringResource(R.string.review_answers))
-                }
-                if (results.incorrectCount > 0) {
-                    OutlinedButton(onClick = { actions.openAnswerReview(ReviewFilter.INCORRECT) }, modifier = Modifier.fillMaxWidth()) {
-                        Text(stringResource(R.string.review_incorrect))
+                when (results.review) {
+                    ReviewAvailability.AVAILABLE -> {
+                        Button(onClick = { actions.openAnswerReview(ReviewFilter.ALL) }, modifier = Modifier.fillMaxWidth()) {
+                            Text(stringResource(R.string.review_answers))
+                        }
+                        if (results.incorrectCount > 0) {
+                            OutlinedButton(onClick = { actions.openAnswerReview(ReviewFilter.INCORRECT) }, modifier = Modifier.fillMaxWidth()) {
+                                Text(stringResource(R.string.review_incorrect))
+                            }
+                        }
                     }
+                    ReviewAvailability.DETAILS_UNREADABLE -> ReviewUnavailable(R.string.details_unreadable)
+                    ReviewAvailability.EXAM_GONE -> ReviewUnavailable(R.string.review_exam_gone)
+                    ReviewAvailability.EXAM_UNREADABLE -> ReviewUnavailable(R.string.review_exam_unreadable)
                 }
-                OutlinedButton(onClick = { actions.retake()?.let(onNextAttempt) }, modifier = Modifier.fillMaxWidth()) {
-                    Text(stringResource(R.string.retake))
+                if (results.canRetake) {
+                    OutlinedButton(onClick = { actions.retake()?.let(onNextAttempt) }, modifier = Modifier.fillMaxWidth()) {
+                        Text(stringResource(R.string.retake))
+                    }
                 }
                 OutlinedButton(onClick = onExit, modifier = Modifier.fillMaxWidth()) {
                     Text(stringResource(R.string.back_to_library))
@@ -203,9 +213,16 @@ fun ResultsBody(results: ResultsView) {
                 InfoRow(stringResource(R.string.correct_answers), stringResource(R.string.fraction, num(results.correct), num(results.total)))
             }
         }
-        Text(stringResource(R.string.by_section), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
-        results.sections.forEach { SectionScoreRow(it) }
+        if (results.sections.isNotEmpty()) {
+            Text(stringResource(R.string.by_section), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+            results.sections.forEach { SectionScoreRow(it) }
+        }
     }
+}
+
+@Composable
+private fun ReviewUnavailable(message: Int) {
+    IconLabel(R.drawable.ic_info, stringResource(message), MaterialTheme.colorScheme.onSurfaceVariant)
 }
 
 @Composable

@@ -42,6 +42,14 @@ android {
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
 }
 
+// Gói .exam nhị phân dùng chung với lõi Swift (fixtures/packages) làm assets của test trên máy: luồng mở `.exam` từ app
+// khác và đọc gói trên ART (ZipPathValidator của Android 14+).
+androidComponents {
+    onVariants { variant ->
+        variant.androidTest?.sources?.assets?.addStaticSourceDirectory(rootProject.file("../fixtures/packages").absolutePath)
+    }
+}
+
 kotlin {
     jvmToolchain(17)
 }
@@ -55,6 +63,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.kotlinx.coroutines.core)
+    // Kiểu của `:data` mà app dùng trực tiếp: kho Room (`LibraryStore.open`) và DataStore của cài đặt.
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.tooling.preview)
