@@ -32,6 +32,7 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -57,6 +58,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -80,7 +82,7 @@ import vn.io.nt0.examsuite.R
 import vn.io.nt0.examsuite.attempt.AttemptActions
 import vn.io.nt0.examsuite.attempt.AttemptScreen
 import vn.io.nt0.examsuite.attempt.AttemptUiState
-import vn.io.nt0.examsuite.attempt.AttemptViewModel
+import vn.io.nt0.examsuite.attempt.AttemptModel
 import vn.io.nt0.examsuite.attempt.CellPart
 import vn.io.nt0.examsuite.attempt.ClockDisplay
 import vn.io.nt0.examsuite.attempt.ClockLevel
@@ -105,8 +107,7 @@ private const val BANNER_MILLIS = 5_000L
  * chạy khi màn hình đang hiện; app xuống nền (không phải xoay màn hình) thì tạm dừng và lưu phiên dở.
  */
 @Composable
-fun AttemptRoute(viewModel: AttemptViewModel, onExit: () -> Unit, onNextAttempt: (NextAttempt) -> Unit) {
-    val model = viewModel.model
+fun AttemptRoute(model: AttemptModel, images: QuestionImages, onExit: () -> Unit, onNextAttempt: (NextAttempt) -> Unit) {
     val state by model.state.collectAsStateWithLifecycle()
     val lifecycleOwner = LocalLifecycleOwner.current
     LaunchedEffect(model, lifecycleOwner) {
@@ -121,7 +122,7 @@ fun AttemptRoute(viewModel: AttemptViewModel, onExit: () -> Unit, onNextAttempt:
     LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
         if (activity?.isChangingConfigurations != true) model.onBackground()
     }
-    CompositionLocalProvider(LocalQuestionImages provides viewModel.images) {
+    CompositionLocalProvider(LocalQuestionImages provides images) {
         AttemptFlow(state, model, onExit, onNextAttempt)
     }
 }
@@ -181,7 +182,11 @@ fun AttemptFlow(state: AttemptUiState, actions: AttemptActions, onExit: () -> Un
     }
 
     if (showNavigator && screen is AttemptScreen.Answering) {
-        ModalBottomSheet(onDismissRequest = { showNavigator = false }, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)) {
+        ModalBottomSheet(
+            onDismissRequest = { showNavigator = false },
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+            dragHandle = { BottomSheetDefaults.DragHandle(width = 48.dp) }, // vùng chạm tối thiểu 48dp
+        ) {
             NavigatorSheet(state.navigator, screen.answeredCount, screen.question.total) { index ->
                 actions.goTo(index)
                 showNavigator = false
@@ -194,13 +199,15 @@ fun AttemptFlow(state: AttemptUiState, actions: AttemptActions, onExit: () -> Un
             onDismissRequest = { askDiscard = false },
             title = { Text(stringResource(R.string.discard_title)) },
             text = { Text(stringResource(R.string.discard_message)) },
-            confirmButton = { TextButton(onClick = { askDiscard = false }) { Text(stringResource(R.string.keep_working)) } },
+            confirmButton = {
+                TextButton(onClick = { askDiscard = false }, modifier = Modifier.testTag("keepWorking")) { Text(stringResource(R.string.keep_working)) }
+            },
             dismissButton = {
                 TextButton(onClick = {
                     askDiscard = false
                     actions.discard()
                     onExit()
-                }) { Text(stringResource(R.string.discard), color = MaterialTheme.colorScheme.error) }
+                }, modifier = Modifier.testTag("confirmDiscard")) { Text(stringResource(R.string.discard), color = MaterialTheme.colorScheme.error) }
             },
         )
     }
@@ -384,6 +391,7 @@ private fun OptionRow(option: OptionView, type: QuestionType, enabled: Boolean, 
             .background(tint.copy(alpha = if (tint == Color.Transparent) 0f else palette.tintOpacity), shape)
             .border(1.dp, if (option.isSelected) tint else MaterialTheme.colorScheme.outlineVariant, shape)
             .then(interaction)
+            .testTag("option-${option.position}")
             .padding(horizontal = 8.dp, vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -566,7 +574,7 @@ private fun ReviewBottomBar(summary: ReviewSummary, actions: AttemptActions) {
                 TextButton(onClick = {
                     confirm = false
                     actions.submit()
-                }) { Text(stringResource(R.string.submit)) }
+                }, modifier = Modifier.testTag("confirmSubmit")) { Text(stringResource(R.string.submit)) }
             },
         )
     }

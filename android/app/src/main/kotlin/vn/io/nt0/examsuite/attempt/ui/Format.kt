@@ -32,6 +32,12 @@ object Fmt {
         SimpleDateFormat(DateFormat.getBestDateTimePattern(locale, "yMdjm"), locale).apply {
             calendar = GregorianCalendar(timeZone, locale)
         }.format(Date.from(instant))
+
+    /** Ngày dạng số theo mẫu của ngôn ngữ ("22/10/2026", "10/22/2026"). */
+    fun date(instant: Instant, locale: Locale, timeZone: TimeZone = TimeZone.getDefault()): String =
+        SimpleDateFormat(DateFormat.getBestDateTimePattern(locale, "yMd"), locale).apply {
+            calendar = GregorianCalendar(timeZone, locale)
+        }.format(Date.from(instant))
 }
 
 /** Múi giờ hiện ngày giờ; ảnh chụp màn hình cố định để không phụ thuộc máy ghi ảnh. */

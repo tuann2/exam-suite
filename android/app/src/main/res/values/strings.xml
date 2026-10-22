@@ -47,7 +47,7 @@
     <string name="answered">Đã làm</string>
     <string name="unanswered">Chưa làm</string>
     <string name="current">Đang xem</string>
-    <string name="list_separator" translatable="false">, </string>
+    <string name="list_separator" translatable="false">,\u0020</string>
     <string name="discard_title">Bài chưa nộp sẽ mất. Bỏ bài?</string>
     <string name="discard_message">Bỏ bài thì không lưu gì và lần này không có trong Lịch sử thi.</string>
     <string name="keep_working">Tiếp tục làm</string>
@@ -127,5 +127,106 @@
     <plurals name="submit_confirm">
         <item quantity="one">Còn %1$s câu chưa làm. Vẫn nộp?</item>
         <item quantity="other">Còn %1$s câu chưa làm. Vẫn nộp?</item>
+    </plurals>
+
+    <!-- Thư viện, Trước khi thi, Lịch sử thi, hộp thoại của app (A3a). Thuật ngữ theo String Catalog của bản macOS. -->
+    <string name="summary_separator" translatable="false">\u0020·\u0020</string>
+    <string name="add_exams">Thêm đề</string>
+    <string name="history">Lịch sử thi</string>
+    <string name="history_of">Lịch sử thi của đề “%1$s”</string>
+    <string name="history_empty">Chưa có lần thi nào</string>
+    <string name="history_empty_body">Mỗi lần bạn nộp bài Luyện tập hoặc Thi sẽ được ghi ở đây, mới nhất trước.</string>
+    <string name="sort_current">Sắp xếp: %1$s</string>
+    <string name="sort_recent">Gần đây</string>
+    <string name="sort_title">Tên</string>
+    <string name="sort_last_score">Điểm lần trước</string>
+    <string name="search_hint">Tìm theo tên hoặc mã đề</string>
+    <string name="no_matching_exams">Không có đề nào khớp với “%1$s”.</string>
+    <string name="welcome_title">Chào mừng bạn đến với Exam Suite</string>
+    <string name="welcome_body">Thư viện có sẵn đề mẫu để bạn làm quen. Thêm đề của bạn bằng nút Thêm đề, hoặc mở file .exam từ app khác (Zalo, Drive, Tệp…).</string>
+    <string name="sample_badge">Đề mẫu</string>
+    <string name="more_actions">Thao tác khác với “%1$s”</string>
+    <string name="view_history">Xem lịch sử thi</string>
+    <string name="remove_from_library">Xoá khỏi thư viện</string>
+    <string name="removed_notice">Đã xoá “%1$s” khỏi thư viện.</string>
+    <string name="undo">Hoàn tác</string>
+    <string name="added_notice">Đã thêm đề “%1$s”.</string>
+    <string name="updated_notice">Đã cập nhật đề “%1$s”.</string>
+    <string name="last_attempt">Lần thi gần nhất: %1$s, %2$s, ngày %3$s.</string>
+    <string name="pass_from">đậu %1$s</string>
+    <string name="no_time_limit">không giới hạn giờ</string>
+    <string name="pre_exam_title">Trước khi thi</string>
+    <string name="candidate_name">Tên thí sinh</string>
+    <string name="question_selection">Chọn câu</string>
+    <string name="all_questions_count">Tất cả câu (%1$s)</string>
+    <string name="random_questions">N câu ngẫu nhiên</string>
+    <string name="random_count_label">Số câu (1–%1$s)</string>
+    <string name="select_all">Chọn hết</string>
+    <string name="deselect_all">Bỏ chọn</string>
+    <string name="shuffle_questions">Xáo thứ tự câu</string>
+    <string name="shuffle_options">Xáo thứ tự đáp án</string>
+    <string name="time_limit_minutes">Thời gian (phút)</string>
+    <string name="start">Bắt đầu</string>
+    <string name="cancel">Huỷ</string>
+    <string name="practice_unavailable">Đề này ẩn đáp án nên không luyện tập được</string>
+    <string name="no_questions_to_practice">Không còn câu nào để luyện lại.</string>
+    <string name="exam_has_no_questions">Đề không có câu nào.</string>
+    <string name="no_section_selected">Chọn ít nhất một phần.</string>
+    <string name="selected_sections_empty">Các phần đã chọn không có câu nào.</string>
+    <string name="random_count_out_of_range">Số câu ngẫu nhiên phải từ 1 đến %1$s.</string>
+    <string name="time_limit_out_of_range">Thời gian phải từ %1$s đến %2$s phút.</string>
+    <string name="empty_candidate_name">Nhập tên thí sinh để bắt đầu.</string>
+    <string name="start_unreadable">Không đọc được file đề. %1$s</string>
+    <string name="start_exam_changed">Đề đã thay đổi so với lựa chọn. Hãy đóng rồi mở lại màn Trước khi thi.</string>
+    <string name="start_failed">Không tạo được bài thi từ đề này.</string>
+    <string name="details_unreadable">Không đọc được chi tiết lần thi này</string>
+    <string name="review_exam_gone">Đề không còn trong thư viện nên không xem lại được.</string>
+    <string name="review_exam_unreadable">Không đọc được file đề nên không xem lại được.</string>
+    <string name="update_title">Đã có đề “%1$s” trong Thư viện</string>
+    <string name="update_message">Cập nhật đề bằng file mới? Lịch sử thi của đề vẫn giữ.</string>
+    <string name="update_drops_draft">Bài đang làm dở của đề này sẽ bị bỏ.</string>
+    <string name="update_exam">Cập nhật đề</string>
+    <string name="conflict_title">Bạn đang làm dở đề “%1$s”</string>
+    <string name="conflict_message">Mỗi lúc chỉ làm một bài. Làm đề khác thì bài đang làm dở sẽ bị bỏ, không lưu gì.</string>
+    <string name="conflict_continue">Tiếp tục đề “%1$s”</string>
+    <string name="conflict_discard">Bỏ bài và làm đề “%1$s”</string>
+    <string name="import_rejected_title">Không thêm được đề</string>
+    <string name="open_failed_title">Không mở được đề</string>
+    <string name="exam_gone">Đề không còn trong thư viện.</string>
+    <string name="store_recovered_title">Thư viện đã được tạo lại</string>
+    <string name="store_recovered_message">Kho Thư viện bị hỏng nên app đã tạo kho mới. Các đề được nạp lại từ bản sao trong máy; lịch sử thi cũ không còn.</string>
+    <string name="library_failed">Không mở được Thư viện. Hãy đóng rồi mở lại app.</string>
+    <string name="error_file_too_large">File quá lớn (tối đa %1$s MB).</string>
+    <string name="error_file_unreadable">Không đọc được file.</string>
+    <string name="error_not_zip">File không phải gói đề .exam hợp lệ (không đọc được dạng zip).</string>
+    <string name="error_missing_manifest">Gói đề thiếu file exam.json ở gốc.</string>
+    <string name="error_corrupted_entry">Gói đề bị hỏng: không giải nén được %1$s.</string>
+    <string name="error_invalid_json">File exam.json trong gói đề không hợp lệ.</string>
+    <string name="error_unsupported_version">Đề cần phiên bản app mới hơn (định dạng v%1$s, app này hiểu tới v%2$s).</string>
+    <string name="error_invalid_version">formatVersion không hợp lệ: %1$s (phải từ 1 trở lên).</string>
+    <string name="error_unknown_fields">Đề có trường không được hỗ trợ: %1$s.</string>
+    <string name="error_duplicate_keys">exam.json có khoá bị lặp lại trong cùng một object: %1$s.</string>
+    <string name="error_null_values">exam.json có giá trị null (không được phép): %1$s.</string>
+    <string name="error_missing_media">Gói đề thiếu ảnh: %1$s.</string>
+    <string name="error_invalid_media_path">Đường dẫn ảnh không hợp lệ: %1$s.</string>
+    <string name="error_duplicate_entry">Gói đề bị hỏng: có nhiều entry cùng tên %1$s.</string>
+    <string name="error_too_large">Gói đề vượt giới hạn ở %1$s (tối đa %2$s).</string>
+    <string name="error_too_deep">exam.json lồng object/mảng quá sâu (tối đa %1$s cấp). File có thể bị hỏng hoặc không phải đề thi.</string>
+    <string name="error_migration_failed">Không chuyển được đề từ định dạng v%1$s lên v%2$s.</string>
+    <plurals name="question_count">
+        <item quantity="one">%1$s câu</item>
+        <item quantity="other">%1$s câu</item>
+    </plurals>
+    <plurals name="section_count">
+        <item quantity="one">%1$s phần</item>
+        <item quantity="other">%1$s phần</item>
+    </plurals>
+    <plurals name="practice_incorrect_summary">
+        <item quantity="one">Luyện lại câu sai: %1$s câu, theo thứ tự lần trước, không xáo.</item>
+        <item quantity="other">Luyện lại câu sai: %1$s câu, theo thứ tự lần trước, không xáo.</item>
+    </plurals>
+    <plurals name="error_validation_failed">
+        <item quantity="one">Đề có %1$s lỗi nên không mở được. Hãy nhờ người soạn đề sửa bằng bản Admin.</item>
+        <item quantity="other">Đề có %1$s lỗi nên không mở được. Hãy nhờ người soạn đề sửa bằng bản Admin.</item>
     </plurals>
 </resources>

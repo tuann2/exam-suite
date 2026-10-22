@@ -1,53 +1,45 @@
 package vn.io.nt0.examsuite
 
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.heading
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
+import vn.io.nt0.examsuite.app.AppModel
+import vn.io.nt0.examsuite.app.AppRoot
 import vn.io.nt0.examsuite.ui.ExamSuiteTheme
 
-/** Khung A0: một màn Thư viện trống. Thư viện thật viết ở bước A3a. */
+/** Một Activity cho cả app; nhận `.exam` từ app khác qua "Mở bằng" (VIEW) và "Chia sẻ" (SEND). */
 class MainActivity : ComponentActivity() {
+    private val model: AppModel by viewModels()
+
+    // Hộp chọn file của hệ điều hành không biết MIME của .exam (spike A0): lọc mọi file, app tự kiểm nội dung.
+    private val picker = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri -> uri?.let(model::add) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent { ExamSuiteTheme { LibraryPlaceholder() } }
+        if (savedInstanceState == null) incomingUri(intent)?.let(model::receive)
+        setContent { ExamSuiteTheme { AppRoot(model) { picker.launch(arrayOf("*/*")) } } }
     }
-}
 
-@Composable
-fun LibraryPlaceholder() {
-    Scaffold { padding ->
-        Column(
-            modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            Text(
-                text = stringResource(R.string.library_title),
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.semantics { heading() },
-            )
-            Text(text = stringResource(R.string.library_empty), style = MaterialTheme.typography.bodyLarge)
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        incomingUri(intent)?.let(model::receive)
+    }
+
+    private fun incomingUri(intent: Intent?): Uri? = when (intent?.action) {
+        Intent.ACTION_VIEW -> intent.data
+        Intent.ACTION_SEND -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra(Intent.EXTRA_STREAM)
         }
+        else -> null
     }
-}
-
-@Preview(name = "Sáng")
-@Composable
-private fun LibraryPlaceholderPreview() {
-    ExamSuiteTheme { LibraryPlaceholder() }
 }

@@ -65,7 +65,11 @@ thuộc đã merge; không xếp chồng quá một tầng.
       bảng câu hỏi bottom sheet, dải cảnh báo 5/1 phút, hết giờ sang Rà soát khoá, che khi tạm dừng, Kiểm tra đáp án), Rà
       soát & nộp, Kết quả, Xem lại bài (bộ lọc, `ReviewItems`), Làm lại, Luyện lại câu sai (trả `NextAttempt` cho A3a);
       chuỗi vi/en; 37 ca JVM; 11 ảnh chụp (4 màn × sáng/tối, câu dài, Kết quả, Xem lại ở cỡ chữ 150%).
-- [ ] A3a Thư viện và nối luồng (Nt0 đã chốt hai câu hỏi, mobile.md); cổng GA2
+- [x] A3a Thư viện và nối luồng (PR xếp chồng trên A3b): `AppModel` (mở kho, dọn và tạo đề mẫu lúc mở, khôi phục phiên dở,
+      nhận `.exam` từ app khác, Cập nhật đề, mỗi lúc một phiên, Lịch sử thi), Thư viện danh sách (tìm, sắp xếp, dải chào
+      mừng, Xoá + Hoàn tác), Trước khi thi (bảng kéo lên; `PreExamForm` thuần, cùng thứ tự lý do khoá với macOS), Kết quả
+      lần thi cũ (`PastAttemptModel`); 52 ca JVM; 3 luồng Compose + 2 test nền tảng trên emulator; ảnh Thư viện sáng/tối.
+- [ ] Cổng GA2: Nt0 cài APK, làm trọn một đề thật trên điện thoại (ghi máy, app gửi file vào Validation)
 - [ ] A4 Hoàn thiện và beta; cổng GA3
 
 ## Decisions
@@ -281,6 +285,33 @@ thuộc đã merge; không xếp chồng quá một tầng.
   `NextAttempt` mở Trước khi thi, đồng hồ nhanh tiêm cho test Compose, chạy thử màn làm bài trên emulator (ba luồng của
   A3a). Màn làm bài chưa mở được từ app ở PR này.
 
+- 2026-10-22, A3a, điều hướng: **không dùng Navigation Compose**: bốn màn (Thư viện, Lịch sử thi, làm bài, Kết quả cũ) là
+  ngăn xếp trong `AppModel` (ViewModel của Activity duy nhất), bớt một thư viện và tránh `ON_STOP` của destination khi pop
+  (review A3b, B2). Hệ điều hành dừng app thì mở lại ở Thư viện, rồi phiên dở tự mở lại (mobile.md).
+- 2026-10-22, A3a, mỗi lúc một phiên (mobile.md, Nt0 chốt): mở app có phiên dở thì vào thẳng bài đó (Tạm dừng). Hộp hỏi
+  ba nút hiện khi bắt đầu đề khác lúc có bài dở trong bộ nhớ hay đã lưu: mở `.exam` từ app khác khi đang làm bài hay lúc mở
+  app có phiên dở, hoặc chọn Huỷ rồi chạm đề khác. Chạm đúng đề có bài dở thì mở lại bài đó. `launchMode="singleTask"` để
+  "Mở bằng" từ app khác không tạo Activity thứ hai (hai phiên).
+- 2026-10-22, A3a, Thêm đề: hộp chọn file của hệ điều hành lọc `*/*` (spike A0), **một file mỗi lần** (hộp hỏi Cập nhật đề
+  chỉ hiện được một); nội dung do bộ đọc nghiêm quyết, không xét đuôi tên (Drive, Zalo có thể đổi tên). Mở từ app khác
+  (VIEW, SEND) thì thêm rồi mở ngay Trước khi thi của đề đó.
+- 2026-10-22, A3a, câu báo lỗi đề: theo mã của `ExamFileError`/`ImportProblem` (strings.xml); đề có lỗi kiểm đề chỉ báo số
+  lỗi kèm "nhờ người soạn đề sửa bằng bản Admin" (bản Học viên trên điện thoại không có màn sửa đề; chi tiết từng mã như
+  `ErrorMessages` của macOS để sau nếu Nt0 cần).
+- 2026-10-22, A3a, gợi ý của re-review A3b: lưu lần thi lỗi thì xoá luôn phiên dở chụp trước khi nộp (như macOS: kết quả chỉ
+  còn tới khi rời màn Kết quả; không mở lại thành bài chưa nộp) (N7); lỗi ghi ghi nhật ký `Log.w` (model nhận hàm ghi log,
+  test để trống). Khoá ghi chung bị treo vẫn là rủi ro đã biết.
+- 2026-10-22, A3a, test trên emulator: đồng hồ nhanh tiêm qua `AppServices.clock` trong cùng tiến trình; luồng 2 mở bằng
+  Intent VIEW tới file trong bộ nhớ của app (gói `fixtures/packages/pack-exam-py.exam` làm assets của androidTest). Kiểm trợ
+  năng bắt được tay nắm mặc định của bảng kéo lên (32dp, rồi bị cắt khi bảng cao hết màn): Trước khi thi bỏ tay nắm (có Huỷ),
+  bảng câu hỏi dùng tay nắm rộng 48dp. AVD `examsuite` ở en-US nên ba luồng đi qua giao diện tiếng Anh; tiếng Việt có ảnh
+  chụp và lint. Test cũ `LaunchTest` bỏ (luồng 1 thay).
+- 2026-10-22, A3a, phát hiện: chuỗi tài nguyên Android **cắt khoảng trắng đầu/cuối**: dấu ngăn " · " và ", " (câu đọc ô bảng
+  câu hỏi của A3b) mất dấu cách; viết `\u0020`.
+- 2026-10-22, A3a, đã làm các việc để lại từ A1/A2: `ZipPathValidator.clearCallback()` ở `Application` (Android 14+), test
+  đọc `fixtures/packages` trên ART; `Collator` tiếng Việt trên ICU của Android (`PlatformTest`); `loadDraft` của đề đã xoá
+  thì bỏ phiên dở. Còn lại: `.broken-*` chưa tự dọn (A2 N6).
+
 ## Validation
 
 A0:
@@ -313,6 +344,15 @@ A3b (PR này):
   `UnusedResources`, test, so ảnh).
 - Bằng chứng merge: check `android` (CI), `local/verify-android` (PR chạm `android/app/**`), `local/verify` mức none (danh
   tính git); review độc lập vì chạm `ExamLibrary` (`android/data/**`).
+
+A3a:
+
+- `:app` 52 ca JVM (`PreExamFormTest` 10, `PastAttemptModelTest` 5, cùng 37 ca của A3b); `check_android.sh` đạt (lint gồm
+  `ComposeHardcodedText`, `Recycle`, `LocalContextGetResourceValueCall`); ảnh Thư viện sáng/tối thay ảnh khung A0.
+- Emulator (Android 15, en-US), kiểm trợ năng bật: `PracticeFlowTest` (luồng 1), `ExamIntentFlowTest` (luồng 2),
+  `BackgroundFlowTest` (luồng 3), `PlatformTest` (2 ca).
+- Bằng chứng merge: check `android` (CI), `local/verify-android`, `local/verify` mức none; PR thường (không chạm vùng rủi ro
+  cao), người duyệt diff.
 
 ## Result
 
