@@ -1,0 +1,175 @@
+{
+  "description": "Ca exam.json sai cú pháp hoặc sai thứ mà chỉ chế độ đọc nghiêm (bản Học viên) bắt, dùng chung cho lõi Swift (ExamFile, SharedInvalidJSONTests) và lõi Kotlin (android/core). Mỗi file là exam.json của một gói chỉ có file đó. Khoá: tên file không đuôi. error: null = đọc nghiêm được; còn lại là tên lỗi (duplicateJSONKeys, trailingCommas, nullValues, unknownFields kèm paths theo thứ tự báo; tooDeep với trần mặc định 32 cấp; unparsable, notUTF8, rootNotObject, missingFormatVersion, formatVersionNotInteger, invalidVersion). Gốc trong paths là <gốc>.",
+  "cases": {
+    "base": {
+      "error": null
+    },
+    "bom": {
+      "error": null
+    },
+    "depth-32": {
+      "error": "unknownFields",
+      "paths": [
+        "deep"
+      ]
+    },
+    "depth-33": {
+      "error": "tooDeep"
+    },
+    "dup-key-escape": {
+      "error": "duplicateJSONKeys",
+      "paths": [
+        "title"
+      ]
+    },
+    "dup-key-format-version": {
+      "error": "duplicateJSONKeys",
+      "paths": [
+        "formatVersion"
+      ]
+    },
+    "dup-key-many-escapes": {
+      "error": "duplicateJSONKeys",
+      "paths": [
+        "sections[0].questions[0].text"
+      ]
+    },
+    "dup-key-option": {
+      "error": "duplicateJSONKeys",
+      "paths": [
+        "sections[0].questions[0].options[1].text"
+      ]
+    },
+    "dup-key-order": {
+      "error": "duplicateJSONKeys",
+      "paths": [
+        "sections[0].questions[0].type",
+        "code"
+      ]
+    },
+    "dup-key-question": {
+      "error": "duplicateJSONKeys",
+      "paths": [
+        "sections[0].questions[0].text"
+      ]
+    },
+    "dup-key-root": {
+      "error": "duplicateJSONKeys",
+      "paths": [
+        "title"
+      ]
+    },
+    "format-version-float": {
+      "error": null
+    },
+    "format-version-string": {
+      "error": "formatVersionNotInteger"
+    },
+    "format-version-zero": {
+      "error": "invalidVersion"
+    },
+    "garbage-after-root": {
+      "error": "unparsable"
+    },
+    "infinity": {
+      "error": "unparsable"
+    },
+    "lone-surrogate-high": {
+      "error": "unparsable"
+    },
+    "lone-surrogate-low": {
+      "error": "unparsable"
+    },
+    "missing-format-version": {
+      "error": "missingFormatVersion"
+    },
+    "nan": {
+      "error": "unparsable"
+    },
+    "not-utf8": {
+      "error": "notUTF8"
+    },
+    "null-code": {
+      "error": "nullValues",
+      "paths": [
+        "code"
+      ]
+    },
+    "null-explanation": {
+      "error": "nullValues",
+      "paths": [
+        "sections[0].questions[0].explanation"
+      ]
+    },
+    "null-hide-answers": {
+      "error": "nullValues",
+      "paths": [
+        "hideAnswers"
+      ]
+    },
+    "null-image": {
+      "error": "nullValues",
+      "paths": [
+        "sections[0].questions[0].image"
+      ]
+    },
+    "null-in-array": {
+      "error": "nullValues",
+      "paths": [
+        "sections[0].questions[0].correct[1]"
+      ]
+    },
+    "null-instructions": {
+      "error": "nullValues",
+      "paths": [
+        "instructions"
+      ]
+    },
+    "null-many": {
+      "error": "nullValues",
+      "paths": [
+        "code",
+        "instructions",
+        "sections[0].questions[0].explanation",
+        "sections[0].questions[0].image"
+      ]
+    },
+    "pass-percent-exponent": {
+      "error": null
+    },
+    "root-array": {
+      "error": "rootNotObject"
+    },
+    "trailing-comma-correct": {
+      "error": "trailingCommas",
+      "paths": [
+        "sections[0].questions[0].correct"
+      ]
+    },
+    "trailing-comma-many": {
+      "error": "trailingCommas",
+      "paths": [
+        "sections[0].questions[0].correct",
+        "sections[0].questions[0]"
+      ]
+    },
+    "trailing-comma-options": {
+      "error": "trailingCommas",
+      "paths": [
+        "sections[0].questions[0].options"
+      ]
+    },
+    "trailing-comma-question": {
+      "error": "trailingCommas",
+      "paths": [
+        "sections[0].questions[0]"
+      ]
+    },
+    "trailing-comma-root": {
+      "error": "trailingCommas",
+      "paths": [
+        "<gốc>"
+      ]
+    }
+  }
+}

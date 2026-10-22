@@ -1,0 +1,89 @@
+{
+  "description": "Vector cố định của dấu vân tay câu (QuestionFingerprint, dạng chuẩn phiên bản 1; docs/product/exam-taking.md), dùng chung cho lõi Swift (QuestionFingerprintTests) và lõi Kotlin. canonical là dạng chuẩn đúng từng byte (khi có); sha256 tính bằng Python: json.dumps(obj, ensure_ascii=False, separators=(\",\", \":\"), sort_keys=True) trên chuỗi NFC rồi hashlib.sha256. Đổi giá trị là mọi lần thi cũ báo câu đã sửa.",
+  "vectors": [
+    {
+      "name": "q1: tiếng Việt, có ảnh và giải thích",
+      "question": {
+        "id": "a91c2d3e-4f5a-4b6c-8d7e-9f0a1b2c3d4e",
+        "type": "single",
+        "text": "Đơn vị đo cường độ dòng điện là gì?",
+        "image": "media/9d5dc894e10f060d.png",
+        "options": [
+          {
+            "id": "A",
+            "text": "Vôn"
+          },
+          {
+            "id": "B",
+            "text": "Ampe"
+          },
+          {
+            "id": "C",
+            "text": "Ôm"
+          },
+          {
+            "id": "D",
+            "text": "Oát"
+          }
+        ],
+        "correct": [
+          "B"
+        ],
+        "explanation": "Ampe (A) là đơn vị SI của cường độ dòng điện."
+      },
+      "canonical": "{\"correct\":[\"B\"],\"explanation\":\"Ampe (A) là đơn vị SI của cường độ dòng điện.\",\"image\":\"media/9d5dc894e10f060d.png\",\"options\":[{\"id\":\"A\",\"text\":\"Vôn\"},{\"id\":\"B\",\"text\":\"Ampe\"},{\"id\":\"C\",\"text\":\"Ôm\"},{\"id\":\"D\",\"text\":\"Oát\"}],\"text\":\"Đơn vị đo cường độ dòng điện là gì?\",\"type\":\"single\"}",
+      "sha256": "bcd9aaae267336ff9c2f93ebb35e7950e44e5b602933e47b59fe04d79631a8f3"
+    },
+    {
+      "name": "q2: nhiều đáp án, ký tự phải escape, /, DEL, U+2028, correct không theo thứ tự",
+      "question": {
+        "id": "00000000-0000-4000-8000-000000000002",
+        "type": "multiple",
+        "text": "Chọn \"đúng\" các mục:\n\t- a\\b / c\u0001 ",
+        "options": [
+          {
+            "id": "A",
+            "text": "x"
+          },
+          {
+            "id": "B",
+            "text": "y"
+          },
+          {
+            "id": "C",
+            "text": "z"
+          }
+        ],
+        "correct": [
+          "C",
+          "A"
+        ]
+      },
+      "canonical": "{\"correct\":[\"A\",\"C\"],\"explanation\":null,\"image\":null,\"options\":[{\"id\":\"A\",\"text\":\"x\"},{\"id\":\"B\",\"text\":\"y\"},{\"id\":\"C\",\"text\":\"z\"}],\"text\":\"Chọn \\\"đúng\\\" các mục:\\n\\t- a\\\\b / c\\u0001 \",\"type\":\"multiple\"}",
+      "sha256": "0b7ff91f43f9d90a62a4fbea1b0325a2290a6dbbb5cf9a88044751523dbd986e"
+    },
+    {
+      "name": "q3: giải thích là chuỗi rỗng (khác không có)",
+      "question": {
+        "id": "00000000-0000-4000-8000-000000000003",
+        "type": "single",
+        "text": "1 + 1 = ?",
+        "options": [
+          {
+            "id": "A",
+            "text": "2"
+          },
+          {
+            "id": "B",
+            "text": "3"
+          }
+        ],
+        "correct": [
+          "A"
+        ],
+        "explanation": ""
+      },
+      "sha256": "1f021a9b169bc8b98031cdfcee2b25b1d1c621e692ac88fad91fdd120eae6950"
+    }
+  ]
+}

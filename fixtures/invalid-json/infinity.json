@@ -1,0 +1,25 @@
+{
+  "formatVersion": 1,
+  "id": "11111111-2222-4333-8444-555555555555",
+  "title": "Đề {thử} [\"khoá\"]",
+  "passPercent": Infinity,
+  "timeLimitMinutes": 5,
+  "sections": [
+    {
+      "id": "22222222-3333-4444-8555-666666666666",
+      "title": "Một section",
+      "questions": [
+        {
+          "id": "33333333-4444-4555-8666-777777777777",
+          "type": "single",
+          "text": "1 + 1 = ? \\ \" , } ]",
+          "options": [
+            { "id": "A", "text": "1" },
+            { "id": "B", "text": "2" }
+          ],
+          "correct": ["B"]
+        }
+      ]
+    }
+  ]
+}

@@ -40,31 +40,10 @@ private func pack(_ json: Data) throws -> Data {
     try Zip.make([("exam.json", json)])
 }
 
+// Ca đọc nghiêm (khoá trùng, null, dấu phẩy thừa) nằm ở fixtures/invalid-json, dùng chung với lõi Kotlin
+// (SharedInvalidJSONTests). Ở đây chỉ còn test bộ quét và test riêng của Swift.
 @Suite("ExamPackageReader: khoá trùng trong JSON")
 struct DuplicateJSONKeyTests {
-    static let cases: [(name: String, json: Data, paths: [String])] = [
-        ("gốc", rawExam(root: #", "title": "Tên khác""#), ["title"]),
-        ("gốc, formatVersion", rawExam(root: #", "formatVersion": 1"#), ["formatVersion"]),
-        ("câu hỏi", rawExam(question: #", "text": "Câu khác""#), ["sections[0].questions[0].text"]),
-        ("lựa chọn", rawExam(option: #", "text": "3""#), ["sections[0].questions[0].options[1].text"]),
-        ("qua escape \\u", rawExam(root: #", "\u0074itle": "Tên khác""#), ["title"]),
-        ("qua nhiều escape \\u", rawExam(question: #", "\u0074\u0065xt": "x", "te\u0078t": "y""#),
-         ["sections[0].questions[0].text"]),
-        ("nhiều chỗ, theo thứ tự file, mỗi khoá một lần",
-         rawExam(root: #", "code": "A", "code": "B", "code": "C""#, question: #", "type": "single""#),
-         ["sections[0].questions[0].type", "code"]),
-    ]
-
-    @Test("Strict từ chối, nêu đúng đường dẫn; lenient vẫn đọc được", arguments: cases.indices)
-    func rejectsInStrict(index: Int) throws {
-        let item = Self.cases[index]
-        let data = try pack(item.json)
-        #expect(throws: ExamFileError.duplicateJSONKeys(item.paths), "\(item.name)") {
-            try ExamPackageReader.read(data, mode: .strict)
-        }
-        _ = try ExamPackageReader.read(data, mode: .lenient)
-    }
-
     @Test("Bộ quét: cặp surrogate, escape trong khoá (\\\", \\/, hex hoa/thường), dấu ngoặc trong chuỗi")
     func scannerEscapes() {
         let json = #"""
@@ -95,48 +74,6 @@ struct DuplicateJSONKeyTests {
 
 @Suite("ExamPackageReader: giá trị null")
 struct NullValueTests {
-    static let cases: [(json: Data, path: String)] = [
-        (rawExam(root: #", "code": null"#), "code"),
-        (rawExam(root: #", "hideAnswers": null"#), "hideAnswers"),
-        (rawExam(root: #", "instructions": null"#), "instructions"),
-        (rawExam(question: #", "image": null"#), "sections[0].questions[0].image"),
-        (rawExam(question: #", "explanation": null"#), "sections[0].questions[0].explanation"),
-    ]
-
-    @Test("Strict từ chối null ở trường tuỳ chọn, nêu đường dẫn; lenient coi như vắng mặt",
-          arguments: cases.indices)
-    func optionalNull(index: Int) throws {
-        let item = Self.cases[index]
-        let data = try pack(item.json)
-        #expect(throws: ExamFileError.nullValues([item.path])) {
-            try ExamPackageReader.read(data, mode: .strict)
-        }
-        let lenient = try ExamPackageReader.read(data, mode: .lenient)
-        let plain = try ExamPackageReader.read(pack(rawExam()), mode: .lenient)
-        #expect(lenient == plain)
-    }
-
-    @Test("Nhiều null: theo thứ tự cấu trúc, trong một object xếp theo tên khoá")
-    func manyNulls() throws {
-        let json = rawExam(root: #", "instructions": null, "code": null"#,
-                           question: #", "image": null, "explanation": null"#)
-        #expect(throws: ExamFileError.nullValues([
-            "code", "instructions",
-            "sections[0].questions[0].explanation", "sections[0].questions[0].image",
-        ])) {
-            try ExamPackageReader.read(pack(json), mode: .strict)
-        }
-    }
-
-    @Test("Null trong mảng và ở trường bắt buộc: strict báo nullValues trước khi giải mã")
-    func nullElsewhere() throws {
-        let json = Data(String(decoding: rawExam(), as: UTF8.self)
-            .replacingOccurrences(of: #""correct": ["B"]"#, with: #""correct": ["B", null]"#).utf8)
-        #expect(throws: ExamFileError.nullValues(["sections[0].questions[0].correct[1]"])) {
-            try ExamPackageReader.read(pack(json), mode: .strict)
-        }
-    }
-
     @Test("Đề mẫu không có null")
     func samplesHaveNoNull() throws {
         for name in ["kien-thuc-chung", "toi-thieu"] {
@@ -158,36 +95,6 @@ struct NullValueTests {
 
 @Suite("ExamPackageReader: dấu phẩy thừa")
 struct TrailingCommaTests {
-    /// Thay một đoạn trong JSON mẫu `rawExam()`; đoạn cần thay phải có thật.
-    private static func edited(_ old: String, _ new: String) -> Data {
-        let text = String(decoding: rawExam(), as: UTF8.self)
-        precondition(text.contains(old), "không thấy \(old)")
-        return Data(text.replacingOccurrences(of: old, with: new).utf8)
-    }
-
-    static let cases: [(name: String, json: Data, paths: [String])] = [
-        ("cuối object gốc {…,}", rawExam(root: ","), [StrictJSON.rootName]),
-        ("cuối object câu hỏi", rawExam(question: ","), ["sections[0].questions[0]"]),
-        (#"cuối mảng correct ["B",]"#, edited(#""correct": ["B"]"#, #""correct": ["B",]"#),
-         ["sections[0].questions[0].correct"]),
-        ("cuối mảng options …},]", edited(#""text": "2" }"#, #""text": "2" },"#),
-         ["sections[0].questions[0].options"]),
-        ("nhiều chỗ, theo thứ tự dấu đóng", edited(#""correct": ["B"]"#, #""correct": ["B" , ],"#),
-         ["sections[0].questions[0].correct", "sections[0].questions[0]"]),
-    ]
-
-    @Test("Strict từ chối (invalidJSON nêu đường dẫn); lenient đọc như không có dấu phẩy",
-          arguments: cases.indices)
-    func rejectsInStrict(index: Int) throws {
-        let item = Self.cases[index]
-        let data = try pack(item.json)
-        #expect(throws: ExamFileError.invalidJSON(.trailingCommas(item.paths)), "\(item.name)") {
-            try ExamPackageReader.read(data, mode: .strict)
-        }
-        let lenient = try ExamPackageReader.read(data, mode: .lenient)
-        #expect(lenient == (try ExamPackageReader.read(pack(rawExam()), mode: .lenient)), "\(item.name)")
-    }
-
     @Test("Bộ quét: dấu phẩy trong chuỗi không tính; khoảng trắng giữa dấu phẩy và dấu đóng vẫn tính")
     func scanner() {
         let lf = String(UnicodeScalar(UInt8(10)))
