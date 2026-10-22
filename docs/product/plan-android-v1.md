@@ -229,7 +229,7 @@ Bằng chứng merge (Nt0 chốt Q8 2026-10-22: CI thay phần lint + test, khô
 | --- | --- |
 | Chỉ `android/core/**`, `android/data/**`, build Gradle | Check `android` của workflow `android.yml` (lint + test JVM, Robolectric, screenshot) |
 | `android/app/**`, và ở mọi cổng | Check `android` **và** status `local/verify-android` do `android/scripts/check_android.sh --ui` ghi (chỉ `connectedCheck` trên emulator của Mac, không chạy lại lint + test) |
-| Cả phần Swift (A1 sửa test Swift đọc `fixtures/vectors/`) | Thêm `local/verify` của `scripts/verify_local.sh` như mọi PR macOS |
+| Mọi PR | `local/verify` của `scripts/verify_local.sh`, mức theo file đổi (`verify_scope.py`): chỉ `android/` và tài liệu thì chỉ kiểm danh tính git; oracle/test lõi Swift thì `check.sh --core`; phần macOS khác thì đủ bộ |
 
 `check_android.sh` không có `--ui` vẫn chạy được lint + test tại chỗ khi làm, nhưng không ghi status. Workflow `CI` của
 macOS giữ nguyên (chỉ chạy tay, tag `v*`); branch protection vẫn chưa bật, người duyệt tự kiểm các check trước khi merge.

@@ -55,7 +55,7 @@ thuộc đã merge; không xếp chồng quá một tầng.
       `ExamComposer` (SplitMix64), `ExamSession` + phiên dở (`snapshot`/`restore`, `SnapshotCodec`), `AttemptPayload`,
       `QuestionFingerprint`, `ReviewItems`, Markdown cơ bản; oracle chung `fixtures/vectors/`, `fixtures/invalid-json/`,
       khoá `issueCodes` của `expected-verdicts.json`, test Swift đọc từ đó; 187 ca JUnit (85 ca oracle).
-- [ ] A2 `:data`
+- [ ] A2 `:data` (PR này, đang làm). Đã có trong nhánh: `verify_local.sh` chọn mức kiểm theo file đổi (Decisions).
 - [ ] A3b Giao diện làm bài (chờ Nt0 chốt mức cỡ chữ, mobile.md Câu hỏi mở)
 - [ ] A3a Thư viện và nối luồng (chờ Nt0 chốt làm đề khác khi có phiên dở); cổng GA2
 - [ ] A4 Hoàn thiện và beta; cổng GA3
@@ -167,6 +167,12 @@ thuộc đã merge; không xếp chồng quá một tầng.
     `android/**` hay `fixtures/**`: đổi lõi Swift ở chỗ oracle chưa phủ không làm CI Kotlin đỏ, nên mọi đổi luật lõi đi
     qua oracle trước (ADR 0011). JSON mẫu payload phụ thuộc `fixtures/exams/kien-thuc-chung`: sửa fixture đó phải sinh lại
     JSON mẫu. A2 không thêm lần kiểm thứ ba "đề mẫu không có warning".
+
+- 2026-10-22, Nt0 (sau khi merge PR #2): `local/verify` không chạy lại toàn bộ app macOS cho PR Android. `verify_local.sh`
+  chọn mức theo file đổi (`scripts/verify_scope.py`): none (chỉ `android/`, tài liệu: chỉ kiểm danh tính git), core (oracle
+  và test lõi Swift mà test giao diện không đọc: `check.sh --core` + Linux, khoảng 1,5 phút), full (mọi thứ khác, file lạ,
+  cổng). Thử trên worktree tạm: commit chỉ tài liệu ra none (0,2 giây), commit chỉ `fixtures/README.md` ra core (85 giây).
+  Với bảng này A0 là none và A1 là core (trước đây cả hai chạy đủ bộ 6–9 phút). Làm trong PR của A2 (không mở PR riêng).
 
 ## Validation
 
