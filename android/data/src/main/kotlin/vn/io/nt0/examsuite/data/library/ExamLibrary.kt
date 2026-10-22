@@ -5,6 +5,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import vn.io.nt0.examsuite.core.attempt.AttemptPayload
 import vn.io.nt0.examsuite.core.attempt.AttemptPayloadException
@@ -38,7 +40,9 @@ import java.util.zip.ZipOutputStream
  * trên `Dispatchers.IO`.
  *
  * Nhập đề nguyên tử: chép nguồn vào `exams/.incoming/<ngẫu nhiên>.part` (có trần), đọc **nghiêm** bằng `:core`, rồi đổi
- * tên thành file đích; ghi kho sau khi đổi tên. Tắt giữa chừng thì `recoverOnStart` dọn file tạm và file không có mục.
+ * tên thành file đích; ghi kho sau khi đổi tên. Cập nhật đề ghi file đánh dấu `<examId>.updating` trước khi đổi tên, xoá
+ * sau khi ghi kho. Tắt giữa chừng thì `recoverOnStart` dọn file tạm, nạp lại file đề chưa có mục và làm mới mục có dấu.
+ * Mọi thao tác ghi chạy tuần tự dưới một khoá (nhập đồng thời không ghi đè nhau mà không hỏi).
  */
 class ExamLibrary(
     private val db: LibraryDatabase,
@@ -51,7 +55,11 @@ class ExamLibrary(
     val examsDir = File(root, "exams")
     private val incomingDir = File(examsDir, ".incoming")
 
+    private val mutex = Mutex()
+
     fun examFile(examId: UUID) = File(examsDir, "$examId.exam")
+
+    private fun updatingMarker(examId: String) = File(examsDir, "$examId.updating")
 
     // ---------- Đề ----------
 
@@ -74,41 +82,43 @@ class ExamLibrary(
      * Nhập một file đề (nút Thêm đề hay mở `.exam` từ app khác). Đọc nghiêm; không đọc được thì không thêm, trả lý do
      * (library.md phương án 2). Đã có đề cùng id thì trả `NeedsUpdateConfirmation`; file đã đọc được giữ chờ trả lời.
      */
-    suspend fun import(source: InputStream): ImportResult = withContext(Dispatchers.IO) {
+    suspend fun import(source: InputStream): ImportResult = mutex.withLock { withContext(Dispatchers.IO) { importLocked(source) } }
+
+    private suspend fun importLocked(source: InputStream): ImportResult {
         incomingDir.mkdirs()
         val part = File(incomingDir, "${UUID.randomUUID()}.part")
         val copied = try {
             copyCapped(source, part)
         } catch (e: IOException) {
             part.delete()
-            return@withContext ImportResult.Rejected(ImportProblem.Io(e.message ?: e.javaClass.simpleName))
+            return ImportResult.Rejected(ImportProblem.Io(e.message ?: e.javaClass.simpleName))
         }
         if (!copied) {
             part.delete()
-            return@withContext ImportResult.Rejected(ImportProblem.FileTooLarge(maxFileBytes))
+            return ImportResult.Rejected(ImportProblem.FileTooLarge(maxFileBytes))
         }
         val package_ = try {
             ExamPackageReader.readStrict(part, limits)
         } catch (e: ExamFileError) {
             part.delete()
-            return@withContext ImportResult.Rejected(ImportProblem.InvalidPackage(e))
+            return ImportResult.Rejected(ImportProblem.InvalidPackage(e))
         }
         val pending = PendingImport(part, package_, sha256(part))
         val id = package_.exam.id.toString()
         val existing = db.entries().get(id)
         if (existing != null && existing.removedAtMillis != null) purge(existing)
         if (existing != null && existing.removedAtMillis == null) {
-            return@withContext ImportResult.NeedsUpdateConfirmation(existing.toItem(db.attempts().forExam(id).firstOrNull()), pending)
+            return ImportResult.NeedsUpdateConfirmation(existing.toItem(db.attempts().forExam(id).firstOrNull()), pending)
         }
-        ImportResult.Added(commit(pending, sampleKey = null, previous = null))
+        return ImportResult.Added(commit(pending, sampleKey = null, previous = null))
     }
 
     /** **Cập nhật đề**: thay file và thông tin thẻ, giữ ngày thêm và lịch sử thi. */
-    suspend fun confirmUpdate(pending: PendingImport): LibraryItem = withContext(Dispatchers.IO) {
+    suspend fun confirmUpdate(pending: PendingImport): LibraryItem = mutex.withLock { withContext(Dispatchers.IO) {
         check(pending.file.exists()) { "file chờ đã bị dọn" }
         val previous = db.entries().get(pending.examId.toString())?.takeIf { it.removedAtMillis == null }
         commit(pending, sampleKey = null, previous = previous)
-    }
+    } }
 
     /** **Huỷ**: bỏ file đã đọc, Thư viện không đổi. */
     suspend fun discard(pending: PendingImport) {
@@ -116,40 +126,66 @@ class ExamLibrary(
     }
 
     /** Xoá khỏi Thư viện, không hỏi (library.md phương án 3): chờ Hoàn tác; file và mục bị xoá hẳn ở `purgeRemoved`. */
-    suspend fun remove(examId: UUID): Boolean = db.entries().markRemoved(examId.toString(), now()) == 1
+    suspend fun remove(examId: UUID): Boolean = mutex.withLock { db.entries().markRemoved(examId.toString(), now()) == 1 }
 
-    suspend fun undoRemove(examId: UUID): Boolean = db.entries().unmarkRemoved(examId.toString()) == 1
+    suspend fun undoRemove(examId: UUID): Boolean = mutex.withLock { db.entries().unmarkRemoved(examId.toString()) == 1 }
 
     /** Xoá hẳn các đề đã xoá khỏi Thư viện (hết thời gian Hoàn tác): file, mục, phiên dở của đề đó; lịch sử thi giữ lại. */
-    suspend fun purgeRemoved(): Int = withContext(Dispatchers.IO) {
+    suspend fun purgeRemoved(): Int = mutex.withLock { withContext(Dispatchers.IO) { purgeRemovedLocked() } }
+
+    private suspend fun purgeRemovedLocked(): Int {
         val removed = db.entries().removed()
         removed.forEach { purge(it) }
-        removed.size
+        return removed.size
     }
 
     /**
-     * Dọn lúc mở app: file tạm của lần nhập dở, đề chờ Hoàn tác từ lần trước, file đề không có mục (tắt giữa đổi tên và
-     * ghi kho), mục không còn file (bị can thiệp ngoài app; mục bị bỏ, lịch sử thi giữ lại).
+     * Dọn lúc mở app (A3a gọi trước khi đọc phiên dở và xử lý file mở từ app khác):
+     * - file tạm của lần nhập dở;
+     * - đề chờ Hoàn tác từ lần trước;
+     * - file đề **không có mục** (tắt giữa đổi tên và ghi kho, hoặc kho vừa được thay vì hỏng): đọc nghiêm được thì **nạp lại
+     *   thành mục**, không đọc được mới xoá; không bao giờ xoá bản sao đề người dùng còn dùng được (review độc lập PR #3, C2);
+     * - mục có dấu Cập nhật đề dở (`<examId>.updating`): đọc lại file và làm mới thông tin thẻ;
+     * - mục không còn file (bị can thiệp ngoài app): bỏ mục, lịch sử thi giữ lại.
      */
-    suspend fun recoverOnStart(): RecoveryReport = withContext(Dispatchers.IO) {
+    suspend fun recoverOnStart(): RecoveryReport = mutex.withLock { withContext(Dispatchers.IO) {
         val incoming = incomingDir.listFiles()?.count { it.delete() } ?: 0
-        val purged = purgeRemoved()
+        val purged = purgeRemovedLocked()
         val entries = db.entries().all().associateBy { it.examId }
-        var orphans = 0
+        var restored = 0
+        var deleted = 0
         examsDir.listFiles()?.filter { it.isFile && it.name.endsWith(".exam") }?.forEach { file ->
-            if (file.name.removeSuffix(".exam") !in entries) {
-                if (file.delete()) orphans++
+            val id = file.name.removeSuffix(".exam")
+            if (id in entries) return@forEach
+            val package_ = runCatching { ExamPackageReader.readStrict(file, limits) }.getOrNull()
+            if (package_ != null && package_.exam.id.toString() == id) {
+                upsertEntry(package_, file, sha256(file), sampleKey = null, previous = null)
+                restored++
+            } else if (file.delete()) {
+                deleted++
             }
         }
+        var refreshed = 0
+        examsDir.listFiles()?.filter { it.isFile && it.name.endsWith(".updating") }?.forEach { marker ->
+            val id = marker.name.removeSuffix(".updating")
+            val file = File(examsDir, "$id.exam")
+            val previous = db.entries().get(id)
+            val package_ = runCatching { ExamPackageReader.readStrict(file, limits) }.getOrNull()
+            if (previous != null && package_ != null) {
+                upsertEntry(package_, file, sha256(file), previous.sampleKey, previous)
+                refreshed++
+            }
+            marker.delete()
+        }
         var dropped = 0
-        for (entry in entries.values) {
+        for (entry in db.entries().all()) {
             if (!File(examsDir, "${entry.examId}.exam").exists()) {
                 purge(entry)
                 dropped++
             }
         }
-        RecoveryReport(purged, orphans, dropped, incoming)
-    }
+        RecoveryReport(purged, restored, deleted, refreshed, dropped, incoming)
+    } }
 
     // ---------- Đề mẫu ----------
 
@@ -158,7 +194,7 @@ class ExamLibrary(
      * thêm với cờ đề mẫu. Đề đã có trong Thư viện (cùng id) thì bỏ qua. Gọi một lần lúc lần đầu mở app (cờ ở
      * `LibrarySettings.samplesSeeded`); xoá đề mẫu thì không tự tạo lại. Trả số đề đã thêm.
      */
-    suspend fun seedSamples(samples: SampleSource): Int = withContext(Dispatchers.IO) {
+    suspend fun seedSamples(samples: SampleSource): Int = mutex.withLock { withContext(Dispatchers.IO) {
         var added = 0
         for (name in samples.names()) {
             incomingDir.mkdirs()
@@ -170,7 +206,13 @@ class ExamLibrary(
                     zip.closeEntry()
                 }
             }
-            val package_ = ExamPackageReader.readStrict(part, limits)
+            // Một đề mẫu lỗi (không xảy ra với đề mẫu đã kiểm trong repo) không làm dừng cả lượt.
+            val package_ = try {
+                ExamPackageReader.readStrict(part, limits)
+            } catch (_: ExamFileError) {
+                part.delete()
+                continue
+            }
             val existing = db.entries().get(package_.exam.id.toString())
             if (existing != null && existing.removedAtMillis == null) {
                 part.delete()
@@ -181,14 +223,14 @@ class ExamLibrary(
             added++
         }
         added
-    }
+    } }
 
     // ---------- Lịch sử thi ----------
 
     /** Mọi lần thi, mới nhất trước (library.md, Lịch sử thi). */
-    fun history(): Flow<List<AttemptSummary>> = db.attempts().observeAll().map { list -> list.map { it.toSummary() } }
+    fun history(): Flow<List<AttemptSummary>> = db.attempts().observeAll().map { list -> list.mapNotNull { it.toSummary() } }
 
-    suspend fun attemptsFor(examId: UUID): List<AttemptSummary> = db.attempts().forExam(examId.toString()).map { it.toSummary() }
+    suspend fun attemptsFor(examId: UUID): List<AttemptSummary> = db.attempts().forExam(examId.toString()).mapNotNull { it.toSummary() }
 
     /**
      * Lưu lần thi khi nộp (library.md: tự lưu khi nộp bài Luyện tập hoặc Thi): tóm tắt + payload có dấu vân tay câu lúc
@@ -222,15 +264,15 @@ class ExamLibrary(
             db.attempts().insert(entity)
             if (db.drafts().get()?.examId == entity.examId) db.drafts().clear()
         }
-        return entity.toSummary()
+        return entity.toSummary()!!
     }
 
     suspend fun attemptDetail(attemptId: UUID): AttemptDetail? {
         val entity = db.attempts().get(attemptId.toString()) ?: return null
         return try {
-            AttemptDetail(entity.toSummary(), AttemptPayload.decode(entity.payload), null)
+            AttemptDetail(entity.toSummary() ?: return null, AttemptPayload.decode(entity.payload), null)
         } catch (e: AttemptPayloadException) {
-            AttemptDetail(entity.toSummary(), null, e.message)
+            AttemptDetail(entity.toSummary() ?: return null, null, e.message)
         }
     }
 
@@ -260,7 +302,16 @@ class ExamLibrary(
         val exam = pending.package_.exam
         val target = examFile(exam.id)
         examsDir.mkdirs()
+        val marker = updatingMarker(exam.id.toString())
+        if (previous != null) marker.writeText("")
         Files.move(pending.file.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE)
+        val entity = upsertEntry(pending.package_, target, pending.sha256, sampleKey, previous)
+        marker.delete()
+        return entity.toItem(db.attempts().forExam(entity.examId).firstOrNull())
+    }
+
+    private suspend fun upsertEntry(package_: ExamPackage, file: File, sha256: String, sampleKey: String?, previous: ExamEntryEntity?): ExamEntryEntity {
+        val exam = package_.exam
         val at = now()
         val entity = ExamEntryEntity(
             examId = exam.id.toString(),
@@ -268,20 +319,20 @@ class ExamLibrary(
             code = exam.code,
             questionCount = exam.questionCount,
             sectionCount = exam.sections.size,
-            mediaCount = pending.package_.mediaPaths.size,
+            mediaCount = package_.mediaPaths.size,
             timeLimitMinutes = exam.timeLimitMinutes.toInt(),
             passPercent = exam.passPercent.toInt(),
             hideAnswers = exam.hideAnswers,
             formatVersion = exam.formatVersion.toInt(),
-            fileSize = target.length(),
-            fileSha256 = pending.sha256,
+            fileSize = file.length(),
+            fileSha256 = sha256,
             addedAtMillis = previous?.addedAtMillis ?: at,
             updatedAtMillis = at,
             sampleKey = sampleKey,
             removedAtMillis = null,
         )
         db.entries().upsert(entity)
-        return entity.toItem(db.attempts().forExam(entity.examId).firstOrNull())
+        return entity
     }
 
     private suspend fun purge(entry: ExamEntryEntity) {
@@ -348,13 +399,14 @@ private fun ExamEntryEntity.toItem(last: AttemptEntity?) = LibraryItem(
     lastAttempt = last?.let { LastAttempt(it.percent, it.score1000, it.passed, it.submittedAtMillis) },
 )
 
-private fun AttemptEntity.toSummary() = AttemptSummary(
+/** null nếu dòng có chế độ lạ (không do app ghi): bỏ dòng đó thay vì làm hỏng cả danh sách. */
+private fun AttemptEntity.toSummary(): AttemptSummary? = SessionMode.entries.firstOrNull { it.raw == mode }?.let { sessionMode -> AttemptSummary(
     attemptId = UUID.fromString(attemptId),
     examId = UUID.fromString(examId),
     examTitle = examTitle,
     examCode = examCode,
     candidateName = candidateName,
-    mode = SessionMode.entries.first { it.raw == mode },
+    mode = sessionMode,
     startedAtMillis = startedAtMillis,
     submittedAtMillis = submittedAtMillis,
     elapsedSeconds = elapsedSeconds,
@@ -365,4 +417,4 @@ private fun AttemptEntity.toSummary() = AttemptSummary(
     percent = percent,
     passPercent = passPercent,
     passed = passed,
-)
+) }

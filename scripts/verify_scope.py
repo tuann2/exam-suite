@@ -19,8 +19,11 @@ from __future__ import annotations
 
 import fnmatch
 import os
+import shutil
 import subprocess
 import sys
+import tempfile
+from pathlib import Path
 
 # Không ảnh hưởng bước macOS nào. Tài liệu chỉ là Markdown; docs/install.md vào DMG nhưng verify_local.sh không đóng DMG.
 NEUTRAL = ["android/*", "docs/*", "AGENTS.md", "CLAUDE.md", ".github/workflows/android.yml"]
@@ -56,8 +59,46 @@ def changed_files() -> list[str]:
     # EXAMSUITE_VERIFY_SCOPE_BASE: ref gốc khác origin/main, chỉ để chạy thử verify_local.sh trên worktree tạm.
     ref = os.environ.get("EXAMSUITE_VERIFY_SCOPE_BASE", "origin/main")
     base = subprocess.run(["git", "merge-base", ref, "HEAD"], capture_output=True, text=True, check=True).stdout.strip()
-    out = subprocess.run(["git", "diff", "--name-only", f"{base}..HEAD"], capture_output=True, text=True, check=True).stdout
+    return diff_files(base, "HEAD")
+
+
+def diff_files(base: str, head: str, cwd: str | None = None) -> list[str]:
+    """File đổi giữa hai commit. `--no-renames`: file chuyển chỗ tính cả đường dẫn cũ (chuyển một file ra khỏi phần macOS
+    là xoá nó khỏi macOS); `core.quotePath=false`: tên có dấu không bị đặt trong ngoặc kép (review độc lập PR #3, C1)."""
+    out = subprocess.run(
+        ["git", "-c", "core.quotePath=false", "diff", "--name-only", "--no-renames", f"{base}..{head}"],
+        capture_output=True, text=True, check=True, cwd=cwd,
+    ).stdout
     return [line for line in out.splitlines() if line]
+
+
+def rename_self_test() -> list[str]:
+    """Đối chứng trên repo git tạm: chuyển đề mẫu của bản macOS vào android/ phải là full; tên có dấu không bị bọc ngoặc."""
+    if shutil.which("git") is None:
+        print("verify_scope: không có git, bỏ tự kiểm đổi tên")
+        return []
+    with tempfile.TemporaryDirectory() as repo:
+        def git(*args: str) -> str:
+            return subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@t", *args], cwd=repo, check=True,
+                                  capture_output=True, text=True).stdout.strip()
+        git("init", "-q")
+        sample = Path(repo, "Packages/ExamFeatures/Sources/LibraryData/Resources/Samples/a/exam.json")
+        sample.parent.mkdir(parents=True)
+        # Nội dung đủ dài: git không nhận file vài byte là đổi tên, test sẽ không tái hiện được lỗi.
+        sample.write_text('{"title": "Đề mẫu đủ dài để git nhận ra là chuyển chỗ", "formatVersion": 1}\n' * 4)
+        Path(repo, "docs").mkdir()
+        git("add", "-A"); git("commit", "-qm", "a"); base = git("rev-parse", "HEAD")
+        Path(repo, "android").mkdir()
+        git("mv", "Packages/ExamFeatures/Sources/LibraryData/Resources/Samples/a", "android/samples-a")
+        Path(repo, "docs/ghi chú đề.md").write_text("x")
+        git("add", "-A"); git("commit", "-qm", "b")
+        files = diff_files(base, "HEAD", cwd=repo)
+    failures = []
+    if scope(files)[0] != "full":
+        failures.append(f"chuyển đề mẫu ra khỏi phần macOS phải là full: {files}")
+    if "docs/ghi chú đề.md" not in files:
+        failures.append(f"tên có dấu bị bọc ngoặc: {files}")
+    return failures
 
 
 def self_test() -> list[str]:
@@ -93,7 +134,7 @@ def self_test() -> list[str]:
 
 def main(argv: list[str]) -> int:
     if argv[:1] == ["--self-test"]:
-        failures = self_test()
+        failures = self_test() + rename_self_test()
         if failures:
             print("verify_scope: tự kiểm thất bại:", *failures, sep="\n  ")
             return 1

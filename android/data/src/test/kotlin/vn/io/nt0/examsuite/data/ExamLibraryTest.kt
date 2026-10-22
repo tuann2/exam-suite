@@ -1,6 +1,8 @@
 package vn.io.nt0.examsuite.data
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -146,7 +148,8 @@ class ExamLibraryTest {
         val removed = add(DataTest.pack("bien-khoang-trang"))
         library.remove(removed.examId)
         val report = library.recoverOnStart()
-        assertEquals(listOf(1, 1, 1, 1), listOf(report.purgedRemoved, report.orphanFilesDeleted, report.entriesWithoutFileDropped, report.incomingDeleted))
+        assertEquals(listOf(1, 0, 1, 0, 1, 1), listOf(report.purgedRemoved, report.orphanFilesRestored, report.orphanFilesDeleted,
+            report.entriesRefreshed, report.entriesWithoutFileDropped, report.incomingDeleted))
         assertEquals(listOf(kept.examId), library.items().first().map { it.examId })
         assertEquals(setOf("${kept.examId}.exam", ".incoming"), library.examsDir.list()!!.toSet())
     }
@@ -203,9 +206,8 @@ class ExamLibraryTest {
         library.saveDraft(s)
         val draft = library.loadDraft()!!
         assertEquals(item.examId, draft.examId)
-        val restored = ExamSession.restore(exam, draft.snapshot!!, Clock())
-        assertEquals(SessionPhase.Paused to PauseReason.BACKGROUND, restored.phase to restored.pauseReason)
-        assertEquals(42.0, restored.elapsed, 0.0)
+        // Luật khôi phục là của lõi (SnapshotTest); ở đây chỉ cần ghi rồi đọc lại đúng snapshot.
+        assertEquals(s.snapshot(), draft.snapshot)
         db.drafts().upsert(vn.io.nt0.examsuite.data.db.DraftEntity(0, item.examId.toString(), "{\"draftVersion\":9}", 1))
         assertNull(library.loadDraft()!!.snapshot)
         library.clearDraft()
@@ -217,5 +219,49 @@ class ExamLibraryTest {
         val item = add()
         val path = library.open(item.examId).mediaPaths.single()
         assertEquals(File(DataTest.fixtures, "exams/kien-thuc-chung/$path").readBytes().toList(), library.media(item.examId, path).toList())
+    }
+
+    @Test
+    fun orphanExamFileThatReadsStrictlyIsRestoredNotDeleted() = runBlocking {
+        val item = add()
+        db.entries().delete(item.examId.toString())
+        val report = library.recoverOnStart()
+        assertEquals(1, report.orphanFilesRestored)
+        assertEquals(listOf(item.examId), library.items().first().map { it.examId })
+        assertTrue(library.examFile(item.examId).exists())
+    }
+
+    @Test
+    fun updateInterruptedAfterFileMoveIsCompletedOnNextStart() = runBlocking {
+        val first = add()
+        val changed = DataTest.pack("kien-thuc-chung") { it.replace("\"passPercent\": 70", "\"passPercent\": 85") }
+        val ask = library.import(DataTest.stream(changed)) as ImportResult.NeedsUpdateConfirmation
+        // Tắt app sau khi đổi tên file, trước khi ghi kho: dấu cập nhật còn, mục còn thông tin cũ.
+        File(library.examsDir, "${first.examId}.updating").writeText("")
+        java.nio.file.Files.move(ask.pending.file.toPath(), library.examFile(first.examId).toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+        assertEquals(70, library.item(first.examId)!!.passPercent)
+        val report = library.recoverOnStart()
+        assertEquals(1, report.entriesRefreshed)
+        assertEquals(85, library.item(first.examId)!!.passPercent)
+        assertEquals(first.addedAtMillis, library.item(first.examId)!!.addedAtMillis)
+        assertFalse(File(library.examsDir, "${first.examId}.updating").exists())
+    }
+
+    @Test
+    fun concurrentImportsOfTheSameNewExamNeverOverwriteWithoutAsking() = runBlocking {
+        val bytes = DataTest.pack("kien-thuc-chung")
+        val results = coroutineScope {
+            (1..4).map { async(kotlinx.coroutines.Dispatchers.Default) { library.import(DataTest.stream(bytes)) } }.map { it.await() }
+        }
+        assertEquals(1, results.count { it is ImportResult.Added })
+        assertEquals(3, results.count { it is ImportResult.NeedsUpdateConfirmation })
+    }
+
+    @Test(expected = IllegalStateException::class)
+    fun confirmUpdateAfterPendingFileWasCleanedFails() = runBlocking<Unit> {
+        add()
+        val ask = library.import(DataTest.stream(DataTest.pack("kien-thuc-chung"))) as ImportResult.NeedsUpdateConfirmation
+        library.recoverOnStart()
+        library.confirmUpdate(ask.pending)
     }
 }

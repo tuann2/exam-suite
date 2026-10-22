@@ -57,7 +57,7 @@ thuộc đã merge; không xếp chồng quá một tầng.
       khoá `issueCodes` của `expected-verdicts.json`, test Swift đọc từ đó; 187 ca JUnit (85 ca oracle).
 - [x] A2 `:data` (PR này, rủi ro cao): kho Room v1 (`exam_entry`, `attempt`, `draft_session`; schema `data/schemas/.../1.json`),
       `LibraryStore` (kho hỏng đổi tên), `ExamLibrary` (nhập nguyên tử, Cập nhật đề, xoá có Hoàn tác, dọn lúc mở app, đề mẫu,
-      lần thi, phiên dở), `LibraryQuery` (tìm không dấu, sắp xếp), `LibrarySettings` (DataStore); 21 ca Robolectric. Cùng
+      lần thi, phiên dở), `LibraryQuery` (tìm không dấu, sắp xếp), `LibrarySettings` (DataStore); 26 ca Robolectric. Cùng
       PR: `verify_local.sh` chọn mức kiểm theo file đổi (Decisions).
 - [ ] A3b Giao diện làm bài (chờ Nt0 chốt mức cỡ chữ, mobile.md Câu hỏi mở)
 - [ ] A3a Thư viện và nối luồng (chờ Nt0 chốt làm đề khác khi có phiên dở); cổng GA2
@@ -201,6 +201,20 @@ thuộc đã merge; không xếp chồng quá một tầng.
 - 2026-10-22, A2, schema: plugin Room ghi đè `1.json` mỗi lần build nên đổi bảng mà không tăng phiên bản không làm test
   mở kho đỏ. Test khoá thêm dấu vân tay schema v1 (`V1_IDENTITY_HASH`); đối chứng âm: thêm một cột thì Room viết lại
   `1.json` và test đỏ.
+- 2026-10-22, A2, review độc lập PR #3 (REQUEST CHANGES, hai lỗi chặn), đã sửa trong cùng PR:
+  - **C1**: `verify_scope.py` dùng `git diff` mặc định nhận đổi tên, nên chuyển đề mẫu hay file Swift vào `android/` bị xếp
+    mức none. Sửa: `--no-renames` và `core.quotePath=false`; tự kiểm dựng repo git tạm chuyển đề mẫu vào `android/` (đối
+    chứng âm: bỏ `--no-renames` thì đỏ; nội dung thử phải đủ dài, git không nhận file vài byte là đổi tên).
+  - **C2**: kho hỏng thì kho mới rỗng và `recoverOnStart` xoá mọi bản sao đề. Sửa: file đề chưa có mục mà đọc nghiêm được thì
+    nạp lại thành mục, chỉ xoá file không đọc được; `LibraryStore` chỉ cách ly khi SQLite báo kho hỏng hoặc Room không nhận
+    schema (kho của bản app khác), lỗi tạm thời ném `LibraryStoreException` cho giao diện báo; đổi tên thất bại thì không tạo
+    kho mới; kho hỏng phát hiện lúc chạy ghi `<tên>.recovered` để lần mở sau báo. Test: chuỗi kho hỏng rồi `recoverOnStart`
+    giữ đề.
+  - Không chặn, đã làm: Cập nhật đề ghi dấu `<examId>.updating`, `recoverOnStart` làm mới mục khi tắt giữa chừng; `Mutex`
+    cho mọi thao tác ghi (đối chứng âm: bỏ khoá ở `import` thì test nhập đồng thời đỏ 3/3 lần); đề mẫu lỗi không dừng cả
+    lượt; lần thi có chế độ lạ bị bỏ thay vì làm hỏng danh sách; mô tả status luôn mở đầu bằng tên mức; bỏ đoạn test lặp
+    luật khôi phục của lõi. Còn lại: `.broken-*` chưa tự dọn (cần quyết định giữ bao lâu); `Collator` tiếng Việt chỉ test
+    trên JVM, ICU của Android kiểm ở test emulator A3a.
 - 2026-10-22, A2, Robolectric: `AssetManager.list` của Robolectric trả đường dẫn đệ quy, của Android trả tên con trực
   tiếp; `AssetSampleSource` lấy đoạn đầu rồi thử mở `exam.json` để đúng ở cả hai.
 

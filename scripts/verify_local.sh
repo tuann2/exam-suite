@@ -319,11 +319,11 @@ if [[ $SCOPE != full ]]; then
     linux_check
     STEP="ghi status"
     MINUTES=$(( ($(date +%s) - START + 59) / 60 ))
-    post_status success "lõi ok (mức core: check.sh --core)$IDENTITY_NOTE$UI_SKIPPED, $LINUX_NOTE, ${MINUTES} phút"
+    post_status success "mức core: lõi ok (check.sh --core)$IDENTITY_NOTE$UI_SKIPPED, $LINUX_NOTE, ${MINUTES} phút"
     echo "== OK: $SHORT (mức core; $LINUX_NOTE). Log: $LOG"
   else
     STEP="ghi status"
-    post_status success "chỉ android/ và tài liệu: không có bước macOS$IDENTITY_NOTE$UI_SKIPPED (phần Android: check android của CI)"
+    post_status success "mức none: chỉ android/ và tài liệu, không bước macOS$IDENTITY_NOTE$UI_SKIPPED (Android: check android của CI)"
     echo "== OK: $SHORT (mức none: chỉ android/ và tài liệu). Log: $LOG"
   fi
   exit 0
@@ -633,5 +633,5 @@ STEP="ghi status"
 MINUTES=$(( ($(date +%s) - START + 59) / 60 ))
 MODE="incremental"; [[ $CLEAN == 1 ]] && MODE="clean"
 [[ $FORCED_REBUILD == 1 ]] && MODE="incremental, ExamFeatures build lại"
-post_status success "macOS ok ($MODE)$IDENTITY_NOTE, $UI_NOTE, $LINUX_NOTE, ${MINUTES} phút"
+post_status success "mức full: macOS ok ($MODE)$IDENTITY_NOTE, $UI_NOTE, $LINUX_NOTE, ${MINUTES} phút"
 echo "== OK: $SHORT ($UI_NOTE; $LINUX_NOTE). Log: $LOG"

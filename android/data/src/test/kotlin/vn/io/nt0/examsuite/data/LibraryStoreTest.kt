@@ -52,6 +52,23 @@ class LibraryStoreTest {
         opened.database.close()
     }
 
+    @Test
+    fun afterBrokenStoreIsReplacedCopiedExamFilesAreRestoredNotDeleted() = runBlocking {
+        val root = java.nio.file.Files.createTempDirectory("thu-vien").toFile()
+        val first = LibraryStore.open(context)
+        vn.io.nt0.examsuite.data.library.ExamLibrary(first.database, root).import(DataTest.stream(DataTest.pack("kien-thuc-chung")))
+        first.database.close()
+        file.writeBytes(ByteArray(4096) { 7 })
+        val opened = LibraryStore.open(context) { 99L }
+        assertNotNull(opened.recoveredFrom)
+        val library = vn.io.nt0.examsuite.data.library.ExamLibrary(opened.database, root)
+        val report = library.recoverOnStart()
+        assertEquals(1, report.orphanFilesRestored)
+        assertEquals(0, report.orphanFilesDeleted)
+        assertEquals(1, opened.database.entries().active().size)
+        opened.database.close()
+    }
+
     /**
      * Kho v1 dựng đúng từ file schema đã commit (`schemas/.../1.json`) phải mở được bằng code hiện tại: đổi bảng hay cột
      * mà không tăng phiên bản làm Room báo lệch dấu vân tay schema và test này đỏ.

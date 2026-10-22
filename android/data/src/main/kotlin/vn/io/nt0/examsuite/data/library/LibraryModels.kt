@@ -87,4 +87,14 @@ sealed interface ImportProblem {
 }
 
 /** Kết quả dọn dẹp lúc mở app (`ExamLibrary.recoverOnStart`), chỉ để ghi nhật ký và test. */
-data class RecoveryReport(val purgedRemoved: Int, val orphanFilesDeleted: Int, val entriesWithoutFileDropped: Int, val incomingDeleted: Int)
+data class RecoveryReport(
+    val purgedRemoved: Int,
+    /** File đề chưa có mục, đọc nghiêm được, đã nạp lại thành mục. */
+    val orphanFilesRestored: Int,
+    /** File đề chưa có mục, không đọc được, đã xoá. */
+    val orphanFilesDeleted: Int,
+    /** Mục có dấu Cập nhật đề dở, đã làm mới từ file. */
+    val entriesRefreshed: Int,
+    val entriesWithoutFileDropped: Int,
+    val incomingDeleted: Int,
+)

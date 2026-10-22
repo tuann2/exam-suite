@@ -85,10 +85,18 @@ abstract class LibraryDatabase : RoomDatabase() {
     abstract fun drafts(): DraftDao
 }
 
+/** Kho không mở được vì lỗi không phải kho hỏng (đầy bộ nhớ, lỗi đọc ghi, bị khoá): không đổi tên kho, giao diện báo lỗi. */
+class LibraryStoreException(message: String, cause: Throwable? = null) : Exception(message, cause)
+
 /**
- * Mở kho trong bộ nhớ riêng của app (library.md, Lưu trữ). Kho không mở được thì app không crash: file kho cũ đổi tên
- * thành `<tên>.broken-<thời điểm>` (cùng `-wal`, `-shm`), tạo kho mới, `recoveredFrom` báo cho giao diện. Android mặc
- * định **xoá** kho hỏng; bộ mở kho ở đây đổi tên thay vì xoá để còn cứu dữ liệu.
+ * Mở kho trong bộ nhớ riêng của app (library.md, Lưu trữ). Kho **hỏng** thì app không crash: file kho đổi tên thành
+ * `<tên>.broken-<thời điểm>` (cùng `-wal`, `-shm`, `-journal`), tạo kho mới, `recoveredFrom` báo cho giao diện. Android mặc
+ * định **xoá** kho hỏng; ở đây đổi tên để còn cứu dữ liệu. Chỉ cách ly khi SQLite báo kho hỏng (`SQLiteDatabaseCorruptException`,
+ * gồm "file is not a database") hoặc khi Room không mở được vì lệch schema (kho của bản app khác); lỗi tạm thời (đầy bộ nhớ,
+ * lỗi đọc ghi, bị khoá) ném `LibraryStoreException`, không đổi tên kho lành (review độc lập PR #3, C2).
+ *
+ * Kho hỏng phát hiện trong lúc chạy (`onCorruption`): đổi tên ngay, ghi file đánh dấu `<tên>.recovered`; lần mở sau báo
+ * `recoveredFrom` một lần.
  */
 object LibraryStore {
     const val FILE_NAME = "library.db"
@@ -97,17 +105,41 @@ object LibraryStore {
 
     fun open(context: Context, now: () -> Long = System::currentTimeMillis): Opened {
         val file = context.getDatabasePath(FILE_NAME)
-        var recovered: File? = null
+        val marker = File(file.path + ".recovered")
+        var recovered: File? = marker.takeIf { it.exists() }?.readText()?.let(::File)
+        marker.delete()
         if (file.exists() && !hasSqliteHeader(file)) recovered = quarantine(file, now())
-        var database = build(context) { recovered = recovered ?: quarantine(file, now()) }
+        var database = build(context) { quarantineAtRuntime(file, marker, now()) }
         try {
-            database.openHelper.writableDatabase.query("SELECT count(*) FROM exam_entry").use { it.moveToFirst() }
-        } catch (e: android.database.sqlite.SQLiteException) {
+            probe(database)
+        } catch (e: Exception) {
             database.close()
+            if (!isCorruptOrIncompatible(e)) throw LibraryStoreException("không mở được kho Thư viện", e)
             if (file.exists()) recovered = quarantine(file, now())
-            database = build(context) {}
+            database = build(context) { quarantineAtRuntime(file, marker, now()) }
+            try {
+                probe(database)
+            } catch (again: Exception) {
+                database.close()
+                throw LibraryStoreException("không tạo được kho Thư viện mới", again)
+            }
         }
         return Opened(database, recovered)
+    }
+
+    private fun probe(database: LibraryDatabase) {
+        database.openHelper.writableDatabase.query("SELECT count(*) FROM exam_entry").use { it.moveToFirst() }
+    }
+
+    /** Kho hỏng (SQLite) hoặc Room không chấp nhận schema của kho (kho do bản app khác ghi, hạ phiên bản). */
+    private fun isCorruptOrIncompatible(e: Throwable): Boolean {
+        var cause: Throwable? = e
+        while (cause != null) {
+            if (cause is android.database.sqlite.SQLiteDatabaseCorruptException) return true
+            if (cause is IllegalStateException && (cause.message?.contains("Room") == true || cause.message?.contains("migration") == true)) return true
+            cause = cause.cause
+        }
+        return false
     }
 
     private fun build(context: Context, onCorruption: () -> Unit): LibraryDatabase =
@@ -123,16 +155,25 @@ object LibraryStore {
         return read == magic.size && head.contentEquals(magic)
     }
 
-    /** Đổi tên kho (và file phụ) thành `.broken-<thời điểm>`; trả file kho đã đổi tên. */
+    private fun quarantineAtRuntime(file: File, marker: File, at: Long) {
+        val broken = quarantine(file, at)
+        runCatching { marker.writeText(broken.path) }
+    }
+
+    /**
+     * Đổi tên kho (và file phụ) thành `.broken-<thời điểm>`; trả file kho đã đổi tên. Đổi tên file kho chính thất bại thì
+     * ném `LibraryStoreException` (không tạo kho mới đè lên dữ liệu cũ).
+     */
     private fun quarantine(file: File, at: Long): File {
         val target = File(file.parentFile, "${file.name}.broken-$at")
         for (suffix in listOf("", "-wal", "-shm", "-journal")) {
             val source = File(file.path + suffix)
-            if (source.exists()) source.renameTo(File(target.path + suffix))
+            if (source.exists() && !source.renameTo(File(target.path + suffix)) && suffix.isEmpty()) {
+                throw LibraryStoreException("không đổi tên được kho hỏng ${file.name}")
+            }
         }
         return target
     }
-
     /** Bọc bộ mở kho mặc định: khi SQLite báo hỏng thì gọi `onCorruption` (đổi tên) thay vì để Android xoá file. */
     private class PreservingFactory(private val onCorruption: () -> Unit) : SupportSQLiteOpenHelper.Factory {
         private val delegate = FrameworkSQLiteOpenHelperFactory()
