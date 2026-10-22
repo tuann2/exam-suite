@@ -66,6 +66,15 @@ class ReviewItemsTest {
     }
 
     @Test
+    fun `dấu vân tay đã tính của đề hiện tại được dùng thay vì tính lại, thiếu câu nào thì tự tính`() {
+        assertEquals(ReviewItems(payload, exam).changes, ReviewItems(payload, exam, payload.fingerprints).changes)
+        // Giá trị đưa vào khác của câu 2: câu đó thành đã sửa, nên giá trị đưa vào được dùng; các câu khác tự tính.
+        val r = ReviewItems(payload, exam, mapOf(ids[1] to "0".repeat(64)))
+        assertEquals(QuestionChange.EDITED, r.changes[1])
+        assertEquals(listOf(QuestionChange.UNCHANGED), (r.changes - QuestionChange.EDITED).distinct())
+    }
+
+    @Test
     fun `câu đã xoá khỏi đề chỉ còn kết quả lúc thi, Luyện lại câu sai chỉ lấy câu còn trong đề`() {
         val removed = exam.copy(sections = exam.sections.map { s -> s.copy(questions = s.questions.filter { it.id != ids[3] }) })
         val r = ReviewItems(payload, removed)

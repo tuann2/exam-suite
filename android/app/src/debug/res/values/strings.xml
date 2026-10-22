@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bản debug cài cạnh bản phát hành (đuôi .debug): tên khác để không nhầm biểu tượng và mục "Mở bằng". -->
+    <string name="app_name" translatable="false">Exam Suite Debug</string>
+</resources>

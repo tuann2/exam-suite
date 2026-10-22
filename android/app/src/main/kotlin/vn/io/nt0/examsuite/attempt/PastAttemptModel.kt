@@ -74,8 +74,9 @@ class PastAttemptModel(
     }
 
     private fun reviewCommand(block: (AnswerReviewController) -> Unit) {
-        review?.let {
-            block(it)
+        val controller = review ?: return
+        Timing.measure("review.command") {
+            block(controller)
             _state.value = build()
         }
     }

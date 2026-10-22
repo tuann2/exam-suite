@@ -4,9 +4,9 @@ Date: 2026-10-22
 
 ## Status
 
-Active. A0, A1, A2 đã merge; **A3b** trên nhánh `feature/android-a3b` rẽ từ `main` fac7d87 (A2 đã merge nên A3b nối
-`ExamLibrary` thật thay vì bản giả); A3a kế tiếp. Các bước sau theo lộ trình ở
-[plan-android-v1.md](../../product/plan-android-v1.md) Phần 3. v1.1 lập plan riêng (`android-v1.1.md`) ở bước B1.
+Active. A0–A3a đã merge (`main` 3612c41), cổng GA2 đạt; **A4** trên nhánh `feature/android-a4` rẽ từ 3612c41, chờ cổng
+GA3. Lộ trình ở [plan-android-v1.md](../../product/plan-android-v1.md) Phần 3. v1.1 lập plan riêng (`android-v1.1.md`) ở
+bước B1.
 
 ## Outcome
 
@@ -69,8 +69,14 @@ thuộc đã merge; không xếp chồng quá một tầng.
       nhận `.exam` từ app khác, Cập nhật đề, mỗi lúc một phiên, Lịch sử thi), Thư viện danh sách (tìm, sắp xếp, dải chào
       mừng, Xoá + Hoàn tác), Trước khi thi (bảng kéo lên; `PreExamForm` thuần, cùng thứ tự lý do khoá với macOS), Kết quả
       lần thi cũ (`PastAttemptModel`); 52 ca JVM; 3 luồng Compose + 2 test nền tảng trên emulator; ảnh Thư viện sáng/tối.
-- [ ] Cổng GA2: Nt0 cài APK, làm trọn một đề thật trên điện thoại (ghi máy, app gửi file vào Validation)
-- [ ] A4 Hoàn thiện và beta; cổng GA3
+- [x] Cổng GA2 (2026-10-22): Nt0 cài APK debug của `main` 3612c41 lên Samsung Galaxy S24+, nhận đề qua WhatsApp, làm
+      trọn đề: chức năng đạt, không báo lỗi (Validation).
+- [ ] A4 Hoàn thiện và beta (PR này): test tương phản bảng màu trên nền Material 3 (8 ca JVM); nhật ký đo `Timing` của bản
+      debug, đo đề chuẩn, sửa ba mục vượt ngân sách (Nộp bài, xuống nền, lưu lần thi chặn luồng giao diện; chạm `:core`,
+      `:data`: review độc lập); ký bản release bằng keystore ngoài repo, `versionName` 0.1.0; tên "Exam Suite Debug" cho
+      bản debug; `android/CHANGELOG.md`, `android/THIRD_PARTY_NOTICES.md`, `docs/install-android.md`,
+      `docs/process/android-release.md`, `docs/notes/android-measurements.md`.
+- [ ] Cổng GA3: Nt0 tạo keystore, đóng APK release, cài và dùng thử trên điện thoại; đo đề chuẩn trên máy thật.
 
 ## Decisions
 
@@ -312,6 +318,33 @@ thuộc đã merge; không xếp chồng quá một tầng.
   đọc `fixtures/packages` trên ART; `Collator` tiếng Việt trên ICU của Android (`PlatformTest`); `loadDraft` của đề đã xoá
   thì bỏ phiên dở. Còn lại: `.broken-*` chưa tự dọn (A2 N6).
 
+- 2026-10-22, Nt0 (A4): phiên bản đầu `versionName` **0.1.0** (`versionCode` 1), tag `android-v0.1.0`.
+- 2026-10-22, A4, tương phản (plan Phần 1: phương án 8 của library.md): bảng màu riêng `ExamPalette` (cùng giá trị
+  `LibraryPalette` của macOS) đạt trên nền Material 3 thật của app, tính bằng chính `examColorScheme` của theme: chữ nhỏ
+  ≥ 4,5:1 trên nền màn, bảng kéo lên, thanh trên khi cuộn, thanh dưới (tonal elevation 3dp), trên hàng lựa chọn nền nhạt;
+  `onSurface` trên mọi nền nhạt; biểu tượng và thanh điểm ≥ 3:1; đối chứng âm: màu của giao diện tối trên nền sáng (và
+  ngược lại) không đạt. Màu mặc định của Material 3 không thuộc quy tắc (như màu hệ thống của macOS). Vạch ngưỡng đậu trên
+  thanh điểm không cần 3:1: dòng "Điểm đậu" ngay dưới ghi bằng chữ.
+- 2026-10-22, A4, hiệu năng (đo trên emulator, `docs/notes/android-measurements.md`): dấu vân tay 2.000 câu (~0,2–0,4 s)
+  tính tới ba lần trên luồng giao diện khi nộp và một lần khi xuống nền. Sửa: `ExamSession.fingerprints` (lazy, an toàn
+  giữa luồng) dùng chung cho phiên dở, payload, khôi phục; `ReviewItems` nhận dấu vân tay đã tính (mặc định tự tính như
+  trước); hex tự dựng thay `String.format`; `ExamLibrary` mã hoá/giải mã lần thi và phiên dở trên `Dispatchers.Default`;
+  app tính dấu vân tay trên nền lúc Bắt đầu, khôi phục phiên dở và dựng Kết quả lần thi cũ trên nền. Kết quả dấu vân tay
+  không đổi (vector `fixtures/vectors/question-fingerprints.json`). Chạm `:core`, `:data`: review độc lập.
+- 2026-10-22, A4, cách đo: lượt đi qua đề chuẩn bằng test Compose **tạm, không commit** (một lần mở app nữa trái quy tắc 3
+  của plan Phần 4, và cần file đề 60 MB), chạy bằng `am instrument` không qua Orchestrator; trên điện thoại cùng lượt đó
+  hoặc làm tay theo mô tả ở notes. Nhật ký `ExamSuiteTiming` chỉ bản debug (cờ `FLAG_DEBUGGABLE`).
+- 2026-10-22, A4, phát hành: keystore và mật khẩu chỉ ở máy Nt0 (`~/.config/exam-suite/android-signing.properties`, ngoài
+  repo vì repo public), CI **không** đóng APK (đưa keystore lên GitHub Secrets trái "keystore Nt0 giữ"). Comment đầu
+  `.github/workflows/android.yml` còn ghi "A4 thêm job đóng APK ký khi gắn tag": không sửa CI khi chưa được yêu cầu, ghi ở
+  đây. **Chưa bật R8** ở 0.1.0: test Compose chỉ chạy trên bản debug, bản rút gọn chưa có test luồng; APK release 26,7 MB,
+  khởi động lạnh 417 ms trên emulator. Bản debug tên "Exam Suite Debug" để không trùng biểu tượng và mục "Mở bằng" với bản
+  phát hành trên cùng máy.
+- 2026-10-22, A4, tài liệu: CHANGELOG và thông báo bên thứ ba của Android nằm trong `android/` (file ở gốc repo đổi mức kiểm
+  của `local/verify` sang full; thông báo gốc dành cho bản macOS và `make_dmg.sh` kiểm). Thư viện trong APK đều Apache-2.0.
+- Còn lại sau A4 (không chặn GA3): `.broken-*` chưa tự dọn (A2 N6, cần quyết định giữ bao lâu); thông báo `liveRegion` và
+  rà TalkBack sâu ở B3.
+
 ## Validation
 
 A0:
@@ -353,6 +386,18 @@ A3a:
   `BackgroundFlowTest` (luồng 3), `PlatformTest` (2 ca).
 - Bằng chứng merge: check `android` (CI), `local/verify-android`, `local/verify` mức none; PR thường (không chạm vùng rủi ro
   cao), người duyệt diff.
+
+GA2 (2026-10-22): Nt0 cài APK debug của `main` 3612c41 lên **Samsung Galaxy S24+**, nhận `.exam` qua **WhatsApp**, mở
+bằng app và làm trọn đề: chức năng đạt, không báo lỗi.
+
+A4 (PR này):
+
+- `:app` 60 ca JVM (thêm `PaletteContrastTest` 8); `:core` 227 ca (thêm 2: dấu vân tay của phiên tính một lần và phiên
+  dở lưu đúng chúng; `ReviewItems` dùng dấu vân tay đưa vào); `:data` vẫn đạt; `check_android.sh` đạt (lint, so ảnh).
+- Đề chuẩn trên emulator: mọi mục đo được trong ngân sách (bảng ở notes); bản release ký bằng khoá thử, cài và mở được
+  trên emulator (khoá thử và APK đã xoá).
+- Bằng chứng merge: check `android` (CI), `local/verify-android`, `local/verify` mức none; review độc lập vì chạm `:core`
+  (`QuestionFingerprint`, `ExamSession`, `ReviewItems`) và `ExamLibrary`.
 
 ## Result
 
