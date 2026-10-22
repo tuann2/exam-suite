@@ -106,8 +106,9 @@ class ExamSession private constructor(
 
     /**
      * Dấu vân tay (`QuestionFingerprint`) các câu của phiên theo id, tính một lần vì đề không đổi trong phiên: phiên dở,
-     * payload lần thi và Xem lại dùng chung. Đề 2.000 câu mất cỡ 0,2 s trên điện thoại, nên app gọi trước trên luồng nền
-     * (an toàn giữa các luồng).
+     * payload lần thi và Xem lại dùng chung. Đề 2.000 câu mất vài trăm ms (emulator, bản debug), nên app gọi trước trên
+     * luồng nền: thuộc tính này (chỉ đọc đề, không đọc trạng thái phiên) an toàn giữa các luồng, phần còn lại của phiên thì
+     * không.
      */
     val fingerprints: Map<UUID, String> by lazy {
         paper.items.associate { it.questionId to QuestionFingerprint.fingerprint(question(it)) }

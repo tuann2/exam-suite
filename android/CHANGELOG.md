@@ -16,7 +16,7 @@ qua WhatsApp) ở cổng GA2: không có lỗi.
 - **Thư viện** dạng danh sách: tìm (không dấu), sắp xếp, Xoá khỏi thư viện có Hoàn tác, hai đề mẫu kèm dải chào mừng,
   Lịch sử thi và Kết quả của lần thi cũ.
 - **Vào đề**: mở `.exam` từ app khác (Zalo, WhatsApp, Drive, File của bạn… qua Mở bằng hay Chia sẻ), nút Thêm đề; mở
-  lại đề đã có thì hỏi **Cập nhật đề** (giữ lịch sử thi). Đề được sao chép vào app.
+  lại cùng đề (cùng mã định danh trong file) thì hỏi **Cập nhật đề** (giữ lịch sử thi). Đề được sao chép vào app.
 - **Trước khi thi, Làm bài, Rà soát & nộp, Kết quả, Xem lại bài, Luyện lại câu sai, Làm lại** theo đúng quy tắc của bản
   macOS (chấm điểm, chọn câu có seed, `hideAnswers`, câu đã sửa sau lần thi, Kiểm tra đáp án ở Luyện tập, đánh dấu câu,
   bảng câu hỏi, đồng hồ và cảnh báo 5/1 phút, so với lần trước, phần yếu nhất, bộ lọc của Xem lại). Lõi Kotlin cùng kết
@@ -27,6 +27,6 @@ qua WhatsApp) ở cổng GA2: không có lỗi.
 - Tiếng Việt và tiếng Anh (theo ngôn ngữ của điện thoại, hoặc riêng cho app từ Android 13); sáng/tối theo hệ thống; cỡ
   chữ theo cài đặt của điện thoại tới 150%; TalkBack đọc được các điều khiển; màu Đúng/Sai/cảnh báo cùng bảng màu đạt
   tương phản của bản macOS.
-- Đề 2.000 câu có ảnh: thêm đề, Bắt đầu, đổi câu, nộp, mở lần thi cũ trong ngân sách của large-exams.md (số đo:
-  `docs/notes/android-measurements.md`).
+- Đề 2.000 câu có ảnh: thêm đề, Bắt đầu, đổi câu, nộp, mở lần thi cũ trong ngân sách của large-exams.md khi đo trên
+  emulator với bản debug; nộp bài và ra khỏi app không chặn giao diện (số đo: `docs/notes/android-measurements.md`).
 - Dữ liệu chỉ nằm trong app trên máy: không sao lưu lên đám mây, không chuyển sang máy mới.

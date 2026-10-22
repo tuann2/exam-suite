@@ -20,13 +20,14 @@ import kotlin.math.roundToInt
 class PaletteContrastTest {
     private val themes = listOf(false, true)
 
-    /** Nền mà chữ, biểu tượng màu của bảng đặt lên: màn, bảng kéo lên (bảng câu hỏi), thanh trên khi cuộn, thanh dưới. */
+    /** Nền mà chữ, biểu tượng màu của bảng đặt lên: màn, bảng kéo lên, thanh trên khi cuộn, thanh dưới, hộp thoại. */
     private fun backgrounds(scheme: ColorScheme) = mapOf(
         "background" to scheme.background,
         "surface" to scheme.surface,
         "surfaceContainerLow (bảng kéo lên)" to scheme.surfaceContainerLow,
         "surfaceContainer (thanh trên khi cuộn)" to scheme.surfaceContainer,
         "thanh dưới (tonalElevation 3dp)" to scheme.surfaceColorAtElevation(3.dp),
+        "surfaceContainerHigh (hộp thoại: nút chữ teal)" to scheme.surfaceContainerHigh,
     )
 
     /** Màu dùng cho chữ nhỏ: "Bạn chọn", nhãn Đề mẫu (teal), "Đúng", "Sai", "Đã đánh dấu", "Phần yếu nhất", đồng hồ. */

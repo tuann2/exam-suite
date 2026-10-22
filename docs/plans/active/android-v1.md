@@ -76,7 +76,8 @@ thuộc đã merge; không xếp chồng quá một tầng.
       `:data`: review độc lập); ký bản release bằng keystore ngoài repo, `versionName` 0.1.0; tên "Exam Suite Debug" cho
       bản debug; `android/CHANGELOG.md`, `android/THIRD_PARTY_NOTICES.md`, `docs/install-android.md`,
       `docs/process/android-release.md`, `docs/notes/android-measurements.md`.
-- [ ] Cổng GA3: Nt0 tạo keystore, đóng APK release, cài và dùng thử trên điện thoại; đo đề chuẩn trên máy thật.
+- [ ] Cổng GA3: Nt0 tạo keystore, đóng APK release, cài và dùng thử trên điện thoại (kể cả rà nhanh TalkBack trên Thư
+      viện, Trước khi thi, Làm bài, Kết quả); đo đề chuẩn trên máy thật.
 
 ## Decisions
 
@@ -329,8 +330,28 @@ thuộc đã merge; không xếp chồng quá một tầng.
   tính tới ba lần trên luồng giao diện khi nộp và một lần khi xuống nền. Sửa: `ExamSession.fingerprints` (lazy, an toàn
   giữa luồng) dùng chung cho phiên dở, payload, khôi phục; `ReviewItems` nhận dấu vân tay đã tính (mặc định tự tính như
   trước); hex tự dựng thay `String.format`; `ExamLibrary` mã hoá/giải mã lần thi và phiên dở trên `Dispatchers.Default`;
-  app tính dấu vân tay trên nền lúc Bắt đầu, khôi phục phiên dở và dựng Kết quả lần thi cũ trên nền. Kết quả dấu vân tay
-  không đổi (vector `fixtures/vectors/question-fingerprints.json`). Chạm `:core`, `:data`: review độc lập.
+  app tính dấu vân tay trên nền ngay sau khi màn làm bài hiện, khôi phục phiên dở và dựng Kết quả lần thi cũ trên nền.
+  Kết quả dấu vân tay không đổi (vector `fixtures/vectors/question-fingerprints.json`). Chạm `:core`, `:data`: review độc
+  lập.
+- 2026-10-22, A4, review độc lập PR #6 (phiên agent mới): **APPROVE**, không lỗi chặn. Đã làm trong PR:
+  - N1: tính dấu vân tay trước khi hiện màn làm bài kéo dài khoảng giữa lúc đồng hồ chạy và lúc màn làm bài nhận được
+    ON_STOP. Dời việc tính ra sau khi hiện (nền); đóng Trước khi thi trong lúc chờ đọc đề thì không bắt đầu; app đã xuống
+    nền khi màn làm bài vừa tạo (Activity không ở giữa ON_START và ON_STOP, `MainActivity` báo `AppModel`) thì tạm dừng và
+    lưu ngay. Hai khoảng này có từ A3a (chờ đọc đề), PR này đóng luôn.
+  - N2: `ExamLibrary.saveAttempt` chỉ đọc phiên trên luồng gọi (dựng payload ở đó), chỉ mã hoá trên nền; KDoc của
+    `ExamSession.fingerprints` ghi rõ chỉ thuộc tính này an toàn giữa luồng.
+  - N3: tham số của `ReviewItems` đổi tên `fingerprintsOfExam`, KDoc cảnh báo đưa dấu vân tay của bản đề khác vào sẽ làm sai
+    quy tắc câu đã sửa; test dùng dấu vân tay tính từ chính đề.
+  - N4: cấu hình ký báo lỗi rõ khi `EXAMSUITE_ANDROID_SIGNING` trỏ tới file không có hay file thiếu khoá.
+  - N5: `app.ready` tính từ lúc yêu cầu tạo tiến trình (Android 13+), một lần mỗi tiến trình.
+  - N6, N7, N8, N9: sửa câu chữ của notes (cột ngân sách từng dòng, số của từng lượt), CHANGELOG, hướng dẫn cài ("Cập nhật
+    đề" theo mã định danh của đề, không phải ô Mã đề), quy trình phát hành (`local/verify`, `mkdir -p dist`).
+  - N10: Apache-2.0 đòi người nhận có giấy phép: APK gửi kèm `LICENSE.txt`, `NOTICE.txt`, `THIRD_PARTY_NOTICES.txt` (như
+    DMG của macOS, ADR 0001), hướng dẫn cài có mục Giấy phép.
+  - N11: AGENTS.md thêm tài liệu Android mới và quy tắc agent không đọc keystore, file mật khẩu ký, không đóng APK release
+    ký thật, không xoá dữ liệu bản debug trên điện thoại của Nt0; rà nhanh TalkBack bốn màn chính đưa vào cổng GA3 (nhãn
+    thiếu trên các màn ba luồng Compose đi qua đã do `enableAccessibilityChecks()` kiểm).
+  - N12: test tương phản thêm nền hộp thoại (`surfaceContainerHigh`, nút chữ teal).
 - 2026-10-22, A4, cách đo: lượt đi qua đề chuẩn bằng test Compose **tạm, không commit** (một lần mở app nữa trái quy tắc 3
   của plan Phần 4, và cần file đề 60 MB), chạy bằng `am instrument` không qua Orchestrator; trên điện thoại cùng lượt đó
   hoặc làm tay theo mô tả ở notes. Nhật ký `ExamSuiteTiming` chỉ bản debug (cờ `FLAG_DEBUGGABLE`).
@@ -394,8 +415,9 @@ A4 (PR này):
 
 - `:app` 60 ca JVM (thêm `PaletteContrastTest` 8); `:core` 227 ca (thêm 2: dấu vân tay của phiên tính một lần và phiên
   dở lưu đúng chúng; `ReviewItems` dùng dấu vân tay đưa vào); `:data` vẫn đạt; `check_android.sh` đạt (lint, so ảnh).
-- Đề chuẩn trên emulator: mọi mục đo được trong ngân sách (bảng ở notes); bản release ký bằng khoá thử, cài và mở được
-  trên emulator (khoá thử và APK đã xoá).
+- Đề chuẩn trên emulator, bản debug (bảng ở notes): các mục đo được trong ngân sách, trừ `app.ready` (1.156 ms so với
+  1.000 ms) chưa đại diện (lần mở đầu tạo đề mẫu, tiến trình do test khởi động; bản phát hành mở lạnh 417 ms), đo lại trên
+  máy thật. Bản release ký bằng khoá thử, cài và mở được trên emulator (khoá thử và APK đã xoá).
 - Bằng chứng merge: check `android` (CI), `local/verify-android`, `local/verify` mức none; review độc lập vì chạm `:core`
   (`QuestionFingerprint`, `ExamSession`, `ReviewItems`) và `ExamLibrary`.
 

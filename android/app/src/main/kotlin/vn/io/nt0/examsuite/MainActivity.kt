@@ -27,6 +27,16 @@ class MainActivity : ComponentActivity() {
         setContent { ExamSuiteTheme { AppRoot(model) { picker.launch(arrayOf("*/*")) } } }
     }
 
+    override fun onStart() {
+        super.onStart()
+        model.inForeground = true
+    }
+
+    override fun onStop() {
+        super.onStop()
+        if (!isChangingConfigurations) model.inForeground = false
+    }
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         incomingUri(intent)?.let(model::receive)

@@ -55,8 +55,11 @@ data class ReviewDetail(
 class ReviewItems(
     private val payload: AttemptPayload,
     exam: Exam,
-    /** Dấu vân tay đã tính của câu trong `exam` (phiên vừa nộp: `ExamSession.fingerprints`); thiếu câu nào thì tính. */
-    currentFingerprints: Map<UUID, String> = emptyMap(),
+    /**
+     * Dấu vân tay đã tính **của chính `exam` này** (phiên vừa nộp: `ExamSession.fingerprints` của phiên có `exam` đó);
+     * thiếu câu nào thì tự tính. Đưa dấu vân tay của bản đề khác vào thì câu đã sửa thành không đổi (sai phương án 13, 18).
+     */
+    fingerprintsOfExam: Map<UUID, String> = emptyMap(),
 ) {
     val answersHidden: Boolean = exam.hideAnswers
 
@@ -68,7 +71,7 @@ class ReviewItems(
         val question = questions[item.questionId]
         when {
             question == null -> QuestionChange.DELETED
-            (currentFingerprints[item.questionId] ?: QuestionFingerprint.fingerprint(question)) == payload.fingerprints[item.questionId] ->
+            (fingerprintsOfExam[item.questionId] ?: QuestionFingerprint.fingerprint(question)) == payload.fingerprints[item.questionId] ->
                 QuestionChange.UNCHANGED
             else -> QuestionChange.EDITED
         }

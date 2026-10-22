@@ -28,8 +28,8 @@ Tên các mục dưới đây theo Samsung (One UI) tiếng Việt; máy hãng k
 - Nhận file `.exam` trong Zalo, WhatsApp, Drive…: chạm vào file › **Mở bằng** › **Exam Suite**. Đề được thêm vào Thư
   viện và mở luôn màn Trước khi thi.
 - Hoặc trong app: **Thêm đề** rồi chọn file `.exam` trong máy.
-- File cùng đề (cùng mã đề bên trong) đã có trong Thư viện thì app hỏi **Cập nhật đề**: lịch sử thi giữ lại; bài đang
-  làm dở của đề đó bị bỏ.
+- File của một đề đã có trong Thư viện (cùng mã định danh mà app soạn đề ghi trong file, không phải ô Mã đề; thường là
+  bản mới của đề đó) thì app hỏi **Cập nhật đề**: lịch sử thi giữ lại; bài đang làm dở của đề đó bị bỏ.
 
 ## Làm bài trên điện thoại
 
@@ -56,6 +56,12 @@ lưu lên đám mây, không chuyển sang điện thoại mới. Gỡ app, xoá
 
 Nhấn giữ biểu tượng Exam Suite › **Gỡ cài đặt** (Uninstall), hoặc **Cài đặt › Ứng dụng › Exam Suite › Gỡ cài đặt**.
 Mọi dữ liệu của app bị xoá cùng.
+
+## Giấy phép
+
+Exam Suite là phần mềm mã nguồn mở theo giấy phép Apache-2.0 (© 2026 Nt0). Cùng file APK, Nt0 gửi kèm `LICENSE.txt`
+(giấy phép), `NOTICE.txt` và `THIRD_PARTY_NOTICES.txt` (thư viện đi kèm app, đều Apache-2.0); bản gốc ở
+https://github.com/tuann2/exam-suite (`LICENSE`, `NOTICE`, `android/THIRD_PARTY_NOTICES.md`).
 
 ## Báo lỗi
 

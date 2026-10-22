@@ -6,13 +6,19 @@ plugins {
     alias(libs.plugins.compose.screenshot)
 }
 
-// Ký bản phát hành bằng keystore của Nt0, giữ ngoài repo (plan-android-v1.md A4; docs/install-android.md): file thuộc
+// Ký bản phát hành bằng keystore của Nt0, giữ ngoài repo (plan-android-v1.md A4; docs/process/android-release.md): file thuộc
 // tính `~/.config/exam-suite/android-signing.properties` (hoặc đường dẫn trong biến EXAMSUITE_ANDROID_SIGNING) có
 // storeFile, storePassword, keyAlias, keyPassword. Không có file thì bản release không được ký (CI không build release).
-val releaseSigning: Properties? = (System.getenv("EXAMSUITE_ANDROID_SIGNING")?.let(::File)
-    ?: File(System.getProperty("user.home"), ".config/exam-suite/android-signing.properties"))
-    .takeIf { it.isFile }
-    ?.let { file -> Properties().apply { file.inputStream().use(::load) } }
+val releaseSigning: Properties? = run {
+    val explicit = System.getenv("EXAMSUITE_ANDROID_SIGNING")?.let(::File)
+    if (explicit != null && !explicit.isFile) error("EXAMSUITE_ANDROID_SIGNING trỏ tới file không có: $explicit")
+    val file = (explicit ?: File(System.getProperty("user.home"), ".config/exam-suite/android-signing.properties"))
+        .takeIf { it.isFile } ?: return@run null
+    Properties().apply { file.inputStream().use(::load) }.also { props ->
+        val missing = listOf("storeFile", "storePassword", "keyAlias", "keyPassword").filter { props.getProperty(it).isNullOrBlank() }
+        if (missing.isNotEmpty()) error("$file thiếu ${missing.joinToString()} (docs/process/android-release.md)")
+    }
+}
 
 android {
     namespace = "vn.io.nt0.examsuite"
