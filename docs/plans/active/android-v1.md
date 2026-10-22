@@ -51,7 +51,10 @@ thuộc đã merge; không xếp chồng quá một tầng.
 - [x] A0 Chuẩn bị (PR này): ADR 0011, 0012; `mobile.md`; plan này; AGENTS.md, review-and-merge.md (ngoại lệ CI);
       khung Gradle `:core`, `:data`, `:app`, `:lint-rules` (một test mỗi module, luật lint có ba test);
       `android/scripts/check_android.sh`, `check_android_rules.py`; `.github/workflows/android.yml`; spike (Decisions).
-- [ ] A1 Lõi `:core`
+- [x] A1 Lõi `:core` (PR này, rủi ro cao): model, `StrictJson`, giải mã, đọc gói nghiêm, `ExamValidator`, `Scorer`,
+      `ExamComposer` (SplitMix64), `ExamSession` + phiên dở (`snapshot`/`restore`, `SnapshotCodec`), `AttemptPayload`,
+      `QuestionFingerprint`, `ReviewItems`, Markdown cơ bản; oracle chung `fixtures/vectors/`, `fixtures/invalid-json/`,
+      khoá `issueCodes` của `expected-verdicts.json`, test Swift đọc từ đó; 187 ca JUnit (85 ca oracle).
 - [ ] A2 `:data`
 - [ ] A3b Giao diện làm bài (chờ Nt0 chốt mức cỡ chữ, mobile.md Câu hỏi mở)
 - [ ] A3a Thư viện và nối luồng (chờ Nt0 chốt làm đề khác khi có phiên dở); cổng GA2
@@ -105,6 +108,33 @@ thuộc đã merge; không xếp chồng quá một tầng.
 - 2026-10-22, A0: các script macOS không quét `android/` (đã kiểm: `uitest_plan.py` coi file trong `android/` là không
   chạm giao diện, `check_localization.py`, `check_colors.py`, `check_quit_sheets.py`, `check_boundaries.py` chỉ quét mã
   Swift và Package/Apps); kết quả `scripts/check.sh` ghi ở Validation.
+
+- 2026-10-22, A1, đọc zip: **đổi kết luận spike A0** từ `ZipInputStream` sang `java.util.zip.ZipFile`. `ZipFile`
+  đọc mục lục trung tâm như ZIPFoundation của bản macOS, `entries()` liệt kê đủ entry trùng tên (spike A0) nên từ chối
+  được trước khi đọc, và cho đọc một ảnh lúc cần mà không giải nén lại cả gói. `getEntry` lấy entry cuối khi trùng nhưng
+  không bao giờ được gọi trên gói có tên trùng. `ZipFile` không tự so CRC: bộ đọc tự so CRC và kích thước như bản macOS.
+- 2026-10-22, A1, ảnh: bộ đọc kiểm mọi ảnh (tên, kích thước, CRC, trần tổng) lúc nhập đề nhưng **không giữ ảnh trong bộ
+  nhớ** (`ExamPackage.mediaPaths`; app đọc bằng `readMedia` từ file đề đã sao chép vào app, mobile.md). Kết luận nhận/từ
+  chối giữ như bản macOS.
+- 2026-10-22, A1, khác biệt đã biết: `ZipFile` không cho biết entry là symlink nên entry symlink được đọc như file thường
+  (nội dung là chữ của đường dẫn đích, không theo liên kết); bản macOS bỏ qua chúng. Chỉ khác ở gói cố tình đặt symlink tên
+  `exam.json` hay tên ảnh hợp lệ, cả hai bản đều không mở được đề đúng hoặc không hiện được ảnh đó.
+- 2026-10-22, A1, giải mã: bộ phân tích JSON riêng (`StrictJson`) dựng cây theo đúng cách `JSONSerialization` nhận
+  (đối chiếu bằng 35 ca `fixtures/invalid-json`); số nguyên như `JSONDecoder` (thăm dò trên macOS): chữ số thuần đọc
+  thành Int64, tràn là lỗi; có `.`/`e` thì qua Double, nhận nếu là số nguyên trong Int64 (`1.0`, `5e1` hợp lệ; `70.5`
+  lỗi); UUID đúng 8-4-4-4-12 (Swift không nhận `1-1-1-1-1` như `UUID.fromString`). Số nguyên của đề giữ kiểu `Long`
+  để kiểm đề báo đúng giá trị ngoài khoảng như bản macOS.
+- 2026-10-22, A1, phiên dở (Q7): `PauseReason.BACKGROUND` mới. Khôi phục: đang làm hay rà soát chưa khoá → Tạm dừng
+  (lý do xuống nền), thời gian đã làm như lúc chụp; đang tạm dừng, hết giờ, rà soát khoá → giữ nguyên trạng thái; cảnh báo
+  đã phát và sự kiện chờ giữ lại. Đề đổi (id, câu, lựa chọn) hay dữ liệu mâu thuẫn → `InvalidSnapshot`, app bỏ phiên dở.
+  `SnapshotCodec` có `draftVersion`; A2 lưu chuỗi này.
+- 2026-10-22, A1, payload (Q11): `AttemptPayload` JSON riêng của Android, cùng nội dung và cùng luật kiểm nhất quán với
+  `AttemptRecord`; JSON mẫu cố định `android/core/src/test/resources/attempt-payload-v1.json`.
+- 2026-10-22, A1, oracle: bảng "fixture sai nào ra mã vấn đề nào" chuyển từ test Swift vào khoá `issueCodes` của
+  `fixtures/expected-verdicts.json` (quy tắc 4: oracle chung thay ca inline); script Python bỏ qua khoá này. Vector
+  SplitMix64, chọn câu, dấu vân tay và ca JSON đọc nghiêm cũng chuyển từ test Swift ra `fixtures/`; giá trị không đổi.
+- 2026-10-22, A1: `ReviewItems` là nơi duy nhất của luật Xem lại (bộ lọc, `hideAnswers`, câu đã sửa/xoá, mức xem lại
+  của PDF v1.1), không chứa chữ giao diện. `fixtures/large-exam.digest` chưa dùng ở Kotlin: đo đề chuẩn ở A4.
 
 ## Validation
 
