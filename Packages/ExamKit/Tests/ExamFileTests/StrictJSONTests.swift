@@ -40,23 +40,10 @@ private func pack(_ json: Data) throws -> Data {
     try Zip.make([("exam.json", json)])
 }
 
-// Ca đọc nghiêm (khoá trùng, null, dấu phẩy thừa) nằm ở fixtures/invalid-json, dùng chung với lõi Kotlin
-// (SharedInvalidJSONTests). Ở đây chỉ còn test bộ quét và test riêng của Swift.
+// Ca đọc nghiêm (khoá trùng kể cả qua escape và lồng nhau, null, dấu phẩy thừa kể cả có khoảng trắng) nằm ở
+// fixtures/invalid-json, dùng chung với lõi Kotlin (SharedInvalidJSONTests). Ở đây chỉ còn test riêng của Swift.
 @Suite("ExamPackageReader: khoá trùng trong JSON")
 struct DuplicateJSONKeyTests {
-    @Test("Bộ quét: cặp surrogate, escape trong khoá (\\\", \\/, hex hoa/thường), dấu ngoặc trong chuỗi")
-    func scannerEscapes() {
-        let json = #"""
-        {"\ud83d\ude00": 1, "😀": 2,
-         "a\"b": "}", "a\u0022b": "]",
-         "x": {"k": "\\", "k": [1, {"k": 1}]},
-         "list": [{"q": 1}, {"q": 2, "q": 3}, [], {"q": null}],
-         "\u006A": 1, "\u006a": 2, "j": 3,
-         "a\/b": 1, "a/b": 2}
-        """#
-        #expect(StrictJSON.duplicateKeyPaths(in: Data(json.utf8)) == ["😀", "a\"b", "x.k", "list[1].q", "j", "a/b"])
-    }
-
     @Test("Không báo nhầm: đề mẫu và cùng khoá ở các object khác nhau", arguments: ["kien-thuc-chung", "toi-thieu"])
     func noFalsePositives(name: String) throws {
         #expect(StrictJSON.duplicateKeyPaths(in: try RepoPaths.examJSON(name)).isEmpty)
@@ -95,17 +82,6 @@ struct NullValueTests {
 
 @Suite("ExamPackageReader: dấu phẩy thừa")
 struct TrailingCommaTests {
-    @Test("Bộ quét: dấu phẩy trong chuỗi không tính; khoảng trắng giữa dấu phẩy và dấu đóng vẫn tính")
-    func scanner() {
-        let lf = String(UnicodeScalar(UInt8(10)))
-        let cr = String(UnicodeScalar(UInt8(13)))
-        let tab = String(UnicodeScalar(UInt8(9)))
-        #expect(StrictJSON.scan(Data(#"{"a": ",}", "b": [",]", 1]}"#.utf8)).trailingCommas.isEmpty)
-        let spaced = #"{"a": [1,"# + lf + tab + #" ], "b": {"c": 1 ,"# + cr + lf + "}}"
-        #expect(StrictJSON.scan(Data(spaced.utf8)).trailingCommas == ["a", "b"])
-        #expect(StrictJSON.scan(Data(#"[[1,],{"x":[],},]"#.utf8)).trailingCommas == ["[0]", "[1]", StrictJSON.rootName])
-    }
-
     @Test("Đề mẫu không có dấu phẩy thừa hay khoá trùng", arguments: ["kien-thuc-chung", "toi-thieu", "bien-khoang-trang"])
     func samples(name: String) throws {
         #expect(StrictJSON.scan(try RepoPaths.examJSON(name)) == StrictJSON.ScanReport())

@@ -4,6 +4,7 @@ import vn.io.nt0.examsuite.core.composer.CompositionOptions
 import vn.io.nt0.examsuite.core.composer.ExamPaper
 import vn.io.nt0.examsuite.core.composer.PaperItem
 import vn.io.nt0.examsuite.core.composer.QuestionSelection
+import vn.io.nt0.examsuite.core.file.QuestionFingerprint
 import vn.io.nt0.examsuite.core.model.Exam
 import vn.io.nt0.examsuite.core.model.OptionId
 import vn.io.nt0.examsuite.core.model.Question
@@ -55,6 +56,11 @@ data class SessionSnapshot(
     val phaseBeforePause: SessionPhase?,
     val issuedWarnings: Set<Int>,
     val pendingEvents: List<SessionEvent>,
+    /**
+     * Dấu vân tay các câu của đề đã tạo lúc chụp (`QuestionFingerprint`). Đề được Cập nhật mà câu đã sửa thì không khôi
+     * phục: mã lựa chọn đi theo vị trí nên đáp án cũ có thể trỏ nhầm (cùng lý do với exam-taking.md phương án 13).
+     */
+    val fingerprints: Map<UUID, String>,
 )
 
 /**
@@ -266,6 +272,7 @@ class ExamSession private constructor(
             startedAt = startedAt, phase = s.phase, currentIndex = s.currentIndex, answers = s.answers, flagged = s.flagged,
             checkedQuestionIds = s.checkedQuestionIds, pauseReason = s.pauseReason, elapsedSeconds = elapsedAt(t),
             phaseBeforePause = s.phaseBeforePause, issuedWarnings = s.issuedWarnings, pendingEvents = s.pendingEvents,
+            fingerprints = paper.items.associate { it.questionId to QuestionFingerprint.fingerprint(question(it)) },
         )
     }
 
@@ -377,8 +384,8 @@ class ExamSession private constructor(
         /**
          * Khôi phục phiên dở (mobile.md, Q7): phiên đang chạy (làm bài, rà soát chưa khoá) về **Tạm dừng** với lý do
          * `BACKGROUND`, đúng câu, đúng đáp án, thời gian đã làm như lúc chụp; phiên đang tạm dừng, hết giờ hay rà soát khoá
-         * giữ nguyên trạng thái. Đề phải là đề của phiên (cùng id, mọi câu còn đó, lựa chọn còn đó); không thì
-         * `InvalidSnapshot` và app bỏ phiên dở.
+         * giữ nguyên trạng thái. Đề phải là đề của phiên (cùng id, mọi câu còn đó và không sửa, so bằng dấu vân tay) và
+         * snapshot phải nhất quán; không thì `InvalidSnapshot` và app bỏ phiên dở.
          */
         fun restore(exam: Exam, snapshot: SessionSnapshot, clock: SessionClock): ExamSession {
             fun invalid(reason: String): Nothing = throw SessionException.InvalidSnapshot(reason)
@@ -404,6 +411,28 @@ class ExamSession private constructor(
             if (!used.keys.containsAll(snapshot.flagged) || !used.keys.containsAll(snapshot.checkedQuestionIds)) invalid("câu ngoài đề")
             val limit = snapshot.timeLimitMinutes?.let { it * 60.0 }
             if (snapshot.elapsedSeconds < 0 || (limit != null && snapshot.elapsedSeconds > limit)) invalid("thời gian đã làm sai")
+            // Trạng thái nhất quán (review độc lập PR #2): mỗi điều dưới đây phiên thật luôn thoả.
+            val phase = snapshot.phase
+            val stopped = phase == SessionPhase.TimeUp || phase == SessionPhase.Reviewing(true)
+            if (phase == SessionPhase.Paused) {
+                if (snapshot.pauseReason == null) invalid("tạm dừng mà không có lý do")
+                if (snapshot.phaseBeforePause != SessionPhase.InProgress && snapshot.phaseBeforePause != SessionPhase.Reviewing(false)) {
+                    invalid("trạng thái trước khi tạm dừng sai")
+                }
+            } else if (snapshot.pauseReason != null || snapshot.phaseBeforePause != null) {
+                invalid("có lý do tạm dừng mà không tạm dừng")
+            }
+            if (limit == null) {
+                if (stopped) invalid("Luyện tập không hết giờ")
+                if (snapshot.issuedWarnings.isNotEmpty() || snapshot.pendingEvents.isNotEmpty()) invalid("Luyện tập không có cảnh báo")
+                if (!snapshot.answers.keys.containsAll(snapshot.checkedQuestionIds)) invalid("câu đã Kiểm tra đáp án phải có đáp án")
+            } else {
+                if (stopped != (snapshot.elapsedSeconds == limit)) invalid("hết giờ không khớp thời gian đã làm")
+                if (snapshot.checkedQuestionIds.isNotEmpty()) invalid("Thi không có Kiểm tra đáp án")
+                if (snapshot.issuedWarnings.any { it !in WARNING_MINUTES || limit <= it * 60.0 }) invalid("cảnh báo sai")
+            }
+            val current = snapshot.paper.items.associate { it.questionId to QuestionFingerprint.fingerprint(used.getValue(it.questionId)) }
+            if (snapshot.fingerprints != current) invalid("câu đã sửa từ lúc chụp phiên dở")
 
             val running = clockRuns(snapshot.phase)
             val state = SessionState(

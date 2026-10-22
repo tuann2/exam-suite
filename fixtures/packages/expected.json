@@ -1,0 +1,13 @@
+{
+  "description": "Gói .exam nhị phân dùng chung cho lõi Swift (ExamPackageReader, SharedPackageTests) và lõi Kotlin (SharedOracleTest): cả hai phải đọc nghiêm được (error null) hoặc từ chối đúng lỗi. pack-exam-py: do scripts/pack_exam.py đóng từ fixtures/exams/kien-thuc-chung. non-utf8-junk-name: cùng đề, thêm entry lạ có tên byte 0x82 0xFF không cờ UTF-8 (zip tạo trên Windows); ZIPFoundation đọc tên bằng CP437 và bỏ qua entry lạ (exam-format.md, mục Gói).",
+  "cases": {
+    "non-utf8-junk-name": {
+      "error": null,
+      "questions": 5
+    },
+    "pack-exam-py": {
+      "error": null,
+      "questions": 5
+    }
+  }
+}

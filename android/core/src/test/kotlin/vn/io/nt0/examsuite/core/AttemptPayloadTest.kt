@@ -98,4 +98,18 @@ class AttemptPayloadTest {
         assertEquals(payload, AttemptPayload.decode(payload.encode()))
         assertEquals(20, payload.timeLimitMinutes)
     }
+
+    @Test
+    fun `chặt như JSONDecoder, khoá UUID trùng khác hoa thường, seed có dấu cộng, số hay Bool viết trong ngoặc kép thì Malformed`() {
+        val answered = AttemptSamples.payload().answers.keys.first().toString()
+        for ((old, new) in listOf(
+            "\"$answered\":" to "\"${answered.uppercase()}\":[\"A\"],\"$answered\":",
+            "\"seed\":\"18446744073709551557\"" to "\"seed\":\"+18446744073709551557\"",
+            "\"total\":5" to "\"total\":\"5\"",
+            "\"passed\":" to "\"passed\":\"x\",\"_\":",
+        )) {
+            check(golden.contains(old)) { old }
+            assertThrows(AttemptPayloadException.Malformed::class.java, { AttemptPayload.decode(golden.replace(old, new)) }, new)
+        }
+    }
 }

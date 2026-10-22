@@ -100,7 +100,12 @@ class ReviewItems(private val payload: AttemptPayload, exam: Exam) {
 
     /** Dòng đầu của nội dung câu (cho danh sách); null nếu câu đã xoá. */
     fun preview(index: Int): String? =
-        questions[payload.paper.items[index].questionId]?.text?.let { text -> text.lineSequence().firstOrNull { it.isNotEmpty() } ?: "" }
+        questions[payload.paper.items[index].questionId]?.text?.let { text -> text.split(*NEWLINES).firstOrNull { it.isNotEmpty() } ?: "" }
+
+    private companion object {
+        /** Ký tự xuống dòng như `Character.isNewline` của Swift: LF, VT, FF, CR, NEL, LS, PS. */
+        val NEWLINES = charArrayOf('\n', '\u000B', '\u000C', '\r', '\u0085', '\u2028', '\u2029')
+    }
 
     fun detail(index: Int): ReviewDetail {
         val item = payload.paper.items[index]

@@ -105,4 +105,42 @@ class SnapshotTest {
             assertThrows(SnapshotCodec.DecodeException::class.java, { SnapshotCodec.decode(bad) }, bad)
         }
     }
+
+    @Test
+    fun `câu đã sửa từ lúc chụp thì không khôi phục, đáp án cũ có thể trỏ nhầm`() {
+        val s = start()
+        s.select(s.currentItem.optionOrder[0])
+        val snap = s.snapshot()
+        val edited = exam.copy(sections = exam.sections.map { sec -> sec.copy(questions = sec.questions.map { it.copy(text = it.text + " (sửa)") }) })
+        assertThrows(SessionException.InvalidSnapshot::class.java) { ExamSession.restore(edited, snap, clock) }
+        ExamSession.restore(exam, snap, clock)
+    }
+
+    @Test
+    fun `snapshot mâu thuẫn trạng thái thì InvalidSnapshot`() {
+        val running = start().snapshot()
+        val paused = start().also { it.pause(PauseReason.USER) }.snapshot()
+        val practice = start(SessionMode.PRACTICE).snapshot()
+        val cases = listOf(
+            paused.copy(pauseReason = null),
+            paused.copy(phaseBeforePause = SessionPhase.TimeUp),
+            running.copy(pauseReason = PauseReason.USER),
+            running.copy(phase = SessionPhase.Reviewing(true)),
+            running.copy(phase = SessionPhase.TimeUp, elapsedSeconds = 10.0),
+            practice.copy(phase = SessionPhase.TimeUp),
+            practice.copy(issuedWarnings = setOf(5)),
+            running.copy(checkedQuestionIds = setOf(running.paper.questionIds[0]), answers = mapOf(running.paper.questionIds[0] to setOf(running.paper.items[0].optionOrder[0]))),
+            running.copy(issuedWarnings = setOf(7)),
+        )
+        cases.forEachIndexed { i, bad -> assertThrows(SessionException.InvalidSnapshot::class.java, { ExamSession.restore(exam, bad, clock) }, "ca $i") }
+    }
+
+    @Test
+    fun `JSON phiên dở chặt như payload, seed có dấu cộng, số viết trong ngoặc kép thì DecodeException`() {
+        val text = SnapshotCodec.encode(start().snapshot())
+        for ((old, new) in listOf("\"seed\":\"4\"" to "\"seed\":\"+4\"", "\"currentIndex\":0" to "\"currentIndex\":\"0\"")) {
+            check(text.contains(old)) { old }
+            assertThrows(SnapshotCodec.DecodeException::class.java, { SnapshotCodec.decode(text.replace(old, new)) }, new)
+        }
+    }
 }

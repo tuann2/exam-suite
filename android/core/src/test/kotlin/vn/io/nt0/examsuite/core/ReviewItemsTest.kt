@@ -85,4 +85,13 @@ class ReviewItemsTest {
         assertEquals(payload.result.sections.first { it.sectionId == payload.paper.items[0].sectionId }.title, d.sectionTitle)
         assertEquals(exam.question(ids[0])!!.text.lines().first { it.isNotEmpty() }, r.preview(0))
     }
+
+    @Test
+    fun `dòng xem trước tách theo mọi ký tự xuống dòng như Swift, kể cả U+2028 và NEL`() {
+        for (separator in listOf(Char(0x2028), Char(0x0085), '\r')) {
+            val changed = exam.copy(sections = exam.sections.map { s -> s.copy(questions = s.questions.map { q ->
+                if (q.id == ids[0]) q.copy(text = "Dòng một" + separator + "Dòng hai") else q }) })
+            assertEquals("Dòng một", ReviewItems(payload, changed).preview(0))
+        }
+    }
 }

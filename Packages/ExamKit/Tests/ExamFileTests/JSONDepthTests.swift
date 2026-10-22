@@ -39,6 +39,13 @@ struct JSONDepthTests {
         }
     }
 
+    @Test("Lồng đúng 32 cấp: bản Admin (lenient) đọc được, ra đúng đề toi-thieu")
+    func lenientAcceptsAtLimit() throws {
+        let data = try Zip.make([("exam.json", examWithDeepField(arrays: Self.limit - 1))])
+        let package = try ExamPackageReader.read(data, mode: .lenient)
+        #expect(package.exam == (try ExamJSON.decode(RepoPaths.examJSON("toi-thieu"))))
+    }
+
     @Test("Trần tuỳ chỉnh qua ExamPackageLimits")
     func customLimit() throws {
         let data = try Zip.packFixture("kien-thuc-chung")

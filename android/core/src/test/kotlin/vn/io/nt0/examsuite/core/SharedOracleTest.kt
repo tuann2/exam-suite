@@ -50,6 +50,10 @@ class SharedOracleTest {
 
         @JvmStatic fun compositionIndices() = composerDoc.getValue("compositions").jsonArray.indices.toList()
 
+        private val packagesDoc = Repo.json("packages/expected.json").jsonObject
+
+        @JvmStatic fun packageNames() = packagesDoc.getValue("cases").jsonObject.keys.sorted()
+
         @JvmStatic fun sampleNames() = Repo.samples.list()!!.filter { File(Repo.samples, "$it/exam.json").isFile }.sorted()
 
         fun hex(text: String): ULong = text.removePrefix("0x").toULong(16)
@@ -79,7 +83,10 @@ class SharedOracleTest {
                 JsonProblem.RootNotObject -> "rootNotObject" to null
                 JsonProblem.MissingFormatVersion -> "missingFormatVersion" to null
                 JsonProblem.FormatVersionNotInteger -> "formatVersionNotInteger" to null
-                else -> error.toString() to null
+                is JsonProblem.InvalidValue -> "invalidValue" to listOf(p.path)
+                is JsonProblem.TypeMismatch -> "typeMismatch" to listOf(p.path)
+                is JsonProblem.ValueMissing -> "valueMissing" to listOf(p.path)
+                is JsonProblem.MissingKey -> "missingKey" to listOf(p.path, p.key)
             }
             else -> error.toString() to null
         }
@@ -114,10 +121,12 @@ class SharedOracleTest {
                     strictError is ExamFileError.MissingMedia,
                 "$key: $strictError",
             )
+            // examfile: model giải mã được nên InvalidJson ở đây chỉ có thể là dấu phẩy thừa (như test Swift).
             "examfile" -> assertTrue(
                 strictError is ExamFileError.UnsupportedVersion || strictError is ExamFileError.InvalidVersion ||
                     strictError is ExamFileError.UnknownFields || strictError is ExamFileError.DuplicateJsonKeys ||
-                    strictError is ExamFileError.NullValues || strictError is ExamFileError.InvalidJson,
+                    strictError is ExamFileError.NullValues ||
+                    (strictError is ExamFileError.InvalidJson && strictError.problem is JsonProblem.TrailingCommas),
                 "$key: $strictError",
             )
         }
@@ -173,6 +182,28 @@ class SharedOracleTest {
     fun `mỗi file invalid-json có đúng một dòng kỳ vọng`() {
         val files = File(Repo.fixtures, "invalid-json").list()!!.filter { it.endsWith(".json") && it != "expected.json" }.map { it.removeSuffix(".json") }
         assertEquals(invalidJsonCases().toSet(), files.toSet())
+    }
+
+    // ---------- fixtures/packages ----------
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("packageNames")
+    fun `gói nhị phân dùng chung đọc nghiêm đúng kỳ vọng như lõi Swift`(name: String) {
+        val expected = packagesDoc.getValue("cases").jsonObject.getValue(name).jsonObject
+        val error = expected["error"]?.takeUnless { it is JsonNull }?.jsonPrimitive?.content
+        val result = runCatching { ExamPackageReader.readStrict(File(Repo.fixtures, "packages/$name.exam")) }
+        if (error == null) {
+            val package_ = result.getOrThrow()
+            expected["questions"]?.let { assertEquals(it.jsonPrimitive.int, package_.exam.questionCount, name) }
+        } else {
+            assertTrue(result.isFailure, name)
+        }
+    }
+
+    @Test
+    fun `mỗi gói trong fixtures packages có đúng một dòng kỳ vọng`() {
+        val files = File(Repo.fixtures, "packages").list()!!.filter { it.endsWith(".exam") }.map { it.removeSuffix(".exam") }
+        assertEquals(packageNames().toSet(), files.toSet())
     }
 
     // ---------- fixtures/vectors/composer.json ----------

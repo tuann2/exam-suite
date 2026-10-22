@@ -136,6 +136,29 @@ thuộc đã merge; không xếp chồng quá một tầng.
 - 2026-10-22, A1: `ReviewItems` là nơi duy nhất của luật Xem lại (bộ lọc, `hideAnswers`, câu đã sửa/xoá, mức xem lại
   của PDF v1.1), không chứa chữ giao diện. `fixtures/large-exam.digest` chưa dùng ở Kotlin: đo đề chuẩn ở A4.
 
+- 2026-10-22, A1, review độc lập PR #2 (REQUEST CHANGES, một lỗi chặn), đã sửa trong cùng PR:
+  - **B1 (chặn)**: `ZipFile` mặc định đọc tên entry bằng UTF-8 nên gói có entry lạ mang tên không phải UTF-8 (zip tạo trên
+    Windows) bị từ chối cả gói, bản macOS bỏ qua entry đó. Sửa: tên không cờ UTF-8 đọc bằng CP437 như ZIPFoundation.
+    Oracle nhị phân mới `fixtures/packages/` (gói do `pack_exam.py` đóng, gói có tên entry 0x82 0xFF) cho cả hai lõi.
+  - Số vượt dải Double (`1e309`, số nguyên trên 308 chữ số): Foundation từ chối ngay khi phân tích; Kotlin nay cũng vậy.
+  - `fixtures/invalid-json` thêm 18 ca (số, UUID, kiểu sai, thiếu khoá, khoá trùng lồng nhau, escape của bộ quét, dấu phẩy
+    thừa có khoảng trắng), thay ca inline ở test Swift và Kotlin. Phát hiện: `JSONDecoder` báo "số không vừa Int" với
+    đường dẫn rỗng (`<gốc>`); oracle ghi đúng như vậy, Kotlin báo giống hệt.
+  - Payload và phiên dở chặt như `JSONDecoder`: khoá UUID trùng khác hoa/thường, seed có dấu `+`, số hay Bool viết trong
+    ngoặc kép đều bị từ chối (`StrictPayloadJson`).
+  - `ExamSession.restore` kiểm nhất quán trạng thái, lý do tạm dừng, thời gian, cảnh báo, câu đã Kiểm tra đáp án; phiên dở
+    lưu dấu vân tay câu, câu đã sửa thì không khôi phục (mobile.md Câu hỏi mở).
+  - Lệch nhỏ đã sửa: Σ cuối từ (Swift `lowercased()` luôn ra σ); dòng xem trước tách như `Character.isNewline`.
+  - Test thêm: bảng lệnh × trạng thái (rà soát chưa khoá, hết giờ, rà soát khoá, đã nộp, đang làm); chấm tất cả đúng/sai;
+    nhãn `examfile` chỉ nhận `InvalidJson` khi là dấu phẩy thừa; test Swift khôi phục ý "lenient đọc được đề lồng đúng 32
+    cấp".
+  - Để sau (không chặn): Android 14+ (ART, targetSdk ≥ 34) `ZipFile` từ chối entry tên chứa `..` hoặc bắt đầu bằng `/`
+    (ZipPathValidator) trước khi bộ đọc kịp bỏ qua; A3a gọi `dalvik.system.ZipPathValidator.clearCallback()` lúc mở đề hoặc
+    chép gói qua bộ đọc riêng, kèm một test emulator đọc `fixtures/packages`. Workflow Android chỉ chạy khi PR chạm
+    `android/**` hay `fixtures/**`: đổi lõi Swift ở chỗ oracle chưa phủ không làm CI Kotlin đỏ, nên mọi đổi luật lõi đi
+    qua oracle trước (ADR 0011). JSON mẫu payload phụ thuộc `fixtures/exams/kien-thuc-chung`: sửa fixture đó phải sinh lại
+    JSON mẫu. A2 không thêm lần kiểm thứ ba "đề mẫu không có warning".
+
 ## Validation
 
 A0:
@@ -150,6 +173,14 @@ A0:
 - Repository-required checks: check `android` của `.github/workflows/android.yml` trên SHA cuối; `local/verify-android`
   (`check_android.sh --ui`, PR chạm `android/app/**`); `local/verify` (`scripts/verify_local.sh`, PR chạm tài liệu và
   workflow của repo: UI test macOS bỏ qua theo bảng map).
+
+A1 (PR #2, trên SHA cuối, ghi ở mô tả PR):
+
+- `:core` 214 ca JUnit, 106 ca đọc oracle chung (fixtures/expected-verdicts.json kể cả issueCodes, 53 ca invalid-json, 2 gói
+  nhị phân, 4 vector chọn câu, SplitMix64, dấu vân tay, khoảng trắng, khoá schema, 2 đề mẫu); lõi Swift đọc cùng oracle
+  (`swift test` ExamKit 201 + 129 ca).
+- Review độc lập (phiên agent mới): REQUEST CHANGES, đã sửa (Decisions); re-review trên commit sửa.
+- Bằng chứng merge: check `android` (CI) và `local/verify` trên SHA cuối.
 
 ## Result
 

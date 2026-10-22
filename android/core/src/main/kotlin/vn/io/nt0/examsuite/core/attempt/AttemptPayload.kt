@@ -188,6 +188,12 @@ data class AttemptPayload(
             val v = version?.intOrNull ?: throw AttemptPayloadException.Malformed("thiếu hoặc sai payloadVersion")
             if (v < 1) throw AttemptPayloadException.Malformed("payloadVersion phải ≥ 1, nhận $v")
             if (v > CURRENT_VERSION) throw AttemptPayloadException.UnsupportedVersion(v, CURRENT_VERSION)
+            StrictPayloadJson.problem(
+                json.parseToJsonElement(text),
+                numericKeys = setOf("payloadVersion", "timeLimitMinutes", "count", "total", "correct", "score1000", "percent", "passPercent"),
+                booleanKeys = setOf("shuffleQuestions", "shuffleOptions", "passed"),
+                uuidKeyedMaps = setOf("answers", "outcomes", "fingerprints"),
+            )?.let { malformed(it) }
             val dto = try {
                 json.decodeFromString(PayloadDto.serializer(), text)
             } catch (e: SerializationException) {
@@ -222,7 +228,7 @@ data class AttemptPayload(
                 "questions" -> QuestionSelection.Questions((o.selection.questionIds ?: malformed("thiếu questionIds")).map(::uuid))
                 else -> malformed("kind lạ \"${o.selection.kind}\"")
             }
-            val seed = o.seed.toULongOrNull() ?: malformed("seed phải là số thập phân 64 bit không dấu")
+            val seed = StrictPayloadJson.parseSeed(o.seed) ?: malformed("seed phải là số thập phân 64 bit không dấu")
             val items = dto.paper.items.map { item ->
                 val order = item.optionOrder.map(::option)
                 if (order.toSet().size != order.size) malformed("thứ tự lựa chọn có mã trùng")

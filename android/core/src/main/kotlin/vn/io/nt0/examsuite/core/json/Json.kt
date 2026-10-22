@@ -83,7 +83,8 @@ object StrictJson {
 
     /**
      * Phân tích như `JSONSerialization` của Foundation (đã đối chiếu bằng fixtures/invalid-json): bỏ BOM đầu văn bản;
-     * gốc phải là object hay mảng; từ chối `NaN`/`Infinity`, surrogate lẻ, ký tự điều khiển chưa escape, rác sau gốc;
+     * gốc phải là object hay mảng; từ chối `NaN`/`Infinity`, số vượt dải Double, surrogate lẻ, ký tự điều khiển chưa
+     * escape, rác sau gốc;
      * **nhận** dấu phẩy thừa và khoá trùng nhưng ghi lại. Gọi sau `depthExceeds` (bộ phân tích đệ quy theo độ sâu).
      */
     fun parse(text: String): ParsedJson = Parser(text).run()
@@ -295,7 +296,10 @@ object StrictJson {
                 if (peek()?.isAsciiDigit() != true) fail("số không hợp lệ ở vị trí $start")
                 while (peek()?.isAsciiDigit() == true) pos++
             }
-            return JsonNumber(s.substring(start, pos))
+            val literal = s.substring(start, pos)
+            // Foundation từ chối số vượt dải Double (1e309, số nguyên trên 308 chữ số) ngay khi phân tích.
+            if (literal.toDouble().isInfinite()) fail("số vượt dải Double ở vị trí $start")
+            return JsonNumber(literal)
         }
 
         private fun Char.isAsciiDigit() = this in '0'..'9'

@@ -125,4 +125,12 @@ class ValidatorTest {
         assertTrue(ExamValidator.isValidImagePath("media/" + "a".repeat(64) + ".heic"))
         assertTrue(!ExamValidator.isValidImagePath("media/" + "a".repeat(65) + ".png"))
     }
+
+    @Test
+    fun `tiêu đề phần trùng không phân biệt hoa thường như Swift, Sigma cuối từ đổi thành sigma thường`() {
+        val upper = "Α" + Char(0x03A3)
+        val lower = "α" + Char(0x03C3)
+        val exam = Build.exam(Build.section(1, Build.question(1), title = upper), Build.section(2, Build.question(2), title = lower))
+        assertEquals(listOf(IssueCode.DUPLICATE_SECTION_TITLE), ExamValidator.validate(exam).map { it.code })
+    }
 }

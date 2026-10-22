@@ -128,8 +128,10 @@ internal object ExamDecoder {
 
     fun asLong(value: JsonValue, path: String): Long {
         val literal = (value as? JsonNumber)?.literal ?: throw DecodeException(JsonProblem.TypeMismatch(path, "Int"))
+        // JSONDecoder của Foundation báo "số không vừa Int" với codingPath rỗng (đã đối chiếu, fixtures/invalid-json
+        // pass-percent-*): giữ đúng đường dẫn đó để hai lõi cùng kết luận.
         return integerValue(literal)
-            ?: throw DecodeException(JsonProblem.InvalidValue(path, "số $literal không phải số nguyên Int64"))
+            ?: throw DecodeException(JsonProblem.InvalidValue(StrictJson.ROOT_PATH, "số $literal ở $path không phải số nguyên Int64"))
     }
 
     /** Giá trị số nguyên của chữ số JSON theo quy tắc của `JSONDecoder` (xem tài liệu của kiểu); null nếu không nhận. */

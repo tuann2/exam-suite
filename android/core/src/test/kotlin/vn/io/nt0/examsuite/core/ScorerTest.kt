@@ -119,4 +119,15 @@ class ScorerTest {
         val id = exam.allQuestions[0].id
         assertThrows(ScoringException.DuplicateQuestion::class.java) { Scorer.score(exam, listOf(id, id), emptyMap()) }
     }
+
+    @Test
+    fun `đề mẫu tất cả đúng cho 5 trên 5, 1000, đậu, tất cả sai cho 0, trượt`() {
+        val exam = Repo.exam("kien-thuc-chung")
+        val ids = exam.allQuestions.map { it.id }
+        val right = Scorer.score(exam, ids, exam.allQuestions.associate { it.id to it.correctSet })
+        assertEquals(listOf(5, 1000, 100, true), listOf(right.correct, right.score1000, right.percent, right.passed))
+        val wrong = Scorer.score(exam, ids, exam.allQuestions.associate { q -> q.id to setOf(q.options.map { it.id }.first { it !in q.correctSet }) })
+        assertEquals(listOf(0, 0, false), listOf(wrong.correct, wrong.score1000, wrong.passed))
+        assertTrue(wrong.outcomes.values.all { it == QuestionOutcome.INCORRECT })
+    }
 }

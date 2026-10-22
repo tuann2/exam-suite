@@ -22,7 +22,9 @@ import java.util.zip.ZipFile
  * độ sâu ≤ trần → UTF-8 → phân tích JSON → gốc là object → `formatVersion` → chuyển phiên bản → dấu phẩy thừa → khoá
  * trùng → trường lạ → `null` → giải mã model → kiểm từng ảnh (trần, CRC) → đường dẫn ảnh → ảnh thiếu → kiểm đề.
  *
- * Khác bản macOS: dùng `java.util.zip.ZipFile` (đọc mục lục trung tâm như ZIPFoundation). `ZipFile` không cho biết
+ * Khác bản macOS: dùng `java.util.zip.ZipFile` (đọc mục lục trung tâm như ZIPFoundation, tên không cờ UTF-8 đọc bằng
+ * CP437 như ZIPFoundation). Trên Android 14+ (ART, targetSdk ≥ 34) `ZipFile` còn từ chối entry tên chứa `..` hoặc bắt
+ * đầu bằng `/` (ZipPathValidator) trước khi bộ đọc kịp bỏ qua; app xử lý ở A3a (Decisions). `ZipFile` không cho biết
  * entry là symlink, nên entry symlink được đọc như file thường (nội dung là chữ của đường dẫn đích, không theo liên kết,
  * không chạm hệ thống file); bản macOS bỏ qua chúng. Kết luận chỉ khác ở gói cố tình đặt symlink tên `exam.json` hoặc
  * tên ảnh hợp lệ: cả hai bản đều từ chối hoặc không hiển thị được ảnh đó.
@@ -39,8 +41,15 @@ object ExamPackageReader {
             extract(zip, entry, limits.mediaEntryBytes, Budget(limits.totalUncompressedBytes), keep = true)!!
         }
 
+    /**
+     * Tên entry không có cờ UTF-8 (bit 11) đọc bằng CP437 như ZIPFoundation của bản macOS; tên có cờ đọc bằng UTF-8. Mặc
+     * định UTF-8 của `ZipFile` từ chối cả gói khi một entry lạ (zip tạo trên Windows) có tên không phải UTF-8, trong khi
+     * entry lạ phải được bỏ qua (exam-format.md; review độc lập PR #2, B1; oracle fixtures/packages).
+     */
+    private val legacyNames = java.nio.charset.Charset.forName("IBM437")
+
     private fun openZip(file: File): ZipFile = try {
-        ZipFile(file)
+        ZipFile(file, ZipFile.OPEN_READ, legacyNames)
     } catch (_: IOException) {
         throw ExamFileError.NotAZipArchive
     } catch (_: IllegalArgumentException) {

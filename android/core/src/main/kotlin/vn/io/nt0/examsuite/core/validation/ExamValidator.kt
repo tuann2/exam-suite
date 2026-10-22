@@ -100,7 +100,8 @@ object ExamValidator {
                 add(IssueCode.DUPLICATE_ID, sectionLocation, IssueArguments(text = section.id.toString(), firstLocation = it))
             }
             checkTitle(section.title, sectionLocation, ::add)
-            val key = trimmed(section.title).lowercase()
+            // `lowercase()` của Java đổi Σ cuối từ thành ς; `lowercased()` của Swift luôn ra σ: đổi Σ trước cho khớp.
+            val key = trimmed(section.title).replace('\u03A3', '\u03C3').lowercase()
             if (key.isNotEmpty()) {
                 val first = seenTitles[key]
                 if (first != null) {

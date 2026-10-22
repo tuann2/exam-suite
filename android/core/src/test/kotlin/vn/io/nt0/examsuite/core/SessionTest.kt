@@ -345,4 +345,55 @@ class SessionTest {
         assertEquals(options.copy(seed = 7uL), s.retakeOptions(7uL))
         assertEquals(s.paper, ExamComposer.compose(exam, s.retakeOptions(42uL)))
     }
+
+    // ---------- Bảng lệnh × trạng thái (exam-session.md, mục Lệnh) ----------
+
+    private val everyCommand: List<Pair<String, ExamSession.() -> Unit>> = listOf(
+        "select" to { select(opt('A')) }, "clearAnswer" to { clearAnswer() }, "toggleFlag" to { toggleFlag() },
+        "goTo" to { goTo(0) }, "next" to { next() }, "previous" to { previous() }, "pause" to { pause(PauseReason.USER) },
+        "resume" to { resume() }, "openReview" to { openReview() }, "returnToAttempt" to { returnToAttempt() },
+        "submit" to { submit() },
+    )
+
+    private fun assertAllowed(s: () -> ExamSession, allowed: Set<String>) {
+        for ((name, command) in everyCommand) {
+            val session = s()
+            val before = session.state
+            val result = runCatching { session.command() }
+            if (name in allowed) {
+                assertTrue(result.isSuccess, "$name phải hợp lệ ở ${before.phase}: ${result.exceptionOrNull()}")
+            } else {
+                assertTrue(result.exceptionOrNull() is SessionException.InvalidCommand, "$name phải bị từ chối ở ${before.phase}")
+                assertEquals(before, session.state, "$name bị từ chối mà đổi phiên")
+            }
+        }
+    }
+
+    @Test
+    fun `rà soát chưa khoá chỉ nhận tạm dừng, quay lại làm bài, nộp`() {
+        assertAllowed({ session().also { it.openReview() } }, setOf("pause", "returnToAttempt", "submit"))
+    }
+
+    @Test
+    fun `hết giờ chỉ nhận mở rà soát`() {
+        assertAllowed({ session(minutes = 1).also { clock.advance(61.0); it.tick() } }, setOf("openReview"))
+    }
+
+    @Test
+    fun `rà soát khoá chỉ nhận nộp`() {
+        assertAllowed({ session(minutes = 1).also { clock.advance(61.0); it.tick(); it.openReview() } }, setOf("submit"))
+    }
+
+    @Test
+    fun `sau khi nộp mọi lệnh bị từ chối, kể cả Kiểm tra đáp án`() {
+        assertAllowed({ session().also { it.openReview(); it.submit() } }, emptySet())
+        val p = session(SessionMode.PRACTICE)
+        p.openReview(); p.submit()
+        assertThrows(SessionException.InvalidCommand::class.java) { p.checkAnswer() }
+    }
+
+    @Test
+    fun `đang làm nhận mọi lệnh trừ tiếp tục, quay lại làm bài, nộp`() {
+        assertAllowed({ session() }, everyCommand.map { it.first }.toSet() - setOf("resume", "returnToAttempt", "submit"))
+    }
 }

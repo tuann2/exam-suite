@@ -53,6 +53,7 @@ object SnapshotCodec {
         elapsedSeconds = s.elapsedSeconds,
         issuedWarnings = s.issuedWarnings.sorted(),
         pendingEvents = s.pendingEvents.map { if (it is SessionEvent.Warning) "warning:${it.minutesLeft}" else "timeUp" },
+        fingerprints = s.fingerprints.entries.associate { (id, fp) -> id.toString() to fp }.toSortedMap(),
     ))
 
     fun decode(text: String): SessionSnapshot {
@@ -62,6 +63,12 @@ object SnapshotCodec {
             fail("không phải object JSON")
         } ?: fail("thiếu draftVersion")
         if (version != CURRENT_VERSION) fail("draftVersion $version, app hiểu $CURRENT_VERSION")
+        vn.io.nt0.examsuite.core.attempt.StrictPayloadJson.problem(
+            json.parseToJsonElement(text),
+            numericKeys = setOf("draftVersion", "timeLimitMinutes", "startedAtEpochMillis", "currentIndex", "elapsedSeconds", "count"),
+            booleanKeys = setOf("shuffleQuestions", "shuffleOptions"),
+            uuidKeyedMaps = setOf("answers", "fingerprints"),
+        )?.let { fail(it) }
         val d = try {
             json.decodeFromString(DraftDto.serializer(), text)
         } catch (e: SerializationException) {
@@ -82,7 +89,8 @@ object SnapshotCodec {
             examId = uuid(d.examId),
             paper = ExamPaper(
                 uuid(d.examId),
-                CompositionOptions(selection, d.shuffleQuestions, d.shuffleOptions, d.seed.toULongOrNull() ?: fail("seed sai")),
+                CompositionOptions(selection, d.shuffleQuestions, d.shuffleOptions,
+                    vn.io.nt0.examsuite.core.attempt.StrictPayloadJson.parseSeed(d.seed) ?: fail("seed sai")),
                 d.items.map { PaperItem(uuid(it.questionId), uuid(it.sectionId), letters(it.optionOrder)) },
             ),
             mode = SessionMode.entries.firstOrNull { it.raw == d.mode } ?: fail("mode lạ"),
@@ -98,6 +106,7 @@ object SnapshotCodec {
             elapsedSeconds = d.elapsedSeconds,
             phaseBeforePause = d.phaseBeforePause?.let(::phase),
             issuedWarnings = d.issuedWarnings.toSet(),
+            fingerprints = d.fingerprints.entries.associate { (id, fp) -> uuid(id) to fp },
             pendingEvents = d.pendingEvents.map {
                 when {
                     it == "timeUp" -> SessionEvent.TimeUp
@@ -152,6 +161,7 @@ internal data class DraftDto(
     val elapsedSeconds: Double,
     val issuedWarnings: List<Int>,
     val pendingEvents: List<String>,
+    val fingerprints: Map<String, String>,
 )
 
 @Serializable

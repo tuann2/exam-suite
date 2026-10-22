@@ -1,5 +1,5 @@
 {
-  "description": "Ca exam.json sai cú pháp hoặc sai thứ mà chỉ chế độ đọc nghiêm (bản Học viên) bắt, dùng chung cho lõi Swift (ExamFile, SharedInvalidJSONTests) và lõi Kotlin (android/core). Mỗi file là exam.json của một gói chỉ có file đó. Khoá: tên file không đuôi. error: null = đọc nghiêm được; còn lại là tên lỗi (duplicateJSONKeys, trailingCommas, nullValues, unknownFields kèm paths theo thứ tự báo; tooDeep với trần mặc định 32 cấp; unparsable, notUTF8, rootNotObject, missingFormatVersion, formatVersionNotInteger, invalidVersion). Gốc trong paths là <gốc>.",
+  "description": "Ca exam.json sai cú pháp hoặc sai thứ mà chỉ chế độ đọc nghiêm (bản Học viên) bắt, dùng chung cho lõi Swift (ExamFile, SharedInvalidJSONTests) và lõi Kotlin (android/core). Mỗi file là exam.json của một gói chỉ có file đó. Khoá: tên file không đuôi. error: null = đọc nghiêm được; còn lại là tên lỗi (duplicateJSONKeys, trailingCommas, nullValues, unknownFields kèm paths theo thứ tự báo; tooDeep với trần mặc định 32 cấp; unparsable, notUTF8, rootNotObject, missingFormatVersion, formatVersionNotInteger, invalidVersion; lỗi giải mã model: invalidValue, typeMismatch, valueMissing với paths = [đường dẫn], missingKey với paths = [đường dẫn object, tên khoá]). Gốc trong paths là <gốc>. Lưu ý: JSONDecoder của Foundation báo số không vừa Int (phần thập phân khác 0, tràn Int64) với đường dẫn rỗng, nên paths là <gốc>; lõi Kotlin báo giống hệt.",
   "cases": {
     "base": {
       "error": null
@@ -34,6 +34,13 @@
         "sections[0].questions[0].text"
       ]
     },
+    "dup-key-nested": {
+      "error": "duplicateJSONKeys",
+      "paths": [
+        "q",
+        "q.r"
+      ]
+    },
     "dup-key-option": {
       "error": "duplicateJSONKeys",
       "paths": [
@@ -59,6 +66,17 @@
         "title"
       ]
     },
+    "dup-key-scanner-escapes": {
+      "error": "duplicateJSONKeys",
+      "paths": [
+        "😀",
+        "a\"b",
+        "x.k",
+        "list[1].q",
+        "j",
+        "a/b"
+      ]
+    },
     "format-version-float": {
       "error": null
     },
@@ -71,6 +89,27 @@
     "garbage-after-root": {
       "error": "unparsable"
     },
+    "hide-answers-number": {
+      "error": "typeMismatch",
+      "paths": [
+        "hideAnswers"
+      ]
+    },
+    "id-braces": {
+      "error": "invalidValue",
+      "paths": [
+        "id"
+      ]
+    },
+    "id-short-groups": {
+      "error": "invalidValue",
+      "paths": [
+        "id"
+      ]
+    },
+    "id-uppercase": {
+      "error": null
+    },
     "infinity": {
       "error": "unparsable"
     },
@@ -82,6 +121,13 @@
     },
     "missing-format-version": {
       "error": "missingFormatVersion"
+    },
+    "missing-key-correct": {
+      "error": "missingKey",
+      "paths": [
+        "sections[0].questions[0]",
+        "correct"
+      ]
     },
     "nan": {
       "error": "unparsable"
@@ -134,8 +180,56 @@
         "sections[0].questions[0].image"
       ]
     },
+    "number-huge-integer": {
+      "error": "unparsable"
+    },
+    "number-overflow-double": {
+      "error": "unparsable"
+    },
+    "option-id-lowercase": {
+      "error": "invalidValue",
+      "paths": [
+        "sections[0].questions[0].options[1].id"
+      ]
+    },
+    "pass-percent-1e19": {
+      "error": "invalidValue",
+      "paths": [
+        "<gốc>"
+      ]
+    },
     "pass-percent-exponent": {
       "error": null
+    },
+    "pass-percent-fraction": {
+      "error": "invalidValue",
+      "paths": [
+        "<gốc>"
+      ]
+    },
+    "pass-percent-int64-overflow": {
+      "error": "invalidValue",
+      "paths": [
+        "<gốc>"
+      ]
+    },
+    "pass-percent-long-fraction": {
+      "error": null
+    },
+    "pass-percent-negative-zero": {
+      "error": null
+    },
+    "pass-percent-string": {
+      "error": "typeMismatch",
+      "paths": [
+        "passPercent"
+      ]
+    },
+    "question-type-unknown": {
+      "error": "invalidValue",
+      "paths": [
+        "sections[0].questions[0].type"
+      ]
     },
     "root-array": {
       "error": "rootNotObject"
@@ -169,6 +263,16 @@
       "error": "trailingCommas",
       "paths": [
         "<gốc>"
+      ]
+    },
+    "trailing-comma-scanner": {
+      "error": "trailingCommas",
+      "paths": [
+        "a",
+        "b",
+        "t[0]",
+        "t[1]",
+        "t"
       ]
     }
   }
