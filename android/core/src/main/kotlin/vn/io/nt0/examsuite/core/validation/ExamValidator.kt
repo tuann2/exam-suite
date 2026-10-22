@@ -101,7 +101,9 @@ object ExamValidator {
             }
             checkTitle(section.title, sectionLocation, ::add)
             // `lowercase()` của Java đổi Σ cuối từ thành ς; `lowercased()` của Swift luôn ra σ: đổi Σ trước cho khớp.
-            val key = trimmed(section.title).replace('\u03A3', '\u03C3').lowercase()
+            // Swift so khoá `String` theo tương đương chuẩn: chuẩn hoá NFC trước ("Café" NFC và NFD là trùng).
+            val key = java.text.Normalizer.normalize(trimmed(section.title), java.text.Normalizer.Form.NFC)
+                .replace('\u03A3', '\u03C3').lowercase()
             if (key.isNotEmpty()) {
                 val first = seenTitles[key]
                 if (first != null) {

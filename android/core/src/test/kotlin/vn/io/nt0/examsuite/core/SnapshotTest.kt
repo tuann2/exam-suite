@@ -143,4 +143,22 @@ class SnapshotTest {
             assertThrows(SnapshotCodec.DecodeException::class.java, { SnapshotCodec.decode(text.replace(old, new)) }, new)
         }
     }
+
+    @Test
+    fun `phiên Thi tạm dừng ngay sau khi vượt mốc cảnh báo, có sự kiện chờ, khôi phục được và trả cảnh báo ở tick`() {
+        val s = start()
+        clock.advance(5 * 60.0 + 1); s.pause(PauseReason.USER)
+        val r = roundTrip(s)
+        assertEquals(SessionPhase.Paused to PauseReason.USER, r.phase to r.pauseReason)
+        assertEquals(listOf(SessionEvent.Warning(5)), r.tick())
+    }
+
+    @Test
+    fun `mảng cảnh báo đã phát viết dạng chuỗi thì DecodeException`() {
+        val s = start()
+        clock.advance(5 * 60.0 + 1); s.tick()
+        val text = SnapshotCodec.encode(s.snapshot())
+        check(text.contains("\"issuedWarnings\":[5]"))
+        assertThrows(SnapshotCodec.DecodeException::class.java) { SnapshotCodec.decode(text.replace("\"issuedWarnings\":[5]", "\"issuedWarnings\":[\"5\"]")) }
+    }
 }

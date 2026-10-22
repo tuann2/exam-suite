@@ -65,7 +65,7 @@ object SnapshotCodec {
         if (version != CURRENT_VERSION) fail("draftVersion $version, app hiểu $CURRENT_VERSION")
         vn.io.nt0.examsuite.core.attempt.StrictPayloadJson.problem(
             json.parseToJsonElement(text),
-            numericKeys = setOf("draftVersion", "timeLimitMinutes", "startedAtEpochMillis", "currentIndex", "elapsedSeconds", "count"),
+            numericKeys = setOf("draftVersion", "timeLimitMinutes", "startedAtEpochMillis", "currentIndex", "elapsedSeconds", "count", "issuedWarnings"),
             booleanKeys = setOf("shuffleQuestions", "shuffleOptions"),
             uuidKeyedMaps = setOf("answers", "fingerprints"),
         )?.let { fail(it) }

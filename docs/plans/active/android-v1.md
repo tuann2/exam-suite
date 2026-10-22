@@ -140,7 +140,9 @@ thuộc đã merge; không xếp chồng quá một tầng.
   - **B1 (chặn)**: `ZipFile` mặc định đọc tên entry bằng UTF-8 nên gói có entry lạ mang tên không phải UTF-8 (zip tạo trên
     Windows) bị từ chối cả gói, bản macOS bỏ qua entry đó. Sửa: tên không cờ UTF-8 đọc bằng CP437 như ZIPFoundation.
     Oracle nhị phân mới `fixtures/packages/` (gói do `pack_exam.py` đóng, gói có tên entry 0x82 0xFF) cho cả hai lõi.
-  - Số vượt dải Double (`1e309`, số nguyên trên 308 chữ số): Foundation từ chối ngay khi phân tích; Kotlin nay cũng vậy.
+  - Số cực lớn: Foundation từ chối khi phân tích `1e309`, số nguyên rất dài, `0e10000`, `0e-1000` nhưng nhận `-1e400` (đo
+    ở re-review). Kotlin từ chối số mà Double ra vô cực và số mũ từ 4 chữ số: cùng kết luận nhận/từ chối trên mọi ca đã đo
+    (fixture `number-*`); chỉ khác loại lỗi ở số không có trong đề thật (`-1e400`, số nguyên 167–308 chữ số).
   - `fixtures/invalid-json` thêm 18 ca (số, UUID, kiểu sai, thiếu khoá, khoá trùng lồng nhau, escape của bộ quét, dấu phẩy
     thừa có khoảng trắng), thay ca inline ở test Swift và Kotlin. Phát hiện: `JSONDecoder` báo "số không vừa Int" với
     đường dẫn rỗng (`<gốc>`); oracle ghi đúng như vậy, Kotlin báo giống hệt.
@@ -152,6 +154,12 @@ thuộc đã merge; không xếp chồng quá một tầng.
   - Test thêm: bảng lệnh × trạng thái (rà soát chưa khoá, hết giờ, rà soát khoá, đã nộp, đang làm); chấm tất cả đúng/sai;
     nhãn `examfile` chỉ nhận `InvalidJson` khi là dấu phẩy thừa; test Swift khôi phục ý "lenient đọc được đề lồng đúng 32
     cấp".
+  - Re-review (phiên agent mới): **APPROVE**. Đã làm thêm trong PR: tên entry đọc bằng ISO-8859-1 thay CP437 (có sẵn trên
+    ART; cùng kết luận vì chỉ tên ASCII có nghĩa); khoá JSON trùng và tiêu đề phần trùng so sau chuẩn hoá NFC như `String`
+    của Swift; mảng `issuedWarnings` của phiên dở kiểm kiểu; oracle thêm 8 ca (UUID sai dạng, Int64 lớn nhất, số mũ lớn,
+    khoá trùng NFC/NFD); test dương "tạm dừng khi có sự kiện chờ". Lệch đã biết: tên entry **có** cờ UTF-8 mà byte hỏng
+    (công cụ đặt cờ sai) thì ZIPFoundation bỏ entry, `ZipFile` từ chối cả gói. `fixtures/packages/pack-exam-py.exam` đóng
+    từ `kien-thuc-chung`: sửa đề đó thì đóng lại gói này.
   - Để sau (không chặn): Android 14+ (ART, targetSdk ≥ 34) `ZipFile` từ chối entry tên chứa `..` hoặc bắt đầu bằng `/`
     (ZipPathValidator) trước khi bộ đọc kịp bỏ qua; A3a gọi `dalvik.system.ZipPathValidator.clearCallback()` lúc mở đề hoặc
     chép gói qua bộ đọc riêng, kèm một test emulator đọc `fixtures/packages`. Workflow Android chỉ chạy khi PR chạm
@@ -176,10 +184,10 @@ A0:
 
 A1 (PR #2, trên SHA cuối, ghi ở mô tả PR):
 
-- `:core` 214 ca JUnit, 106 ca đọc oracle chung (fixtures/expected-verdicts.json kể cả issueCodes, 53 ca invalid-json, 2 gói
+- `:core` 225 ca JUnit, 114 ca đọc oracle chung (fixtures/expected-verdicts.json kể cả issueCodes, 61 ca invalid-json, 2 gói
   nhị phân, 4 vector chọn câu, SplitMix64, dấu vân tay, khoảng trắng, khoá schema, 2 đề mẫu); lõi Swift đọc cùng oracle
   (`swift test` ExamKit 201 + 129 ca).
-- Review độc lập (phiên agent mới): REQUEST CHANGES, đã sửa (Decisions); re-review trên commit sửa.
+- Review độc lập (phiên agent mới): REQUEST CHANGES, đã sửa (Decisions); re-review trên 8287c69: APPROVE.
 - Bằng chứng merge: check `android` (CI) và `local/verify` trên SHA cuối.
 
 ## Result

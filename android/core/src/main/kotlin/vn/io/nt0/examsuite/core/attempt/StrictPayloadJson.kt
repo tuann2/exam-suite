@@ -28,7 +28,7 @@ internal object StrictPayloadJson {
                         if (ids.toSet().size != ids.size) return "$path: hai khoá cùng một UUID (khác hoa/thường)"
                     } else {
                         for ((key, child) in value) {
-                            if (key in numericKeys && !(child is JsonPrimitive && !child.isString && child.content != "true" && child.content != "false" && child.content != "null")) {
+                            if (key in numericKeys && child !is JsonArray && !(child is JsonPrimitive && !child.isString && child.content != "true" && child.content != "false" && child.content != "null")) {
                                 return "$path.$key: cần số, không phải chuỗi"
                             }
                             if (key in booleanKeys && !(child is JsonPrimitive && !child.isString && (child.content == "true" || child.content == "false"))) {
@@ -38,7 +38,14 @@ internal object StrictPayloadJson {
                     }
                     for ((key, child) in value) pending.addLast("$path.$key" to child)
                 }
-                is JsonArray -> value.forEachIndexed { i, child -> pending.addLast("$path[$i]" to child) }
+                is JsonArray -> {
+                    if (path.substringAfterLast('.') in numericKeys &&
+                        value.any { !(it is JsonPrimitive && !it.isString && it.content != "true" && it.content != "false" && it.content != "null") }
+                    ) {
+                        return "$path: cần mảng số"
+                    }
+                    value.forEachIndexed { i, child -> pending.addLast("$path[$i]" to child) }
+                }
                 else -> Unit
             }
         }

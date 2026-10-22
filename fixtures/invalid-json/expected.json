@@ -1,5 +1,5 @@
 {
-  "description": "Ca exam.json sai cú pháp hoặc sai thứ mà chỉ chế độ đọc nghiêm (bản Học viên) bắt, dùng chung cho lõi Swift (ExamFile, SharedInvalidJSONTests) và lõi Kotlin (android/core). Mỗi file là exam.json của một gói chỉ có file đó. Khoá: tên file không đuôi. error: null = đọc nghiêm được; còn lại là tên lỗi (duplicateJSONKeys, trailingCommas, nullValues, unknownFields kèm paths theo thứ tự báo; tooDeep với trần mặc định 32 cấp; unparsable, notUTF8, rootNotObject, missingFormatVersion, formatVersionNotInteger, invalidVersion; lỗi giải mã model: invalidValue, typeMismatch, valueMissing với paths = [đường dẫn], missingKey với paths = [đường dẫn object, tên khoá]). Gốc trong paths là <gốc>. Lưu ý: JSONDecoder của Foundation báo số không vừa Int (phần thập phân khác 0, tràn Int64) với đường dẫn rỗng, nên paths là <gốc>; lõi Kotlin báo giống hệt.",
+  "description": "Ca exam.json sai cú pháp hoặc sai thứ mà chỉ chế độ đọc nghiêm (bản Học viên) bắt, dùng chung cho lõi Swift (ExamFile, SharedInvalidJSONTests) và lõi Kotlin (android/core). Mỗi file là exam.json của một gói chỉ có file đó. Khoá: tên file không đuôi. error: null = đọc nghiêm được; còn lại là tên lỗi (duplicateJSONKeys, trailingCommas, nullValues, unknownFields kèm paths theo thứ tự báo; tooDeep với trần mặc định 32 cấp; unparsable, notUTF8, rootNotObject, missingFormatVersion, formatVersionNotInteger, invalidVersion; lỗi giải mã model: invalidValue, typeMismatch, valueMissing với paths = [đường dẫn], missingKey với paths = [đường dẫn object, tên khoá]; validationFailed với paths = mã vấn đề mức error theo thứ tự). Gốc trong paths là <gốc>. Lưu ý: JSONDecoder của Foundation báo số không vừa Int (phần thập phân khác 0, tràn Int64) với đường dẫn rỗng, nên paths là <gốc>; lõi Kotlin báo giống hệt.",
   "cases": {
     "base": {
       "error": null
@@ -39,6 +39,12 @@
       "paths": [
         "q",
         "q.r"
+      ]
+    },
+    "dup-key-nfc-nfd": {
+      "error": "duplicateJSONKeys",
+      "paths": [
+        "é"
       ]
     },
     "dup-key-option": {
@@ -96,6 +102,30 @@
       ]
     },
     "id-braces": {
+      "error": "invalidValue",
+      "paths": [
+        "id"
+      ]
+    },
+    "id-extra-char": {
+      "error": "invalidValue",
+      "paths": [
+        "id"
+      ]
+    },
+    "id-leading-space": {
+      "error": "invalidValue",
+      "paths": [
+        "id"
+      ]
+    },
+    "id-no-dashes": {
+      "error": "invalidValue",
+      "paths": [
+        "id"
+      ]
+    },
+    "id-non-hex": {
       "error": "invalidValue",
       "paths": [
         "id"
@@ -180,6 +210,12 @@
         "sections[0].questions[0].image"
       ]
     },
+    "number-exponent-huge": {
+      "error": "unparsable"
+    },
+    "number-exponent-tiny": {
+      "error": "unparsable"
+    },
     "number-huge-integer": {
       "error": "unparsable"
     },
@@ -205,6 +241,12 @@
       "error": "invalidValue",
       "paths": [
         "<gốc>"
+      ]
+    },
+    "pass-percent-int64-max": {
+      "error": "validationFailed",
+      "paths": [
+        "passPercentOutOfRange"
       ]
     },
     "pass-percent-int64-overflow": {

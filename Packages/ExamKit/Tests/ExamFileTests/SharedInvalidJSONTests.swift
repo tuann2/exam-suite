@@ -48,6 +48,7 @@ struct SharedInvalidJSONTests {
         case let .invalidJSON(.typeMismatch(path, _)): ("typeMismatch", [path])
         case let .invalidJSON(.valueMissing(path, _)): ("valueMissing", [path])
         case let .invalidJSON(.missingKey(path, key)): ("missingKey", [path, key])
+        case let .validationFailed(issues): ("validationFailed", issues.map(\.code.rawValue))
         case .invalidVersion: ("invalidVersion", nil)
         case .tooDeep: ("tooDeep", nil)
         default: ("\(error)", nil)

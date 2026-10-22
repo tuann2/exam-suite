@@ -23,7 +23,8 @@ import java.util.zip.ZipFile
  * trùng → trường lạ → `null` → giải mã model → kiểm từng ảnh (trần, CRC) → đường dẫn ảnh → ảnh thiếu → kiểm đề.
  *
  * Khác bản macOS: dùng `java.util.zip.ZipFile` (đọc mục lục trung tâm như ZIPFoundation, tên không cờ UTF-8 đọc bằng
- * CP437 như ZIPFoundation). Trên Android 14+ (ART, targetSdk ≥ 34) `ZipFile` còn từ chối entry tên chứa `..` hoặc bắt
+ * bảng mã một byte như ZIPFoundation). Tên **có** cờ UTF-8 mà byte không phải UTF-8 (công cụ đặt cờ sai): ZIPFoundation
+ * coi tên là rỗng và bỏ entry, `ZipFile` từ chối cả gói (lệch đã biết, Decisions). Trên Android 14+ (ART, targetSdk ≥ 34) `ZipFile` còn từ chối entry tên chứa `..` hoặc bắt
  * đầu bằng `/` (ZipPathValidator) trước khi bộ đọc kịp bỏ qua; app xử lý ở A3a (Decisions). `ZipFile` không cho biết
  * entry là symlink, nên entry symlink được đọc như file thường (nội dung là chữ của đường dẫn đích, không theo liên kết,
  * không chạm hệ thống file); bản macOS bỏ qua chúng. Kết luận chỉ khác ở gói cố tình đặt symlink tên `exam.json` hoặc
@@ -42,11 +43,13 @@ object ExamPackageReader {
         }
 
     /**
-     * Tên entry không có cờ UTF-8 (bit 11) đọc bằng CP437 như ZIPFoundation của bản macOS; tên có cờ đọc bằng UTF-8. Mặc
-     * định UTF-8 của `ZipFile` từ chối cả gói khi một entry lạ (zip tạo trên Windows) có tên không phải UTF-8, trong khi
-     * entry lạ phải được bỏ qua (exam-format.md; review độc lập PR #2, B1; oracle fixtures/packages).
+     * Tên entry không có cờ UTF-8 (bit 11) đọc bằng bảng mã một byte (ZIPFoundation của bản macOS dùng CP437); tên có cờ
+     * đọc bằng UTF-8. Mặc định UTF-8 của `ZipFile` từ chối cả gói khi một entry lạ (zip tạo trên Windows) có tên không
+     * phải UTF-8, trong khi entry lạ phải được bỏ qua (exam-format.md; review độc lập PR #2, B1; oracle fixtures/packages).
+     * Dùng ISO-8859-1 thay CP437 vì có sẵn trên mọi JVM và ART: chỉ tên ASCII (`exam.json`, `media/<hex>.<ext>`) có nghĩa,
+     * và mọi bảng mã một byte tương thích ASCII cho cùng kết luận.
      */
-    private val legacyNames = java.nio.charset.Charset.forName("IBM437")
+    private val legacyNames = Charsets.ISO_8859_1
 
     private fun openZip(file: File): ZipFile = try {
         ZipFile(file, ZipFile.OPEN_READ, legacyNames)

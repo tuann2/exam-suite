@@ -83,8 +83,8 @@ object StrictJson {
 
     /**
      * Phân tích như `JSONSerialization` của Foundation (đã đối chiếu bằng fixtures/invalid-json): bỏ BOM đầu văn bản;
-     * gốc phải là object hay mảng; từ chối `NaN`/`Infinity`, số vượt dải Double, surrogate lẻ, ký tự điều khiển chưa
-     * escape, rác sau gốc;
+     * gốc phải là object hay mảng; từ chối `NaN`/`Infinity`, số cực lớn (xem `number`), surrogate lẻ, ký tự điều khiển
+     * chưa escape, rác sau gốc;
      * **nhận** dấu phẩy thừa và khoá trùng nhưng ghi lại. Gọi sau `depthExceeds` (bộ phân tích đệ quy theo độ sâu).
      */
     fun parse(text: String): ParsedJson = Parser(text).run()
@@ -156,6 +156,7 @@ object StrictJson {
             expect('{')
             val entries = LinkedHashMap<String, JsonValue>()
             val reported = HashSet<String>()
+            val seen = HashSet<String>()
             skipWhitespace()
             if (peek() == '}') {
                 pos++
@@ -167,11 +168,13 @@ object StrictJson {
                 val key = string()
                 skipWhitespace()
                 expect(':')
-                // Ghi khoá trùng ngay khi đọc khoá, trước giá trị (cùng thứ tự với bộ quét của bản macOS).
-                val duplicate = key in entries
-                if (duplicate && reported.add(key)) duplicates += join(path, key)
+                // Ghi khoá trùng ngay khi đọc khoá, trước giá trị (cùng thứ tự với bộ quét của bản macOS). Swift so `String`
+                // theo tương đương chuẩn: so dạng NFC; đường dẫn ghi đúng chữ của lần lặp như bản macOS.
+                val canonical = Normalizer.normalize(key, Normalizer.Form.NFC)
+                val duplicate = !seen.add(canonical)
+                if (duplicate && reported.add(canonical)) duplicates += join(path, key)
                 val child = value(join(path, key))
-                if (!duplicate) entries[key] = child
+                if (!duplicate && key !in entries) entries[key] = child
                 skipWhitespace()
                 when (peek()) {
                     ',' -> {
@@ -297,8 +300,12 @@ object StrictJson {
                 while (peek()?.isAsciiDigit() == true) pos++
             }
             val literal = s.substring(start, pos)
-            // Foundation từ chối số vượt dải Double (1e309, số nguyên trên 308 chữ số) ngay khi phân tích.
-            if (literal.toDouble().isInfinite()) fail("số vượt dải Double ở vị trí $start")
+            // Xấp xỉ JSONSerialization của Foundation với số cực lớn (đã đo, fixtures/invalid-json number-*): Foundation từ
+            // chối 1e309, số nguyên rất dài, 0e10000, 0e-1000 khi phân tích. Kotlin từ chối số mà Double ra vô cực và số mũ
+            // từ 4 chữ số: cùng kết luận nhận/từ chối trên mọi ca đã đo; chỉ khác loại lỗi ở số không có trong đề thật
+            // (-1e400 Foundation nhận rồi báo khi giải mã; số nguyên 167–308 chữ số Foundation báo khi phân tích).
+            val exponentDigits = literal.substringAfter('e', literal.substringAfter('E', "")).trimStart('+', '-')
+            if (literal.toDouble().isInfinite() || exponentDigits.length >= 4) fail("số quá lớn ở vị trí $start")
             return JsonNumber(literal)
         }
 

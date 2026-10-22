@@ -76,6 +76,7 @@ class SharedOracleTest {
             is ExamFileError.UnknownFields -> "unknownFields" to error.paths
             is ExamFileError.TooDeep -> "tooDeep" to null
             is ExamFileError.InvalidVersion -> "invalidVersion" to null
+            is ExamFileError.ValidationFailed -> "validationFailed" to error.issues.map { swiftName(it.code) }
             is ExamFileError.InvalidJson -> when (val p = error.problem) {
                 is JsonProblem.TrailingCommas -> "trailingCommas" to p.paths
                 is JsonProblem.Unparsable -> "unparsable" to null

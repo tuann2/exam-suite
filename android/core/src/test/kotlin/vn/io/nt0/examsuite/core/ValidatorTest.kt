@@ -133,4 +133,12 @@ class ValidatorTest {
         val exam = Build.exam(Build.section(1, Build.question(1), title = upper), Build.section(2, Build.question(2), title = lower))
         assertEquals(listOf(IssueCode.DUPLICATE_SECTION_TITLE), ExamValidator.validate(exam).map { it.code })
     }
+
+    @Test
+    fun `tiêu đề phần trùng khi chỉ khác dạng chuẩn hoá Unicode NFC và NFD, như Swift`() {
+        val nfc = "Caf" + Char(0xE9)
+        val nfd = "Cafe" + Char(0x301)
+        val exam = Build.exam(Build.section(1, Build.question(1), title = nfc), Build.section(2, Build.question(2), title = nfd))
+        assertEquals(listOf(IssueCode.DUPLICATE_SECTION_TITLE), ExamValidator.validate(exam).map { it.code })
+    }
 }
