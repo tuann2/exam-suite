@@ -39,7 +39,8 @@ Result của plan giai đoạn 6). Đang active:
 - [active/cong-khai-repo.md](active/cong-khai-repo.md): công khai repo (giấy phép Apache-2.0, bản 0.1.1, dọn dấu vết,
   tạo lại fixture kho v1; các bước sau merge: repo public mới, cổng, DMG, Release v0.1.1).
 
-Việc tiếp theo lập plan mới ở `active/` khi Nt0 quyết (ví dụ bản Android, docs/product/plan-android-v1.md).
+Việc tiếp theo lập plan mới ở `active/` khi Nt0 quyết (bản Android: docs/product/plan-android-v1.md; bản iOS:
+docs/product/plan-ios-v1.md; Nt0 chốt 2026-10-22 làm Android trước).
 
 Đã hoàn thành:
 

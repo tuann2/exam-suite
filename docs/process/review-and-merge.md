@@ -78,7 +78,8 @@ PR **thường**: người duyệt diff là đủ.
 ## 4. Nhịp làm việc (áp dụng mọi giai đoạn từ 2026-10-18, Nt0 chốt)
 
 Căn cứ: [notes/g5-ui-test-trung-lap.md](../notes/g5-ui-test-trung-lap.md) và
-[plan-android-v1.md](../product/plan-android-v1.md) Phần 1 (rà soát cách làm bản macOS). Áp dụng cho giai đoạn 5 từ
+[notes/ra-soat-cach-lam-macos.md](../notes/ra-soat-cach-lam-macos.md) (rà soát cách làm bản macOS, trước ở Phần 1 của
+plan-android-v1.md). Áp dụng cho giai đoạn 5 từ
 bước 9, giai đoạn 6 và mọi giai đoạn sau.
 
 - **Một `verify_local.sh --uitest` mỗi PR**, trên SHA cuối sau khi đã sửa theo review độc lập. Không chạy trước review;
@@ -93,7 +94,7 @@ bước 9, giai đoạn 6 và mọi giai đoạn sau.
 - Không chia một thay đổi liền khối (ví dụ một module lõi thuần) thành nhiều PR rủi ro cao: một PR, một lượt review độc
   lập.
 - **Không thêm lớp kiểm mới** (script, bộ test song song) cho hành vi đã được kiểm; ưu tiên ít lớp hơn
-  (notes/g5-ui-test-trung-lap.md mục 3, plan-android-v1.md mục 1.3).
+  (notes/g5-ui-test-trung-lap.md mục 3, notes/ra-soat-cach-lam-macos.md mục 3).
 - Số đo chỉ để ghi (test `Timing` chỉ ghi số, không so giới hạn chặn) chạy dưới `scripts/measure_large.sh`
   (`EXAMSUITE_MEASURE_RECORD=1`), không ở mọi PR.
 - Mỗi lúc **một việc nặng** (build, test, đo) trên Mac của người điều phối.
