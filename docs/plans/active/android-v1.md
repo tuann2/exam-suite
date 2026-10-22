@@ -4,8 +4,8 @@ Date: 2026-10-22
 
 ## Status
 
-Active. Bước **A0** (chuẩn bị, khung Gradle, spike) trên nhánh `feature/android-a0`, rẽ từ `main` 265ab44; PR mang cả
-hai plan mobile, tài liệu rà soát macOS và plan này. Các bước sau theo lộ trình ở
+Active. A0, A1, A2 đã merge; **A3b** trên nhánh `feature/android-a3b` rẽ từ `main` fac7d87 (A2 đã merge nên A3b nối
+`ExamLibrary` thật thay vì bản giả); A3a kế tiếp. Các bước sau theo lộ trình ở
 [plan-android-v1.md](../../product/plan-android-v1.md) Phần 3. v1.1 lập plan riêng (`android-v1.1.md`) ở bước B1.
 
 ## Outcome
@@ -59,8 +59,13 @@ thuộc đã merge; không xếp chồng quá một tầng.
       `LibraryStore` (kho hỏng đổi tên), `ExamLibrary` (nhập nguyên tử, Cập nhật đề, xoá có Hoàn tác, dọn lúc mở app, đề mẫu,
       lần thi, phiên dở), `LibraryQuery` (tìm không dấu, sắp xếp), `LibrarySettings` (DataStore); 29 ca Robolectric. Cùng
       PR: `verify_local.sh` chọn mức kiểm theo file đổi (Decisions).
-- [ ] A3b Giao diện làm bài (chờ Nt0 chốt mức cỡ chữ, mobile.md Câu hỏi mở)
-- [ ] A3a Thư viện và nối luồng (chờ Nt0 chốt làm đề khác khi có phiên dở); cổng GA2
+- [x] A3b Giao diện làm bài (PR này): `AttemptModel` (Kotlin thuần) bọc `ExamSession`, `AttemptPresentation` (đồng hồ ba
+      mức, nhãn A–Z theo vị trí, bảng câu hỏi theo phần, Rà soát, Kết quả: so với lần trước, phần yếu nhất), tạm dừng và
+      lưu phiên dở khi xuống nền, lưu lần thi khi nộp (`AttemptStore`, nối `ExamLibrary` thật); màn Làm bài (ảnh phóng to,
+      bảng câu hỏi bottom sheet, dải cảnh báo 5/1 phút, hết giờ sang Rà soát khoá, che khi tạm dừng, Kiểm tra đáp án), Rà
+      soát & nộp, Kết quả, Xem lại bài (bộ lọc, `ReviewItems`), Làm lại, Luyện lại câu sai (trả `NextAttempt` cho A3a);
+      chuỗi vi/en; 37 ca JVM; 11 ảnh chụp (4 màn × sáng/tối, câu dài, Kết quả, Xem lại ở cỡ chữ 150%).
+- [ ] A3a Thư viện và nối luồng (Nt0 đã chốt hai câu hỏi, mobile.md); cổng GA2
 - [ ] A4 Hoàn thiện và beta; cổng GA3
 
 ## Decisions
@@ -227,6 +232,55 @@ thuộc đã merge; không xếp chồng quá một tầng.
 - 2026-10-22, A2, Robolectric: `AssetManager.list` của Robolectric trả đường dẫn đệ quy, của Android trả tên con trực
   tiếp; `AssetSampleSource` lấy đoạn đầu rồi thử mở `exam.json` để đúng ở cả hai.
 
+- 2026-10-22, Nt0 (trước A3b, A3a): cỡ chữ hệ thống tới **150%** (như macOS); làm đề khác khi có bài dở: hỏi **Tiếp tục
+  đề A** / **Bỏ bài và làm đề B** / **Huỷ**; Cập nhật đề khi đề có bài dở: hộp Cập nhật thêm dòng báo và luôn bỏ phiên dở.
+  Ghi vào mobile.md (bảng Khác macOS).
+- 2026-10-22, A3b, phụ thuộc: `lifecycle-viewmodel-compose` và `lifecycle-runtime-compose` 2.9.4 (cùng phiên bản Compose BOM
+  đã kéo theo; thuộc `androidx.*` của ADR 0012); test JVM của `:app` dùng JUnit 4 và `kotlinx-coroutines-test` (đã có
+  trong danh mục).
+- 2026-10-22, A3b, kiến trúc: `AttemptModel` là lớp Kotlin thuần (không `ViewModel`, không Android) để test JVM;
+  `AttemptViewModel` chỉ giữ nó qua xoay màn hình. Màn hình nhận `AttemptUiState` + `AttemptActions`, nên ảnh chụp dựng
+  trạng thái bằng chính model trên phiên thật. Trình bày không chứa chữ giao diện (composable tra strings.xml); câu đọc của
+  ô bảng câu hỏi là danh sách phần (`CellPart`) để test JVM được.
+- 2026-10-22, A3b, xuống nền: `ON_STOP` mà không phải xoay màn hình (`isChangingConfigurations`) thì tạm dừng (lý do
+  `BACKGROUND`, chỉ khi đang làm hay rà soát chưa khoá) và lưu phiên dở; tạm dừng do người dùng giữ lý do của người dùng.
+  Phiên dở **chụp ngay lúc xuống nền** rồi mới ghi: test bắt được lỗi khi chụp lúc lệnh ghi chạy (người dùng nộp ngay sau
+  đó thì `snapshot()` ném vì phiên đã nộp). Thêm `ExamLibrary.saveDraft(snapshot)` (bản nhận phiên gọi bản này).
+- 2026-10-22, A3b, ghi dữ liệu: mọi lệnh ghi (phiên dở, xoá phiên dở, lưu lần thi) chạy lần lượt theo thứ tự gọi (một
+  `Mutex`) trên phạm vi của app (`AppScope`), không bị huỷ khi rời màn hình: lần thi vừa nộp vẫn được lưu khi người dùng
+  bấm Về thư viện ngay; phiên dở ghi trước không đè được việc xoá sau. Lần trước (so với lần trước) đọc trước khi lưu lần
+  này. Lưu lỗi thì Kết quả báo "Không lưu được lần thi vào Lịch sử thi." và vẫn xem được.
+- 2026-10-22, A3b, hành vi chọn: chạm lại lựa chọn đang chọn của câu một đáp án thì bỏ chọn (như phím A–Z của bản macOS,
+  exam-taking.md); Kiểm tra đáp án là nút cuối nội dung câu (thanh dưới của điện thoại chỉ đủ chỗ cho Câu trước, Câu sau,
+  Đánh dấu, Bảng câu hỏi, Rà soát & nộp). Tạm dừng che cả câu lẫn bảng câu hỏi (bảng là bottom sheet, không hiện khi tạm
+  dừng). Luyện lại câu sai đặt ở danh sách Xem lại bài (exam-taking.md đặt nó ở Xem lại); Kết quả có Xem lại bài, Xem câu
+  sai, Làm lại, Về thư viện.
+- 2026-10-22, A3b, định dạng: số, phần trăm, ngày giờ theo ngôn ngữ giao diện (`interface_language` của strings.xml: vi/en),
+  không theo vùng của máy; ngày giờ theo mẫu `yMdjm` của ngôn ngữ ("14:43 22/10/2026"); thang 1000 số trơn. Múi giờ tiêm
+  được (`LocalTimeZone`) để ảnh chụp không phụ thuộc máy ghi ảnh.
+- 2026-10-22, A3b, biểu tượng: vector theo Material Icons (Apache-2.0) trong `res/drawable`, không thêm thư viện biểu
+  tượng; A4 ghi vào THIRD_PARTY_NOTICES cùng giấy phép thư viện. Màu Đúng/Sai/cảnh báo cùng giá trị `LibraryPalette` của
+  macOS (`ExamPalette`); test tương phản ở A4.
+- 2026-10-22, A3b, review độc lập PR #4 (REQUEST CHANGES, năm lỗi chặn), đã sửa trong cùng PR:
+  - **B1**: check `android` đỏ: ảnh "ảnh lớn" lệch vài điểm ảnh giữa Mac và runner Linux (co ảnh 1600px khi vẽ). Sửa: ảnh thử
+    dựng đúng bằng cỡ hiện (861px), chỉ hình chữ nhật không khử răng cưa, nên không co. Ảnh co trên màn thật không chụp.
+  - **B2**: Bỏ bài rồi `ON_STOP` (rời màn hình, đóng Activity) lưu lại phiên dở vừa xoá. Sửa: model đã Bỏ bài bỏ qua mọi lệnh
+    kể cả xuống nền; test chiều Bỏ bài → xuống nền.
+  - **B3**: lỗi ghi phiên dở (đầy bộ nhớ, kho hỏng) làm app dừng. Sửa: lệnh ghi bắt lỗi (trừ huỷ); test với nơi lưu ném lỗi.
+  - **B4**: thêm ảnh Xem lại bài ở cỡ chữ 150% (mobile.md đòi cả ba màn).
+  - **B5**: luật "lần trước cùng đề, cùng chế độ" thành hàm thuần `AttemptPresentation.previousAttempt` (có `beforeMillis` cho
+    Lịch sử thi ở A3a), có test.
+  - Không chặn, đã làm: bỏ test kể lại luật lõi (chọn nhiều đáp án, danh sách câu Luyện lại câu sai, đồng hồ sau khôi phục,
+    số đếm của bộ lọc) (N1); khoá ghi chung cả app `StoreWrites` (N2); KDoc `ExamLibrary.saveDraft` và rủi ro của
+    plan-android-v1.md Phần 5 ghi đúng là lưu khi xuống nền, không lưu mỗi lần đổi đáp án (N3); hai chỗ khác exam-taking.md
+    (Kiểm tra đáp án ở cuối nội dung câu, bảng câu hỏi đóng khi tạm dừng) vào bảng Khác macOS của mobile.md (N4); bảng câu
+    hỏi không tự mở lại sau Tiếp tục (N8). Để A3a/A4: việc nặng trên luồng chính với đề 2.000 câu (N5, đo ở A4), thông báo
+    trình đọc màn hình bằng `liveRegion` thử trên emulator (N6), lưu lần thi lỗi thì phiên dở cũ còn (N7, A3a chốt), tương
+    phản bảng màu trên nền Material 3 (N9, A4).
+- 2026-10-22, A3b, chưa làm (A3a): nối điều hướng, tạo `AttemptViewModel` từ Trước khi thi hay phiên dở khôi phục,
+  `NextAttempt` mở Trước khi thi, đồng hồ nhanh tiêm cho test Compose, chạy thử màn làm bài trên emulator (ba luồng của
+  A3a). Màn làm bài chưa mở được từ app ở PR này.
+
 ## Validation
 
 A0:
@@ -249,6 +303,16 @@ A1 (PR #2, trên SHA cuối, ghi ở mô tả PR):
   (`swift test` ExamKit 201 + 129 ca).
 - Review độc lập (phiên agent mới): REQUEST CHANGES, đã sửa (Decisions); re-review trên 8287c69: APPROVE.
 - Bằng chứng merge: check `android` (CI) và `local/verify` trên SHA cuối.
+
+A3b (PR này):
+
+- `:app` 37 ca JVM (`AttemptPresentationTest` 16, `AttemptModelTest` 21; không kể lại luật của `ExamSession`, `Scorer`,
+  `ReviewItems`); `:data` vẫn đạt; 11 ảnh chụp mới (`AttemptScreenshots`: câu dài 10 lựa chọn, ảnh lớn đã Kiểm tra đáp án,
+  Kết quả ba phần, Xem lại đề `hideAnswers`; sáng/tối; ba màn ở `fontScale` 1,5), đã xem từng ảnh.
+- `android/scripts/check_android.sh` đạt tại chỗ (luật riêng, lint gồm `ComposeHardcodedText`, `MissingTranslation`,
+  `UnusedResources`, test, so ảnh).
+- Bằng chứng merge: check `android` (CI), `local/verify-android` (PR chạm `android/app/**`), `local/verify` mức none (danh
+  tính git); review độc lập vì chạm `ExamLibrary` (`android/data/**`).
 
 ## Result
 

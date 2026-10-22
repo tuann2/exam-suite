@@ -2,6 +2,7 @@ package vn.io.nt0.examsuite
 
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable
+import vn.io.nt0.examsuite.ui.ExamSuiteTheme
 import androidx.compose.ui.tooling.preview.Preview
 import com.android.tools.screenshot.PreviewTest
 
