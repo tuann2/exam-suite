@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Biểu tượng TẠM (A0): tờ giấy có ba dòng và dấu tích. Nt0 thay sau, như biểu tượng tạm của bản macOS. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:fillColor="#FFFFFF" android:pathData="M36,28h36a4,4 0,0 1,4 4v44a4,4 0,0 1,-4 4h-36a4,4 0,0 1,-4 -4v-44a4,4 0,0 1,4 -4z" />
+    <path android:fillColor="#0F6E6E" android:pathData="M41,40h26v4h-26z M41,50h26v4h-26z M41,60h14v4h-14z" />
+    <path android:fillColor="#0F6E6E" android:pathData="M58,66l4,4l8,-9l3,3l-11,12l-7,-7z" />
+</vector>

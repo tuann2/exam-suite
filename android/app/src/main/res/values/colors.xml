@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Nền biểu tượng tạm (teal của bảng màu macOS, LibraryPalette). -->
+    <color name="ic_launcher_background">#0F6E6E</color>
+</resources>

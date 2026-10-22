@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ngôn ngữ riêng cho app (Android 13 trở lên, Cài đặt › Ứng dụng › Ngôn ngữ): tiếng Việt là nguồn, có tiếng Anh. -->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <locale android:name="vi" />
+    <locale android:name="en" />
+</locale-config>

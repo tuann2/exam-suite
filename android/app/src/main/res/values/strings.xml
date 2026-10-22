@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Ngôn ngữ nguồn: tiếng Việt (docs/product/accessibility-localization.md). Bản tiếng Anh ở values-en.
+     Không thêm tools:locale vào đây: lint (AGP 9.4) có thuộc tính đó thì bỏ qua MissingTranslation (spike A0). -->
+<resources>
+    <string name="app_name" translatable="false">Exam Suite</string>
+    <string name="library_title">Thư viện</string>
+    <string name="library_empty">Chưa có đề nào. Mở file .exam để thêm đề.</string>
+</resources>

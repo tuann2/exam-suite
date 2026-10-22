@@ -21,6 +21,7 @@ Ba cơ chế mượn từ ai-workflow-template (ADR 0007), áp dụng cho mọi 
   đó quy tắc dưới đây không đổi. Workflow `CI` chỉ chạy tay hoặc khi gắn tag `v*`, mỗi sự kiện một nhóm job (Nt0 chốt 2026-10-19): chạy tay chỉ hai job kiểm `core-linux`, `apps-macos`; gắn tag chỉ job `release-dmg`.
 - **Ở mỗi cổng** (G2 cuối giai đoạn 3, G3 cuối giai đoạn 6), trên SHA `main` sẽ đem đi test tay/phát hành: `scripts/verify_local.sh --clean --uitest` (build lại từ đầu, gần máy sạch, kèm UI test); ghi SHA và status vào phần Validation/Result của exec-plan.
 - **Hai job kiểm của workflow `CI` (máy sạch của GitHub; lúc repo còn private ~42 phút tính tiền, repo public miễn phí) chỉ chạy khi Nt0 báo** (Nt0 quyết 2026-10-16, thay quyết định chạy ở mọi cổng cùng ngày; cổng G2 không chạy; giai đoạn 6 không chạy hai job kiểm, Nt0 chốt 2026-10-19: bằng chứng cho SHA phát hành là cổng `verify_local.sh --clean --uitest`). Chạy tay: `gh workflow run CI --ref main`, ghi link run vào exec-plan đang active hoặc PR. Gắn tag `v*` chỉ chạy job `release-dmg` (đóng hai DMG trên runner macOS, tạo GitHub Release; từ v0.1.1 đây là DMG phát hành công khai, Nt0 chốt 2026-10-20), nên chỉ Nt0 đẩy tag.
+- **Bản Android (`android/`, Nt0 chốt Q8 2026-10-22, ADR 0011)**: ngoại lệ của quy tắc "CI không chạy theo PR". Workflow `Android` (`.github/workflows/android.yml`, runner Linux) chạy theo mọi PR chạm `android/**`, `fixtures/**`, `schema/**` hay đề mẫu; check `android` (`android/scripts/check_android.sh`: luật riêng, lint, test, so ảnh) xanh trên SHA cuối **thay** kiểm tại chỗ phần đó. PR chạm `android/app/**` và mọi cổng Android thêm status `local/verify-android` (`android/scripts/check_android.sh --ui`: test Compose trên emulator của Mac, không chạy lại lint + test). PR chạm cả phần ngoài `android/` (Swift, script, tài liệu) vẫn cần `local/verify` như mọi PR. Tag phát hành Android là `android-v*` (không khớp `v*` của macOS), chỉ Nt0 đẩy.
 - **Danh tính git** (Nt0 chốt 2026-10-20, repo public): commit dùng địa chỉ ẩn của GitHub (`<id>+<tài khoản>@users.noreply.github.com`); `verify_local.sh` dừng trước mọi bước build khi một commit bất kỳ từ merge-base với `origin/main` tới HEAD (trên `main`: HEAD) có email tác giả khác địa chỉ đó, hay email người commit khác địa chỉ đó và khác `noreply@github.com` (merge trên web GitHub); đối chứng dương và âm chạy mỗi lần; `--check-identity` chỉ chạy bước này. Cách sửa: commit ở đỉnh chưa push thì `git commit --amend --no-edit --reset-author`, còn lại viết lại các commit của nhánh trước khi merge. Commit có từ trước khi công khai (chỉ ở repo riêng cũ) chỉ được miễn khi người điều phối đặt `EXAMSUITE_IDENTITY_ALLOW=<sha>[,<sha>]` cho đúng lần chạy đó (cảnh báo từng commit; status ghi "miễn danh tính N commit"). Trên GitHub: bật "Keep my email addresses private" và "Block command line pushes that expose my email".
 - **UI test** (`scripts/verify_local.sh --uitest`: XCUITest `ExamSuiteUITests` của bản Học viên, luồng bàn phím
   1–3 của overview.md, rồi `ExamSuiteAdminUITests` của bản Admin): PR chạm code app (`Packages/ExamFeatures/Sources/**`,
@@ -63,6 +64,7 @@ Ba cơ chế mượn từ ai-workflow-template (ADR 0007), áp dụng cho mọi 
 | Đọc/ghi gói đề, chuyển phiên bản | `Packages/ExamKit/Sources/ExamFile/**`, `schema/**`, `fixtures/**` |
 | Lưu file soạn đề | `Packages/ExamFeatures/Sources/AuthoringFeature/**` (document, save, recovery) |
 | Ranh giới hai bản app | `project.yml`, `Packages/ExamFeatures/Package.swift`, `Apps/**`, `scripts/check_boundaries.py` |
+| Bản Android: lõi, lưu trữ | `android/core/**`, Room schema và `ExamStore` trong `android/data/**` (plan-android-v1.md Phần 4) |
 
 Với PR rủi ro cao:
 
@@ -78,7 +80,8 @@ PR **thường**: người duyệt diff là đủ.
 ## 4. Nhịp làm việc (áp dụng mọi giai đoạn từ 2026-10-18, Nt0 chốt)
 
 Căn cứ: [notes/g5-ui-test-trung-lap.md](../notes/g5-ui-test-trung-lap.md) và
-[plan-android-v1.md](../product/plan-android-v1.md) Phần 1 (rà soát cách làm bản macOS). Áp dụng cho giai đoạn 5 từ
+[notes/ra-soat-cach-lam-macos.md](../notes/ra-soat-cach-lam-macos.md) (rà soát cách làm bản macOS, trước ở Phần 1 của
+plan-android-v1.md). Áp dụng cho giai đoạn 5 từ
 bước 9, giai đoạn 6 và mọi giai đoạn sau.
 
 - **Một `verify_local.sh --uitest` mỗi PR**, trên SHA cuối sau khi đã sửa theo review độc lập. Không chạy trước review;
@@ -93,7 +96,7 @@ bước 9, giai đoạn 6 và mọi giai đoạn sau.
 - Không chia một thay đổi liền khối (ví dụ một module lõi thuần) thành nhiều PR rủi ro cao: một PR, một lượt review độc
   lập.
 - **Không thêm lớp kiểm mới** (script, bộ test song song) cho hành vi đã được kiểm; ưu tiên ít lớp hơn
-  (notes/g5-ui-test-trung-lap.md mục 3, plan-android-v1.md mục 1.3).
+  (notes/g5-ui-test-trung-lap.md mục 3, notes/ra-soat-cach-lam-macos.md mục 3).
 - Số đo chỉ để ghi (test `Timing` chỉ ghi số, không so giới hạn chặn) chạy dưới `scripts/measure_large.sh`
   (`EXAMSUITE_MEASURE_RECORD=1`), không ở mọi PR.
 - Mỗi lúc **một việc nặng** (build, test, đo) trên Mac của người điều phối.
@@ -104,6 +107,7 @@ bước 9, giai đoạn 6 và mọi giai đoạn sau.
 - [ ] `local/verify` = success trên SHA cuối (CI GitHub không phải điều kiện merge; gắn tag chỉ chạy job `release-dmg`);
       PR chạm giao diện: mô tả status có "UI test ok" (hoặc "UI test bỏ qua (không lớp nào bị ảnh hưởng)" khi bảng
       map không chọn lớp nào); cổng: "đủ bộ".
+- [ ] PR chạm `android/`: check `android` của CI xanh trên SHA cuối; chạm `android/app/**` hay là cổng: thêm `local/verify-android`.
 - [ ] Rủi ro cao có review độc lập đính kèm.
 - [ ] Không thư viện mới ngoài ADR.
 - [ ] Không chép code/đề từ Open Exam Suite (ADR 0001).
