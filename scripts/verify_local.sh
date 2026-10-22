@@ -14,12 +14,19 @@
 #                                         # khi chạm hạ tầng chung, khi có --clean (cổng) hoặc --uitest-all
 #   scripts/verify_local.sh --uitest-all  # như --uitest nhưng luôn đủ bộ hai target (người duyệt yêu cầu)
 #   scripts/verify_local.sh --uitest-plan # chỉ in các lớp UI test sẽ chạy (không build, không chạy, không ghi status)
+#   scripts/verify_local.sh --full        # luôn đủ bộ macOS, bỏ qua chọn mức theo file đổi
+#   scripts/verify_local.sh --scope-plan  # chỉ in mức kiểm sẽ chạy (none/core/full) rồi thoát
 #   scripts/verify_local.sh --check-identity
 #                                         # chỉ kiểm danh tính git của các commit sẽ làm bằng chứng rồi thoát
 #   scripts/verify_local.sh --uitest --no-autosave-check
 #                                         # như trên nhưng bỏ bước so ~/Library/Autosave Information (khi chưa cấp
 #                                         # Full Disk Access); status ghi "kiểm Autosave: bỏ qua"
 #
+# Mức kiểm theo file đổi so với merge-base(origin/main, HEAD) (scripts/verify_scope.py; Nt0 chốt 2026-10-22):
+#   none  chỉ android/** và tài liệu: chỉ kiểm danh tính git rồi ghi status (phần Android: check `android` của CI);
+#   core  oracle/test lõi Swift (fixtures/invalid-json, vectors, packages, expected-verdicts.json, schema/, test ExamKit):
+#         check.sh --core trên macOS và bước Linux;
+#   full  mọi thứ khác, và luôn khi --clean (cổng), --uitest-all, --full: đủ các bước dưới đây.
 # Cần: macOS có Xcode được chọn, xcodegen, Docker (bước Linux), gh đã đăng nhập (ghi status),
 # jsonschema hoặc uv (scripts/check.sh). Working tree phải sạch và HEAD đã push.
 # --uitest còn cần: màn hình mở khoá và không ai dùng chuột/bàn phím trong lúc chạy (~10 phút); trình chạy test
@@ -44,6 +51,8 @@ UITEST_ALL=0
 UITEST_PLAN_ONLY=0
 AUTOSAVE_CHECK=1
 CHECK_IDENTITY_ONLY=0
+FORCE_FULL=0
+SCOPE_PLAN_ONLY=0
 for arg in "$@"; do
   case "$arg" in
     --no-status) POST_STATUS=0 ;;
@@ -54,9 +63,27 @@ for arg in "$@"; do
     --uitest-plan) UITEST_PLAN_ONLY=1 ;;
     --check-identity) CHECK_IDENTITY_ONLY=1 ;;
     --no-autosave-check) AUTOSAVE_CHECK=0 ;;
+    --full) FORCE_FULL=1 ;;
+    --scope-plan) SCOPE_PLAN_ONLY=1 ;;
     *) echo "verify_local.sh: tham số lạ: $arg" >&2; exit 2 ;;
   esac
 done
+
+# Mức kiểm (scripts/verify_scope.py): ép full ở cổng và khi người duyệt yêu cầu đủ bộ.
+verify_scope() {
+  if [[ $CLEAN == 1 ]]; then printf 'scope: full\nreason: --clean (cổng)\n'
+  elif [[ $UITEST_ALL == 1 ]]; then printf 'scope: full\nreason: --uitest-all\n'
+  elif [[ $FORCE_FULL == 1 ]]; then printf 'scope: full\nreason: --full\n'
+  else python3 scripts/verify_scope.py --git
+  fi
+}
+SCOPE_PLAN="$(verify_scope)"
+SCOPE="$(sed -n 's/^scope: //p' <<< "$SCOPE_PLAN")"
+[[ "$SCOPE" =~ ^(none|core|full)$ ]] || { echo "verify_local.sh: mức kiểm sai dạng: $SCOPE_PLAN" >&2; exit 2; }
+if [[ $SCOPE_PLAN_ONLY == 1 ]]; then
+  echo "$SCOPE_PLAN"
+  exit 0
+fi
 
 # Lớp UI test sẽ chạy (docs/notes/g5-ui-test-trung-lap.md, T1): theo file đổi so với merge-base(origin/main, HEAD);
 # đủ bộ khi --clean (cổng), --uitest-all, chạm hạ tầng chung, hoặc bảng map chưa khớp lớp thật (cảnh báo).
@@ -210,6 +237,21 @@ on_exit() {
 }
 trap on_exit EXIT
 
+# Job core-linux: đúng commit HEAD (git archive), cùng image và gói như CI. Dùng ở mức core và full.
+LINUX_NOTE="Linux bỏ qua"
+linux_check() {
+  [[ $RUN_LINUX == 1 ]] || return 0
+  STEP="Linux (Docker swift:6.1, check.sh --core)"
+  echo "== $STEP" | tee -a "$LOG"
+  git archive "$SHA" | docker run --rm -i swift:6.1 bash -c '
+    set -euo pipefail
+    mkdir /w && tar -x -C /w && cd /w
+    apt-get update -q >/dev/null
+    DEBIAN_FRONTEND=noninteractive apt-get install -y -q python3 python3-jsonschema >/dev/null
+    scripts/check.sh --core' 2>&1 | tee -a "$LOG"
+  LINUX_NOTE="Linux ok"
+}
+
 run() { # tên bước, lệnh...
   STEP="$1"; shift
   echo "== $STEP" | tee -a "$LOG"
@@ -267,6 +309,26 @@ for catalog in sorted(root.glob("Sources/*/Resources/Localizable.xcstrings")):
                     print(f"{copy}: khác bản ở Products ({relative})")
 PY
 }
+{ echo "== Mức kiểm"; echo "$SCOPE_PLAN"; } | tee -a "$LOG"
+if [[ $SCOPE != full ]]; then
+  # Không chạm phần macOS: bỏ build hai app, catalog, Release, ExamFeatures, UI test (xem đầu file).
+  UI_SKIPPED=""
+  [[ $UITEST == 0 ]] || UI_SKIPPED=", UI test bỏ qua (mức $SCOPE)"
+  if [[ $SCOPE == core ]]; then
+    run "check.sh --core (lõi Swift, schema, ranh giới, quét chuỗi)" scripts/check.sh --core
+    linux_check
+    STEP="ghi status"
+    MINUTES=$(( ($(date +%s) - START + 59) / 60 ))
+    post_status success "lõi ok (mức core: check.sh --core)$IDENTITY_NOTE$UI_SKIPPED, $LINUX_NOTE, ${MINUTES} phút"
+    echo "== OK: $SHORT (mức core; $LINUX_NOTE). Log: $LOG"
+  else
+    STEP="ghi status"
+    post_status success "chỉ android/ và tài liệu: không có bước macOS$IDENTITY_NOTE$UI_SKIPPED (phần Android: check android của CI)"
+    echo "== OK: $SHORT (mức none: chỉ android/ và tài liệu). Log: $LOG"
+  fi
+  exit 0
+fi
+
 FORCED_REBUILD=0
 if [[ $CLEAN == 0 ]]; then
   STEP="kiểm bundle tài nguyên của swift test (trước check.sh)"
@@ -566,20 +628,7 @@ elif [[ $UITEST == 1 ]]; then
     || UI_NOTE="UI test ok (${UI_COUNTS}, kho thật không đổi${AUTOSAVE_NOTE}; ${UI_RETRIED} lần chạy lại do lỗi hạ tầng)"
 fi
 
-# Job core-linux: đúng commit HEAD (git archive), cùng image và gói như CI.
-LINUX_NOTE="Linux bỏ qua"
-if [[ $RUN_LINUX == 1 ]]; then
-  STEP="Linux (Docker swift:6.1, check.sh --core)"
-  echo "== $STEP" | tee -a "$LOG"
-  git archive "$SHA" | docker run --rm -i swift:6.1 bash -c '
-    set -euo pipefail
-    mkdir /w && tar -x -C /w && cd /w
-    apt-get update -q >/dev/null
-    DEBIAN_FRONTEND=noninteractive apt-get install -y -q python3 python3-jsonschema >/dev/null
-    scripts/check.sh --core' 2>&1 | tee -a "$LOG"
-  LINUX_NOTE="Linux ok"
-fi
-
+linux_check
 STEP="ghi status"
 MINUTES=$(( ($(date +%s) - START + 59) / 60 ))
 MODE="incremental"; [[ $CLEAN == 1 ]] && MODE="clean"
