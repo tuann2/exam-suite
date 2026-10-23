@@ -43,7 +43,7 @@ thêm Soạn đề). Đề là gói zip `.exam` = `exam.json` + `media/`.
 3. `docs/plans/active/`: exec-plan của giai đoạn đang làm; mỗi PR đúng một mục.
 4. `schema/exam-v1.schema.json`, code và test: hành vi hiện tại.
 5. `docs/product/plan-macos-v1.md`: kế hoạch đầy đủ (lộ trình, UX, rủi ro). Bản mobile: `docs/product/mobile.md`
-   (chỗ khác macOS), `docs/product/plan-android-v1.md` (đang làm, exec-plan `docs/plans/active/android-v1.md`),
+   (chỗ khác macOS), `docs/product/plan-android-v1.md` (v1 xong, bản 0.1.0; exec-plan `docs/plans/completed/android-v1.md`; v1.1 lập plan khi Nt0 quyết),
    `docs/product/plan-ios-v1.md` (làm sau).
    DESIGN_BRIEF của Open Exam Suite chỉ **đọc qua link** (GPLv3): không chép code hay đề mẫu.
 

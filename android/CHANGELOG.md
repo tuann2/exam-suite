@@ -8,8 +8,10 @@ macOS ghi ở `CHANGELOG.md` gốc repo. Cách đóng APK: `docs/process/android
 ## [0.1.0] – beta riêng
 
 Bản Android đầu tiên của Exam Suite, bản **Học viên**: APK phát riêng (không có trên Google Play), ký bằng keystore của
-Nt0, Android 12 trở lên, giao diện điện thoại. `versionCode` 1. Nt0 dùng thử bản debug trên Samsung Galaxy S24+ (đề gửi
-qua WhatsApp) ở cổng GA2: không có lỗi.
+Nt0, Android 12 trở lên, giao diện điện thoại. `versionCode` 1. Chứng chỉ ký `CN=Nt0`, SHA-256
+`8dfc356e7714effe98d9635269541302d5251b4ba5ff51460b5a39b51ea2ebe2` (mọi bản sau phải cùng chứng chỉ này). Nt0 dùng thử
+bản debug trên Samsung Galaxy S24+ (đề gửi qua WhatsApp) ở cổng GA2, rồi bản release đã ký ở cổng GA3 (cùng máy; có nghe
+TalkBack bốn màn chính): đạt.
 
 ### Added
 

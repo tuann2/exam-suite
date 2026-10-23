@@ -21,7 +21,7 @@ import org.jetbrains.uast.skipParenthesizedExprDown
 
 /**
  * Chữ giao diện phải lấy từ `strings.xml` (`stringResource`), không viết thẳng trong Compose. Android Lint có sẵn
- * (`HardcodedText`) chỉ quét layout XML, không thấy `Text("…")` (spike A0, docs/plans/active/android-v1.md).
+ * (`HardcodedText`) chỉ quét layout XML, không thấy `Text("…")` (spike A0, docs/plans/completed/android-v1.md).
  *
  * Bắt: chuỗi literal có ít nhất một chữ cái truyền vào hàm `@Composable` (kể cả `Text`, `Button`… của Material), và
  * chuỗi literal có chữ cái gán cho `contentDescription`/`stateDescription` trong `semantics { }`. Không bắt: chuỗi

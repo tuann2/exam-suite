@@ -29,7 +29,7 @@ class ExamSuiteApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         // Android 14+ (targetSdk ≥ 34) làm `ZipFile` từ chối cả gói khi có entry tên chứa ".." hay bắt đầu bằng "/", trước
-        // khi bộ đọc của `:core` kịp bỏ qua entry lạ như bản macOS (Decisions A1 của docs/plans/active/android-v1.md).
+        // khi bộ đọc của `:core` kịp bỏ qua entry lạ như bản macOS (Decisions A1 của docs/plans/completed/android-v1.md).
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) dalvik.system.ZipPathValidator.clearCallback()
         // Số đo đề chuẩn (docs/notes/android-measurements.md): chỉ bản debug ghi, `adb logcat -s ExamSuiteTiming`.
         if (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {

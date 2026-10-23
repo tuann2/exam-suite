@@ -28,7 +28,7 @@ shell am start -W` (TotalTime, Android tự đo tới khung hình đầu).
 | `review.command` | Đổi bộ lọc Xem lại (dựng danh sách 2.000 dòng), luồng giao diện |
 | `history.open` | Mở Kết quả của lần thi cũ: giải mã payload, đọc nghiêm đề, dựng Xem lại (`.model`, nền) |
 
-## 2026-10-22 · A4, emulator (trước khi đo trên máy thật)
+## 2026-10-22 · A4, emulator (không đo trên máy thật: Nt0 chốt 2026-10-23)
 
 Máy: emulator `examsuite` (Pixel 7, Android 15 arm64, `sdk_gphone64_arm64`) trên Mac Apple M4 Pro, 24 GB; bản debug, lượt
 đi chạy bằng test Compose tạm qua `am instrument`. "Trước": `main` 3612c41 cộng nhật ký đo; "Sau": nhánh A4 sau review
@@ -36,7 +36,7 @@ Máy: emulator `examsuite` (Pixel 7, Android 15 arm64, `sdk_gphone64_arm64`) tr�
 
 | Mã | Ngân sách (cột của large-exams.md) | Trước | Sau | Ghi chú |
 | --- | --- | --- | --- | --- |
-| `app.ready` | Mở app ≤ 1.000 ms (Release) | 1.144 ms | 1.156 ms | **chưa đại diện**: lần mở đầu (tạo hai đề mẫu, thư viện chưa phải 50 đề), tiến trình do test khởi động; bản phát hành mở lạnh (`am start -W`): 417 ms. Đo lại trên máy thật |
+| `app.ready` | Mở app ≤ 1.000 ms (Release) | 1.144 ms | 1.156 ms | **chưa đại diện**: lần mở đầu (tạo hai đề mẫu, thư viện chưa phải 50 đề), tiến trình do test khởi động; bản phát hành mở lạnh (`am start -W`): 417 ms. Chưa đo trên máy thật |
 | `library.import` | Thêm đề ≤ 1.500 ms (Release) | 917 ms | 819 ms | |
 | `preExam.read` | như Bắt đầu ≤ 1.500 ms (Release) | 445 ms | 460 ms | |
 | `attempt.start` | Bắt đầu ≤ 1.500 ms (Release) | 963 ms | 646 ms | |

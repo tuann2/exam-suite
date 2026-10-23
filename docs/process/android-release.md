@@ -36,6 +36,7 @@ Thư viện, lịch sử thi (dữ liệu không sao lưu, mobile.md).
 2. Trên SHA đó của `main`, tree sạch:
 
    ```bash
+   export ANDROID_HOME=$HOME/Library/Android/sdk   # nếu shell chưa có (script của repo tự đặt, lệnh gõ tay thì không)
    (cd android && ./gradlew :app:assembleRelease)
    $ANDROID_HOME/build-tools/35.0.0/apksigner verify --print-certs android/app/build/outputs/apk/release/app-release.apk
    mkdir -p dist

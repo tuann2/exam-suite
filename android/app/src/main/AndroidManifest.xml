@@ -21,7 +21,7 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <!-- Mở .exam từ app khác (spike A0, Decisions của docs/plans/active/android-v1.md): app gửi file
+            <!-- Mở .exam từ app khác (spike A0, Decisions của docs/plans/completed/android-v1.md): app gửi file
                  thường không biết MIME của .exam nên gửi zip hoặc octet-stream; app kiểm đuôi và chữ ký zip. -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
