@@ -1,11 +1,13 @@
 package vn.io.nt0.examsuite.core
 
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.Test
 import vn.io.nt0.examsuite.core.Build.opt
 import vn.io.nt0.examsuite.core.composer.CompositionOptions
 import vn.io.nt0.examsuite.core.composer.ExamComposer
+import vn.io.nt0.examsuite.core.file.QuestionFingerprint
 import vn.io.nt0.examsuite.core.session.ExamSession
 import vn.io.nt0.examsuite.core.session.PauseReason
 import vn.io.nt0.examsuite.core.session.SessionEvent
@@ -114,6 +116,15 @@ class SnapshotTest {
         val edited = exam.copy(sections = exam.sections.map { sec -> sec.copy(questions = sec.questions.map { it.copy(text = it.text + " (sửa)") }) })
         assertThrows(SessionException.InvalidSnapshot::class.java) { ExamSession.restore(edited, snap, clock) }
         ExamSession.restore(exam, snap, clock)
+    }
+
+    @Test
+    fun `dấu vân tay của phiên tính một lần cho các câu của phiên, phiên dở lưu đúng chúng`() {
+        val s = start()
+        assertSame(s.fingerprints, s.fingerprints)
+        assertEquals(s.paper.items.associate { it.questionId to QuestionFingerprint.fingerprint(s.question(it)) }, s.fingerprints)
+        assertEquals(s.fingerprints, s.snapshot().fingerprints)
+        assertEquals(s.fingerprints, roundTrip(s).fingerprints)
     }
 
     @Test

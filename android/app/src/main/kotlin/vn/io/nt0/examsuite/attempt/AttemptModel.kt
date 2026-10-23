@@ -11,7 +11,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import vn.io.nt0.examsuite.core.attempt.AttemptPayload
 import vn.io.nt0.examsuite.core.composer.CompositionOptions
-import vn.io.nt0.examsuite.core.file.QuestionFingerprint
 import vn.io.nt0.examsuite.core.model.QuestionType
 import vn.io.nt0.examsuite.core.review.QuestionChange
 import vn.io.nt0.examsuite.core.review.ReviewDetail
@@ -224,8 +223,8 @@ class AttemptModel(
         }
         if (!isSubmitted) {
             // Chụp ngay: lệnh ghi chạy sau, khi đó phiên có thể đã được nộp.
-            val snapshot = session.snapshot()
-            write { store.saveDraft(snapshot) }
+            val snapshot = Timing.measure("attempt.background.snapshot") { session.snapshot() }
+            write { Timing.measure("draft.save") { store.saveDraft(snapshot) } }
         }
     }
 
@@ -239,10 +238,10 @@ class AttemptModel(
     // ---------- Nộp, Kết quả ----------
 
     /** Nộp bài (Rà soát). Hỏi "Còn N câu chưa làm" là việc của giao diện (`ReviewSummary.needsSubmitConfirmation`). */
-    override fun submit() {
+    override fun submit() = Timing.measure("attempt.submit") {
         command { session.submit() }
-        if (!isSubmitted || review != null) return
-        val items = ReviewItems(AttemptPayload.from(session, QuestionFingerprint.fingerprints(session.exam)), session.exam)
+        if (!isSubmitted || review != null) return@measure
+        val items = ReviewItems(AttemptPayload.from(session, session.fingerprints), session.exam, session.fingerprints)
         review = AnswerReviewController(items, canPracticeIncorrect = session.practiceIncorrectOptions(0u) != null)
         banner = null
         publish()
@@ -255,7 +254,7 @@ class AttemptModel(
                 null
             }
             saveState = try {
-                store.saveAttempt(session)
+                Timing.measure("attempt.save") { store.saveAttempt(session) }
                 SaveState.SAVED
             } catch (e: CancellationException) {
                 throw e
@@ -305,16 +304,17 @@ class AttemptModel(
     }
 
     private fun reviewCommand(block: (AnswerReviewController) -> Unit) {
-        review?.let {
-            block(it)
+        val controller = review ?: return
+        Timing.measure("review.command") {
+            block(controller)
             publish()
         }
     }
 
     // ---------- Nội bộ ----------
 
-    private fun command(block: () -> Unit) {
-        if (discarded) return
+    private fun command(block: () -> Unit) = Timing.measure("attempt.command") {
+        if (discarded) return@measure
         try {
             block()
         } catch (_: SessionException) {

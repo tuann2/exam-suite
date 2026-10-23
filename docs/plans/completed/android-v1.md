@@ -4,9 +4,9 @@ Date: 2026-10-22
 
 ## Status
 
-Active. A0, A1, A2 đã merge; **A3b** trên nhánh `feature/android-a3b` rẽ từ `main` fac7d87 (A2 đã merge nên A3b nối
-`ExamLibrary` thật thay vì bản giả); A3a kế tiếp. Các bước sau theo lộ trình ở
-[plan-android-v1.md](../../product/plan-android-v1.md) Phần 3. v1.1 lập plan riêng (`android-v1.1.md`) ở bước B1.
+Completed 2026-10-23. A0–A4 xong, qua cổng GA2 và GA3; bản phát hành riêng 0.1.0 (tag `android-v0.1.0` do Nt0 gắn sau
+khi merge PR #6). Lộ trình ở [plan-android-v1.md](../../product/plan-android-v1.md) Phần 3. v1.1 lập plan riêng
+(`android-v1.1.md`) ở bước B1 khi Nt0 quyết.
 
 ## Outcome
 
@@ -69,8 +69,16 @@ thuộc đã merge; không xếp chồng quá một tầng.
       nhận `.exam` từ app khác, Cập nhật đề, mỗi lúc một phiên, Lịch sử thi), Thư viện danh sách (tìm, sắp xếp, dải chào
       mừng, Xoá + Hoàn tác), Trước khi thi (bảng kéo lên; `PreExamForm` thuần, cùng thứ tự lý do khoá với macOS), Kết quả
       lần thi cũ (`PastAttemptModel`); 52 ca JVM; 3 luồng Compose + 2 test nền tảng trên emulator; ảnh Thư viện sáng/tối.
-- [ ] Cổng GA2: Nt0 cài APK, làm trọn một đề thật trên điện thoại (ghi máy, app gửi file vào Validation)
-- [ ] A4 Hoàn thiện và beta; cổng GA3
+- [x] Cổng GA2 (2026-10-22): Nt0 cài APK debug của `main` 3612c41 lên Samsung Galaxy S24+, nhận đề qua WhatsApp, làm
+      trọn đề: chức năng đạt, không báo lỗi (Validation).
+- [x] A4 Hoàn thiện và beta (PR #6): test tương phản bảng màu trên nền Material 3 (8 ca JVM); nhật ký đo `Timing` của bản
+      debug, đo đề chuẩn, sửa ba mục vượt ngân sách (Nộp bài, xuống nền, lưu lần thi chặn luồng giao diện; chạm `:core`,
+      `:data`: review độc lập); ký bản release bằng keystore ngoài repo, `versionName` 0.1.0; tên "Exam Suite Debug" cho
+      bản debug; `android/CHANGELOG.md`, `android/THIRD_PARTY_NOTICES.md`, `docs/install-android.md`,
+      `docs/process/android-release.md`, `docs/notes/android-measurements.md`.
+- [x] Cổng GA3 (2026-10-23): Nt0 tạo keystore, đóng APK release, cài và dùng thử trên điện thoại (kể cả rà nhanh
+      TalkBack trên Thư viện, Trước khi thi, Làm bài, Kết quả): đạt. Không đo đề chuẩn trên máy thật (Nt0 chốt
+      2026-10-23, Decisions).
 
 ## Decisions
 
@@ -312,6 +320,56 @@ thuộc đã merge; không xếp chồng quá một tầng.
   đọc `fixtures/packages` trên ART; `Collator` tiếng Việt trên ICU của Android (`PlatformTest`); `loadDraft` của đề đã xoá
   thì bỏ phiên dở. Còn lại: `.broken-*` chưa tự dọn (A2 N6).
 
+- 2026-10-22, Nt0 (A4): phiên bản đầu `versionName` **0.1.0** (`versionCode` 1), tag `android-v0.1.0`.
+- 2026-10-22, A4, tương phản (plan Phần 1: phương án 8 của library.md): bảng màu riêng `ExamPalette` (cùng giá trị
+  `LibraryPalette` của macOS) đạt trên nền Material 3 thật của app, tính bằng chính `examColorScheme` của theme: chữ nhỏ
+  ≥ 4,5:1 trên nền màn, bảng kéo lên, thanh trên khi cuộn, thanh dưới (tonal elevation 3dp), trên hàng lựa chọn nền nhạt;
+  `onSurface` trên mọi nền nhạt; biểu tượng và thanh điểm ≥ 3:1; đối chứng âm: màu của giao diện tối trên nền sáng (và
+  ngược lại) không đạt. Màu mặc định của Material 3 không thuộc quy tắc (như màu hệ thống của macOS). Vạch ngưỡng đậu trên
+  thanh điểm không cần 3:1: dòng "Điểm đậu" ngay dưới ghi bằng chữ.
+- 2026-10-22, A4, hiệu năng (đo trên emulator, `docs/notes/android-measurements.md`): dấu vân tay 2.000 câu (~0,2–0,4 s)
+  tính tới ba lần trên luồng giao diện khi nộp và một lần khi xuống nền. Sửa: `ExamSession.fingerprints` (lazy, an toàn
+  giữa luồng) dùng chung cho phiên dở, payload, khôi phục; `ReviewItems` nhận dấu vân tay đã tính (mặc định tự tính như
+  trước); hex tự dựng thay `String.format`; `ExamLibrary` mã hoá/giải mã lần thi và phiên dở trên `Dispatchers.Default`;
+  app tính dấu vân tay trên nền ngay sau khi màn làm bài hiện, khôi phục phiên dở và dựng Kết quả lần thi cũ trên nền.
+  Kết quả dấu vân tay không đổi (vector `fixtures/vectors/question-fingerprints.json`). Chạm `:core`, `:data`: review độc
+  lập.
+- 2026-10-22, A4, review độc lập PR #6 (phiên agent mới): **APPROVE**, không lỗi chặn. Đã làm trong PR:
+  - N1: tính dấu vân tay trước khi hiện màn làm bài kéo dài khoảng giữa lúc đồng hồ chạy và lúc màn làm bài nhận được
+    ON_STOP. Dời việc tính ra sau khi hiện (nền); đóng Trước khi thi trong lúc chờ đọc đề thì không bắt đầu; app đã xuống
+    nền khi màn làm bài vừa tạo (Activity không ở giữa ON_START và ON_STOP, `MainActivity` báo `AppModel`) thì tạm dừng và
+    lưu ngay. Hai khoảng này có từ A3a (chờ đọc đề), PR này đóng luôn.
+  - N2: `ExamLibrary.saveAttempt` chỉ đọc phiên trên luồng gọi (dựng payload ở đó), chỉ mã hoá trên nền; KDoc của
+    `ExamSession.fingerprints` ghi rõ chỉ thuộc tính này an toàn giữa luồng.
+  - N3: tham số của `ReviewItems` đổi tên `fingerprintsOfExam`, KDoc cảnh báo đưa dấu vân tay của bản đề khác vào sẽ làm sai
+    quy tắc câu đã sửa; test dùng dấu vân tay tính từ chính đề.
+  - N4: cấu hình ký báo lỗi rõ khi `EXAMSUITE_ANDROID_SIGNING` trỏ tới file không có hay file thiếu khoá.
+  - N5: `app.ready` tính từ lúc yêu cầu tạo tiến trình (Android 13+), một lần mỗi tiến trình.
+  - N6, N7, N8, N9: sửa câu chữ của notes (cột ngân sách từng dòng, số của từng lượt), CHANGELOG, hướng dẫn cài ("Cập nhật
+    đề" theo mã định danh của đề, không phải ô Mã đề), quy trình phát hành (`local/verify`, `mkdir -p dist`).
+  - N10: Apache-2.0 đòi người nhận có giấy phép: APK gửi kèm `LICENSE.txt`, `NOTICE.txt`, `THIRD_PARTY_NOTICES.txt` (như
+    DMG của macOS, ADR 0001), hướng dẫn cài có mục Giấy phép.
+  - N11: AGENTS.md thêm tài liệu Android mới và quy tắc agent không đọc keystore, file mật khẩu ký, không đóng APK release
+    ký thật, không xoá dữ liệu bản debug trên điện thoại của Nt0; rà nhanh TalkBack bốn màn chính đưa vào cổng GA3 (nhãn
+    thiếu trên các màn ba luồng Compose đi qua đã do `enableAccessibilityChecks()` kiểm).
+  - N12: test tương phản thêm nền hộp thoại (`surfaceContainerHigh`, nút chữ teal).
+- 2026-10-22, A4, cách đo: lượt đi qua đề chuẩn bằng test Compose **tạm, không commit** (một lần mở app nữa trái quy tắc 3
+  của plan Phần 4, và cần file đề 60 MB), chạy bằng `am instrument` không qua Orchestrator; trên điện thoại cùng lượt đó
+  hoặc làm tay theo mô tả ở notes. Nhật ký `ExamSuiteTiming` chỉ bản debug (cờ `FLAG_DEBUGGABLE`).
+- 2026-10-22, A4, phát hành: keystore và mật khẩu chỉ ở máy Nt0 (`~/.config/exam-suite/android-signing.properties`, ngoài
+  repo vì repo public), CI **không** đóng APK (đưa keystore lên GitHub Secrets trái "keystore Nt0 giữ"). Comment đầu
+  `.github/workflows/android.yml` còn ghi "A4 thêm job đóng APK ký khi gắn tag": không sửa CI khi chưa được yêu cầu, ghi ở
+  đây. **Chưa bật R8** ở 0.1.0: test Compose chỉ chạy trên bản debug, bản rút gọn chưa có test luồng; APK release 26,7 MB,
+  khởi động lạnh 417 ms trên emulator. Bản debug tên "Exam Suite Debug" để không trùng biểu tượng và mục "Mở bằng" với bản
+  phát hành trên cùng máy.
+- 2026-10-22, A4, tài liệu: CHANGELOG và thông báo bên thứ ba của Android nằm trong `android/` (file ở gốc repo đổi mức kiểm
+  của `local/verify` sang full; thông báo gốc dành cho bản macOS và `make_dmg.sh` kiểm). Thư viện trong APK đều Apache-2.0.
+- 2026-10-23, Nt0: **bỏ bước đo đề chuẩn trên máy thật**, phát hành 0.1.0 với số đo trên emulator (bản debug). Rủi ro
+  chấp nhận: chưa có số khung hình khi cuộn và thời gian mở app trên điện thoại (`app.ready` trên emulator chưa đại diện);
+  nếu người dùng beta thấy chậm với đề lớn thì đo ở B3 (`:benchmark`, plan-android-v1.md).
+- Còn lại sau A4 (không chặn GA3): `.broken-*` chưa tự dọn (A2 N6, cần quyết định giữ bao lâu); thông báo `liveRegion` và
+  rà TalkBack sâu ở B3.
+
 ## Validation
 
 A0:
@@ -354,6 +412,37 @@ A3a:
 - Bằng chứng merge: check `android` (CI), `local/verify-android`, `local/verify` mức none; PR thường (không chạm vùng rủi ro
   cao), người duyệt diff.
 
+GA2 (2026-10-22): Nt0 cài APK debug của `main` 3612c41 lên **Samsung Galaxy S24+**, nhận `.exam` qua **WhatsApp**, mở
+bằng app và làm trọn đề: chức năng đạt, không báo lỗi.
+
+A4 (PR #6):
+
+- `:app` 60 ca JVM (thêm `PaletteContrastTest` 8); `:core` 227 ca (thêm 2: dấu vân tay của phiên tính một lần và phiên
+  dở lưu đúng chúng; `ReviewItems` dùng dấu vân tay đưa vào); `:data` vẫn đạt; `check_android.sh` đạt (lint, so ảnh).
+- Đề chuẩn trên emulator, bản debug (bảng ở notes): các mục đo được trong ngân sách, trừ `app.ready` (1.156 ms so với
+  1.000 ms) chưa đại diện (lần mở đầu tạo đề mẫu, tiến trình do test khởi động; bản phát hành mở lạnh 417 ms); không đo
+  trên máy thật (Nt0 chốt 2026-10-23). Bản release ký bằng khoá thử, cài và mở được trên emulator (khoá thử và APK đã xoá).
+- Bằng chứng merge: check `android` (CI), `local/verify-android`, `local/verify` mức none; review độc lập vì chạm `:core`
+  (`QuestionFingerprint`, `ExamSession`, `ReviewItems`) và `ExamLibrary`.
+
+GA3 (2026-10-23): Nt0 tạo keystore (`CN=Nt0`, chứng chỉ SHA-256
+`8dfc356e7714effe98d9635269541302d5251b4ba5ff51460b5a39b51ea2ebe2`, ghi ở `android/CHANGELOG.md`), đóng APK release 0.1.0
+từ nhánh `feature/android-a4` (mã như bản merge; `apksigner verify` đạt), cài lên **Samsung Galaxy S24+**, nhận đề qua
+WhatsApp, làm trọn đề, xuống nền rồi mở lại, Kết quả, Lịch sử thi, nghe TalkBack bốn màn chính: **đạt**. Phiên bản Android
+của máy không ghi.
+
 ## Result
 
-Ghi khi đóng plan sau cổng GA3.
+Outcome đạt (2026-10-23): APK bản Học viên 0.1.0 ký bằng keystore của Nt0, cài được trên Android 12 trở lên, đủ phạm vi
+v1 của plan-android-v1.md Phần 1; lõi Kotlin cùng kết luận với lõi Swift trên oracle chung; qua GA2 (bản debug) và GA3
+(bản release) trên Samsung Galaxy S24+, đề gửi qua WhatsApp.
+
+- Sáu PR: #1 A0, #2 A1, #3 A2, #4 A3b, #5 A3a, #6 A4; ba PR chạm vùng rủi ro cao (A1, A2, A4) có review độc lập.
+- Test: `:core` 227 ca (oracle chung với lõi Swift), `:data` 29 ca Robolectric, `:app` 60 ca JVM, 13 ảnh chụp
+  sáng/tối/150%, 3 luồng Compose + 2 test nền tảng trên emulator có kiểm trợ năng.
+- Đề chuẩn 2.000 câu trong ngân sách trên emulator (bản debug); không đo trên máy thật (Nt0 chốt 2026-10-23).
+- Phát hành: `docs/process/android-release.md` (keystore ngoài repo, APK kèm giấy phép, tag `android-v*`); cài đặt:
+  `docs/install-android.md`.
+- Để sau (v1.1 hoặc khi Nt0 quyết): `.broken-*` của kho hỏng chưa tự dọn (A2 N6); thông báo `liveRegion` và rà TalkBack
+  theo bảng mục tiêu (B3); R8 cho bản release; đo trên máy thật và `:benchmark` (B3) nếu người dùng beta thấy chậm; comment
+  cũ ở đầu `.github/workflows/android.yml` ("A4 thêm job đóng APK ký khi gắn tag").

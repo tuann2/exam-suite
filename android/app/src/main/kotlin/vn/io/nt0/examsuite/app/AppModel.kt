@@ -2,6 +2,9 @@ package vn.io.nt0.examsuite.app
 
 import android.app.Application
 import android.net.Uri
+import android.os.Build
+import android.os.Process
+import android.os.SystemClock
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,6 +22,7 @@ import vn.io.nt0.examsuite.attempt.LibraryAttemptStore
 import vn.io.nt0.examsuite.attempt.NextAttempt
 import vn.io.nt0.examsuite.attempt.PastAttemptModel
 import vn.io.nt0.examsuite.attempt.ReviewAvailability
+import vn.io.nt0.examsuite.attempt.Timing
 import vn.io.nt0.examsuite.attempt.randomSeed
 import vn.io.nt0.examsuite.attempt.ui.QuestionImages
 import vn.io.nt0.examsuite.core.composer.CompositionException
@@ -43,6 +47,9 @@ import java.io.IOException
 import java.util.UUID
 
 private const val TAG = "ExamSuite"
+
+/** Số đo mở app chỉ ghi một lần mỗi tiến trình (AppModel mới trong tiến trình cũ không phải lần mở app). */
+private var readyReported = false
 
 /** Màn đang hiện; ngăn xếp có Thư viện ở đáy. */
 sealed interface Route {
@@ -131,6 +138,10 @@ class AppModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch { startUp() }
     }
 
+    /** Activity đang hiện (giữa ON_START và ON_STOP, không tính xoay màn hình); `MainActivity` cập nhật. */
+    @Volatile
+    var inForeground = false
+
     private val activeAttempt: AttemptModel?
         get() = (_state.value.route as? Route.Attempt)?.model?.takeIf { !it.isSubmitted }
 
@@ -154,6 +165,11 @@ class AppModel(app: Application) : AndroidViewModel(app) {
         val draft = library.loadDraft()
         draftExamId = draft?.examId
         _state.update { it.copy(ready = true, dialog = if (opened.recoveredFrom != null) AppDialog.StoreRecovered else null) }
+        if (!readyReported) {
+            readyReported = true
+            val start = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) Process.getStartRequestedUptimeMillis() else Process.getStartUptimeMillis()
+            Timing.record("app.ready", (SystemClock.uptimeMillis() - start).toDouble())
+        }
         if (pendingIncoming.isNotEmpty()) {
             val uris = pendingIncoming.toList()
             pendingIncoming.clear()
@@ -178,7 +194,7 @@ class AppModel(app: Application) : AndroidViewModel(app) {
     private suspend fun importUri(uri: Uri, openAfter: Boolean) {
         val resolver = getApplication<Application>().contentResolver
         val result = try {
-            withContext(Dispatchers.IO) { resolver.openInputStream(uri)?.use { library.import(it) } }
+            Timing.measure("library.import") { withContext(Dispatchers.IO) { resolver.openInputStream(uri)?.use { library.import(it) } } }
                 ?: ImportResult.Rejected(ImportProblem.Io("không mở được $uri"))
         } catch (e: IOException) {
             ImportResult.Rejected(ImportProblem.Io(e.message ?: e.javaClass.simpleName))
@@ -281,7 +297,7 @@ class AppModel(app: Application) : AndroidViewModel(app) {
     }
 
     private suspend fun openPreExam(target: StartTarget) {
-        val exam = readExam(target.examId) ?: return
+        val exam = Timing.measure("preExam.read") { readExam(target.examId) } ?: return
         val current = services.settings.current()
         val form = target.next?.let { PreExamForm.from(exam, it, current.candidateName) }
             ?: PreExamForm.fresh(exam, target.mode ?: current.lastMode, current.candidateName)
@@ -304,16 +320,19 @@ class AppModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch {
             fun fail(error: StartError?, form: PreExamForm = ui.form) =
                 _state.update { s -> s.copy(preExam = s.preExam?.copy(form = form, starting = false, startError = error)) }
+            val started = System.nanoTime()
             val exam = try {
-                library.open(ui.examId).exam
+                Timing.measure("attempt.start.read") { library.open(ui.examId).exam }
             } catch (e: ExamFileError) {
                 return@launch fail(StartError.Unreadable(e))
             }
             val form = ui.form.withExam(exam)
             if (!form.canStart) return@launch fail(null, form)
             val session = try {
-                val paper = ExamComposer.compose(exam, form.options(randomSeed()))
-                ExamSession.start(exam, paper, form.mode, form.sessionTimeLimit(), form.trimmedName, services.clock)
+                Timing.measure("attempt.start.compose") {
+                    val paper = ExamComposer.compose(exam, form.options(randomSeed()))
+                    ExamSession.start(exam, paper, form.mode, form.sessionTimeLimit(), form.trimmedName, services.clock)
+                }
             } catch (_: CompositionException) {
                 return@launch fail(StartError.Changed, form)
             } catch (_: SessionException) {
@@ -321,18 +340,26 @@ class AppModel(app: Application) : AndroidViewModel(app) {
             }
             services.settings.setCandidateName(form.trimmedName)
             services.settings.setLastMode(form.mode)
+            // Đã đóng Trước khi thi trong lúc chờ đọc đề: không bắt đầu.
+            if (_state.value.preExam?.starting != true) return@launch
             _state.update { it.copy(preExam = null) }
-            showAttempt(session)
+            Timing.measure("attempt.start.model") { showAttempt(session) }
+            Timing.record("attempt.start", (System.nanoTime() - started) / 1e6)
         }
     }
 
     private fun showAttempt(session: ExamSession) {
         val model = AttemptModel(session, LibraryAttemptStore(library), AppScope, ::randomSeed) { what, e -> Log.w(TAG, "Không $what", e) }
         _state.update { it.copy(stack = listOf(Route.Library, Route.Attempt(model, services.images(library, session.exam.id)))) }
+        // Dấu vân tay của mọi câu (đề 2.000 câu: vài trăm ms) tính trước trên nền, để xuống nền và nộp bài không chặn giao
+        // diện (A4); phiên khôi phục đã có sẵn.
+        viewModelScope.launch(Dispatchers.Default) { Timing.measure("attempt.fingerprints") { session.fingerprints } }
+        // App đã xuống nền trong lúc chờ đọc đề: màn làm bài chưa kịp nhận ON_STOP, tạm dừng và lưu ngay (mobile.md).
+        if (!inForeground) model.onBackground()
     }
 
     /** Mở lại phiên dở (mobile.md): về đúng câu ở trạng thái Tạm dừng. Không dùng được thì bỏ. */
-    private suspend fun resumeDraft(draft: DraftRecord) {
+    private suspend fun resumeDraft(draft: DraftRecord) = Timing.measure("draft.resume") {
         val snapshot = draft.snapshot
         val exam = if (snapshot != null && library.item(draft.examId) != null) {
             try {
@@ -344,10 +371,12 @@ class AppModel(app: Application) : AndroidViewModel(app) {
             null
         }
         val session = if (exam != null && snapshot != null) {
-            try {
-                ExamSession.restore(exam, snapshot, services.clock)
-            } catch (_: SessionException) {
-                null
+            withContext(Dispatchers.Default) {
+                try {
+                    ExamSession.restore(exam, snapshot, services.clock)
+                } catch (_: SessionException) {
+                    null
+                }
             }
         } else {
             null
@@ -411,6 +440,7 @@ class AppModel(app: Application) : AndroidViewModel(app) {
     /** Mở Kết quả của một lần thi cũ; nội dung câu của Xem lại lấy từ file đề hiện tại. */
     fun openPastAttempt(summary: AttemptSummary) {
         viewModelScope.launch {
+            val started = System.nanoTime()
             val detail = library.attemptDetail(summary.attemptId) ?: return@launch
             var problem: ReviewAvailability? = null
             val exam = if (library.item(summary.examId) == null) {
@@ -425,8 +455,11 @@ class AppModel(app: Application) : AndroidViewModel(app) {
                 }
             }
             val previous = AttemptPresentation.previousAttempt(history.value, summary.examId, summary.mode, summary.submittedAtMillis)?.percent
-            val model = PastAttemptModel(detail.summary, detail.payload, exam, problem, previous, ::randomSeed)
+            val model = Timing.measure("history.open.model") {
+                withContext(Dispatchers.Default) { PastAttemptModel(detail.summary, detail.payload, exam, problem, previous, ::randomSeed) }
+            }
             _state.update { it.copy(stack = it.stack + Route.PastAttempt(model, services.images(library, summary.examId))) }
+            Timing.record("history.open", (System.nanoTime() - started) / 1e6)
         }
     }
 

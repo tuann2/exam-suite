@@ -4,7 +4,7 @@
 1. Thư viện (ADR 0012, Nt0 chốt Q5 2026-10-22): mọi thư viện và plugin khai báo trong gradle/libs.versions.toml thuộc
    danh sách cho phép; thư viện chỉ cho test/build không vào cấu hình implementation/api; build script không khai báo
    toạ độ Maven trực tiếp (mọi phụ thuộc đi qua danh mục).
-2. Chuỗi (Decisions A0 của docs/plans/active/android-v1.md): res/values*/strings.xml không có tools:locale, vì lint
+2. Chuỗi (Decisions A0 của docs/plans/completed/android-v1.md): res/values*/strings.xml không có tools:locale, vì lint
    (AGP 9.4) có thuộc tính đó thì bỏ qua MissingTranslation mà không báo gì.
 
 Dùng: python3 android/scripts/check_android_rules.py [--self-test-only]
@@ -94,7 +94,7 @@ def strings_problems(name: str, text: str) -> list[str]:
     if re.search(r"\btools:locale\s*=", text):
         return [
             f"{name}: có tools:locale; lint (AGP 9.4) khi đó bỏ qua MissingTranslation mà không báo "
-            "(Decisions A0, docs/plans/active/android-v1.md). Xoá thuộc tính; tiếng Việt là values/ mặc định."
+            "(Decisions A0, docs/plans/completed/android-v1.md). Xoá thuộc tính; tiếng Việt là values/ mặc định."
         ]
     return []
 

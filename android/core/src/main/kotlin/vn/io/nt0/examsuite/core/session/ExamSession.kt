@@ -104,6 +104,16 @@ class ExamSession private constructor(
 
     val questionCount: Int get() = paper.items.size
 
+    /**
+     * Dấu vân tay (`QuestionFingerprint`) các câu của phiên theo id, tính một lần vì đề không đổi trong phiên: phiên dở,
+     * payload lần thi và Xem lại dùng chung. Đề 2.000 câu mất vài trăm ms (emulator, bản debug), nên app gọi trước trên
+     * luồng nền: thuộc tính này (chỉ đọc đề, không đọc trạng thái phiên) an toàn giữa các luồng, phần còn lại của phiên thì
+     * không.
+     */
+    val fingerprints: Map<UUID, String> by lazy {
+        paper.items.associate { it.questionId to QuestionFingerprint.fingerprint(question(it)) }
+    }
+
     fun isAnswered(questionId: UUID): Boolean = !s.answers[questionId].isNullOrEmpty()
 
     val unansweredCount: Int get() = paper.items.count { !isAnswered(it.questionId) }
@@ -272,7 +282,7 @@ class ExamSession private constructor(
             startedAt = startedAt, phase = s.phase, currentIndex = s.currentIndex, answers = s.answers, flagged = s.flagged,
             checkedQuestionIds = s.checkedQuestionIds, pauseReason = s.pauseReason, elapsedSeconds = elapsedAt(t),
             phaseBeforePause = s.phaseBeforePause, issuedWarnings = s.issuedWarnings, pendingEvents = s.pendingEvents,
-            fingerprints = paper.items.associate { it.questionId to QuestionFingerprint.fingerprint(question(it)) },
+            fingerprints = fingerprints,
         )
     }
 
@@ -431,9 +441,6 @@ class ExamSession private constructor(
                 if (snapshot.checkedQuestionIds.isNotEmpty()) invalid("Thi không có Kiểm tra đáp án")
                 if (snapshot.issuedWarnings.any { it !in WARNING_MINUTES || limit <= it * 60.0 }) invalid("cảnh báo sai")
             }
-            val current = snapshot.paper.items.associate { it.questionId to QuestionFingerprint.fingerprint(used.getValue(it.questionId)) }
-            if (snapshot.fingerprints != current) invalid("câu đã sửa từ lúc chụp phiên dở")
-
             val running = clockRuns(snapshot.phase)
             val state = SessionState(
                 phase = if (running) SessionPhase.Paused else snapshot.phase,
@@ -450,8 +457,10 @@ class ExamSession private constructor(
                 issuedWarnings = snapshot.issuedWarnings,
                 pendingEvents = snapshot.pendingEvents,
             )
-            return ExamSession(exam, snapshot.paper, snapshot.mode, snapshot.timeLimitMinutes, snapshot.candidateName,
+            val session = ExamSession(exam, snapshot.paper, snapshot.mode, snapshot.timeLimitMinutes, snapshot.candidateName,
                 snapshot.startedAt, clock, used, state)
+            if (snapshot.fingerprints != session.fingerprints) invalid("câu đã sửa từ lúc chụp phiên dở")
+            return session
         }
     }
 }

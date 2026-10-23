@@ -1,7 +1,9 @@
 package vn.io.nt0.examsuite.app
 
 import android.app.Application
+import android.content.pm.ApplicationInfo
 import android.os.Build
+import android.util.Log
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.preferencesDataStoreFile
 import kotlinx.coroutines.Dispatchers
@@ -9,6 +11,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import vn.io.nt0.examsuite.attempt.AndroidSessionClock
+import vn.io.nt0.examsuite.attempt.Timing
 import vn.io.nt0.examsuite.attempt.ui.QuestionImages
 import vn.io.nt0.examsuite.core.session.SessionClock
 import vn.io.nt0.examsuite.data.db.LibraryStore
@@ -16,6 +19,7 @@ import vn.io.nt0.examsuite.data.library.AssetSampleSource
 import vn.io.nt0.examsuite.data.library.ExamLibrary
 import vn.io.nt0.examsuite.data.settings.LibrarySettings
 import java.io.File
+import java.util.Locale
 import java.util.UUID
 
 /** Application của app: giữ các dịch vụ dùng chung một lần cho cả tiến trình. */
@@ -25,8 +29,16 @@ class ExamSuiteApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         // Android 14+ (targetSdk ≥ 34) làm `ZipFile` từ chối cả gói khi có entry tên chứa ".." hay bắt đầu bằng "/", trước
-        // khi bộ đọc của `:core` kịp bỏ qua entry lạ như bản macOS (Decisions A1 của docs/plans/active/android-v1.md).
+        // khi bộ đọc của `:core` kịp bỏ qua entry lạ như bản macOS (Decisions A1 của docs/plans/completed/android-v1.md).
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) dalvik.system.ZipPathValidator.clearCallback()
+        // Số đo đề chuẩn (docs/notes/android-measurements.md): chỉ bản debug ghi, `adb logcat -s ExamSuiteTiming`.
+        if (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {
+            Timing.sink = { code, millis -> Log.i(TIMING_TAG, "%s %.1f ms".format(Locale.ROOT, code, millis)) }
+        }
+    }
+
+    private companion object {
+        const val TIMING_TAG = "ExamSuiteTiming"
     }
 }
 

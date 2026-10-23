@@ -52,7 +52,15 @@ data class ReviewDetail(
  * - câu đã sửa: không đánh dấu lựa chọn, vẫn hiện giải thích hiện tại khi đề không ẩn đáp án (phương án 13, 18);
  * - câu đã xoá: chỉ còn kết quả lúc thi.
  */
-class ReviewItems(private val payload: AttemptPayload, exam: Exam) {
+class ReviewItems(
+    private val payload: AttemptPayload,
+    exam: Exam,
+    /**
+     * Dấu vân tay đã tính **của chính `exam` này** (phiên vừa nộp: `ExamSession.fingerprints` của phiên có `exam` đó);
+     * thiếu câu nào thì tự tính. Đưa dấu vân tay của bản đề khác vào thì câu đã sửa thành không đổi (sai phương án 13, 18).
+     */
+    fingerprintsOfExam: Map<UUID, String> = emptyMap(),
+) {
     val answersHidden: Boolean = exam.hideAnswers
 
     private val questions: Map<UUID, Question> = LinkedHashMap<UUID, Question>().also { map ->
@@ -63,7 +71,8 @@ class ReviewItems(private val payload: AttemptPayload, exam: Exam) {
         val question = questions[item.questionId]
         when {
             question == null -> QuestionChange.DELETED
-            QuestionFingerprint.fingerprint(question) == payload.fingerprints[item.questionId] -> QuestionChange.UNCHANGED
+            (fingerprintsOfExam[item.questionId] ?: QuestionFingerprint.fingerprint(question)) == payload.fingerprints[item.questionId] ->
+                QuestionChange.UNCHANGED
             else -> QuestionChange.EDITED
         }
     }

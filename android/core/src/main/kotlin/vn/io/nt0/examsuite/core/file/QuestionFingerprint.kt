@@ -19,8 +19,17 @@ import java.util.UUID
 object QuestionFingerprint {
     fun fingerprint(question: Question): String {
         val digest = MessageDigest.getInstance("SHA-256").digest(canonicalJson(question).toByteArray(Charsets.UTF_8))
-        return digest.joinToString("") { "%02x".format(it.toInt() and 0xFF) }
+        // Hex tự dựng: `String.format` cho từng byte chiếm phần lớn thời gian với đề 2.000 câu trên điện thoại (A4).
+        val hex = CharArray(digest.size * 2)
+        for ((i, byte) in digest.withIndex()) {
+            val v = byte.toInt() and 0xFF
+            hex[2 * i] = HEX_DIGITS[v ushr 4]
+            hex[2 * i + 1] = HEX_DIGITS[v and 0x0F]
+        }
+        return String(hex)
     }
+
+    private val HEX_DIGITS = "0123456789abcdef".toCharArray()
 
     /** Dấu vân tay mọi câu theo id; id trùng (đề sai) thì lấy lần xuất hiện đầu. */
     fun fingerprints(exam: Exam): Map<UUID, String> {

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import vn.io.nt0.examsuite.core.file.QuestionFingerprint
 import vn.io.nt0.examsuite.core.review.QuestionChange
 import vn.io.nt0.examsuite.core.review.ReviewFilter
 import vn.io.nt0.examsuite.core.review.ReviewItems
@@ -63,6 +64,15 @@ class ReviewItemsTest {
         assertEquals(QuestionOutcome.INCORRECT, d.outcome)
         assertEquals("Giải thích mới", d.explanation)
         assertNull(ReviewItems(payload, edited.copy(hideAnswers = true)).detail(1).explanation)
+    }
+
+    @Test
+    fun `dấu vân tay đã tính của đề hiện tại được dùng thay vì tính lại, thiếu câu nào thì tự tính`() {
+        assertEquals(ReviewItems(payload, exam).changes, ReviewItems(payload, exam, QuestionFingerprint.fingerprints(exam)).changes)
+        // Giá trị đưa vào khác của câu 2: câu đó thành đã sửa, nên giá trị đưa vào được dùng; các câu khác tự tính.
+        val r = ReviewItems(payload, exam, mapOf(ids[1] to "0".repeat(64)))
+        assertEquals(QuestionChange.EDITED, r.changes[1])
+        assertEquals(listOf(QuestionChange.UNCHANGED), (r.changes - QuestionChange.EDITED).distinct())
     }
 
     @Test

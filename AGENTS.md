@@ -43,7 +43,7 @@ thêm Soạn đề). Đề là gói zip `.exam` = `exam.json` + `media/`.
 3. `docs/plans/active/`: exec-plan của giai đoạn đang làm; mỗi PR đúng một mục.
 4. `schema/exam-v1.schema.json`, code và test: hành vi hiện tại.
 5. `docs/product/plan-macos-v1.md`: kế hoạch đầy đủ (lộ trình, UX, rủi ro). Bản mobile: `docs/product/mobile.md`
-   (chỗ khác macOS), `docs/product/plan-android-v1.md` (đang làm, exec-plan `docs/plans/active/android-v1.md`),
+   (chỗ khác macOS), `docs/product/plan-android-v1.md` (v1 xong, bản 0.1.0; exec-plan `docs/plans/completed/android-v1.md`; v1.1 lập plan khi Nt0 quyết),
    `docs/product/plan-ios-v1.md` (làm sau).
    DESIGN_BRIEF của Open Exam Suite chỉ **đọc qua link** (GPLv3): không chép code hay đề mẫu.
 
@@ -68,7 +68,7 @@ thêm Soạn đề). Đề là gói zip `.exam` = `exam.json` + `media/`.
 | `schema/`, `fixtures/` | Schema v1, đề thử hợp lệ và cố tình sai (fixture) | Tự soạn; "đề mẫu" chỉ dùng cho đề mẫu của Thư viện |
 | `scripts/` | Kiểm tra máy; đóng DMG beta (`make_dmg.sh`), vẽ biểu tượng tạm (`make_icons.swift`) | `check.sh` là lệnh tổng |
 | `docs/install.md` | Hướng dẫn cài đặt tiếng Việt (DMG, Vẫn mở/Open Anyway, máy cài cả hai bản, cập nhật, gỡ cài, chỗ dữ liệu); `make_dmg.sh` chép thành `Hướng dẫn cài đặt.txt` trong mỗi DMG | Không ảnh chụp màn hình (plan giai đoạn 6) |
-| `android/` (Gradle độc lập; ADR 0011, 0012; plan-android-v1.md) | Bản Android Học viên: `:core` lõi Kotlin JVM thuần (oracle chung đọc tại chỗ từ `fixtures/` qua thuộc tính `examsuite.fixtures`), `:data` (Room, DataStore, đề mẫu là assets trỏ thẳng vào `Packages/ExamFeatures/Sources/LibraryData/Resources/Samples`), `:app` (Compose, gói `vn.io.nt0.examsuite.android`, debug `.debug`), `:lint-rules` (luật `ComposeHardcodedText`); chuỗi `res/values` (vi, nguồn) và `values-en`; ảnh screenshot `app/src/screenshotTestDebug/reference/`; `android/scripts/` | `:core` không có Android SDK (Gradle chặn `android.*`); thư viện chỉ theo ADR 0012 (danh mục `gradle/libs.versions.toml`, không toạ độ Maven trực tiếp); `values/strings.xml` không có `tools:locale` (lint bỏ qua MissingTranslation); preview chụp ảnh ghi `locale`; minSdk 31 |
+| `android/` (Gradle độc lập; ADR 0011, 0012; plan-android-v1.md) | Bản Android Học viên: `:core` lõi Kotlin JVM thuần (oracle chung đọc tại chỗ từ `fixtures/` qua thuộc tính `examsuite.fixtures`), `:data` (Room, DataStore, đề mẫu là assets trỏ thẳng vào `Packages/ExamFeatures/Sources/LibraryData/Resources/Samples`), `:app` (Compose, gói `vn.io.nt0.examsuite.android`, debug `.debug`), `:lint-rules` (luật `ComposeHardcodedText`); chuỗi `res/values` (vi, nguồn) và `values-en`; ảnh screenshot `app/src/screenshotTestDebug/reference/`; `android/scripts/`; `android/CHANGELOG.md`, `android/THIRD_PARTY_NOTICES.md`; cài đặt `docs/install-android.md`, phát hành (keystore, APK ký, tag `android-v*`) `docs/process/android-release.md`; số đo đề chuẩn `docs/notes/android-measurements.md` (nhật ký `ExamSuiteTiming` chỉ bản debug) | `:core` không có Android SDK (Gradle chặn `android.*`); thư viện chỉ theo ADR 0012 (danh mục `gradle/libs.versions.toml`, không toạ độ Maven trực tiếp); `values/strings.xml` không có `tools:locale` (lint bỏ qua MissingTranslation); preview chụp ảnh ghi `locale`; minSdk 31 |
 
 ### Lệnh kiểm chứng
 
@@ -131,6 +131,9 @@ AdminShell): kho, đề mẫu và cài đặt trong thư mục tạm, app build 
 `vn.io.nt0.examsuite.admin.uitest` để AppKit không ghi vị trí cửa sổ vào defaults thật. Bản Admin ở chế độ cô lập nhận
 thêm `-ExamSuiteUITestChosenFile <file trong thư mục tạm>` thay hộp chọn file (ảnh của câu, Import đề…), cũng chỉ
 build Debug. Không `open` app, không osascript/System Events/CGEvent.
+Agent không đọc, chép hay sửa keystore ký bản Android và file mật khẩu của nó (`~/.config/exam-suite/android-signing.properties`,
+`*.jks`), không đóng APK release ký thật: việc đó Nt0 làm (docs/process/android-release.md). Bản debug (`.debug`) trên
+điện thoại của Nt0 có dữ liệu thật của Nt0: không `pm clear`, không gỡ.
 Chỉ có Command Line Tools (chưa có hoặc chưa chọn Xcode) thì SwiftData `@Model` không biên dịch
 được (thiếu macro plugin `SwiftDataMacros`), nên bước 4 của `scripts/check.sh` lỗi; đừng kết luận
 code SwiftData sai vì lỗi đó.

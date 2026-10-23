@@ -296,7 +296,8 @@ lõi (macOS giữ Swift) và thêm toolchain Kotlin/Native. Cả hai bị loại
 1. Đọc `AGENTS.md`, `docs/WORKFLOW.md`, plan này, `docs/product/{exam-format,scoring,exam-session,exam-taking,library,accessibility-localization,large-exams}.md` (export-print.md chỉ khi làm B1), `docs/product/mobile.md` nếu đã có, mọi ADR hiện có, `docs/process/review-and-merge.md`.
 2. Bảng Quyết định đã chốt 2026-10-22; bắt đầu từ A0. Quyết định nào cần đổi thì dừng, hỏi Nt0, không tự sửa bảng.
 3. Mỗi bước một PR trên nhánh `feature/android-<bước>`; không push `main`, không tự merge; cập nhật exec-plan
-   `docs/plans/active/android-v1.md` (v1.1: `android-v1.1.md`) trong cùng PR; không mở PR tài liệu riêng.
+   `docs/plans/active/android-v1.md` (v1 đã đóng 2026-10-23: `docs/plans/completed/android-v1.md`; v1.1:
+   `docs/plans/active/android-v1.1.md`) trong cùng PR; không mở PR tài liệu riêng.
 4. Không thêm lớp kiểm mới cho hành vi đã có lớp kiểm trong bảng Phần 4; tuân sáu quy tắc chống trùng; không viết
    script tự kiểm cho những gì Gradle, Lint, build variant đã chặn.
 5. Không kéo mục v1.1 vào PR của v1, kể cả "tiện tay".

@@ -39,8 +39,8 @@ Result của plan giai đoạn 6). Đang active:
 - [active/cong-khai-repo.md](active/cong-khai-repo.md): công khai repo (giấy phép Apache-2.0, bản 0.1.1, dọn dấu vết,
   tạo lại fixture kho v1; các bước sau merge: repo public mới, cổng, DMG, Release v0.1.1).
 
-Việc tiếp theo lập plan mới ở `active/` khi Nt0 quyết (bản Android: docs/product/plan-android-v1.md; bản iOS:
-docs/product/plan-ios-v1.md; Nt0 chốt 2026-10-22 làm Android trước).
+Việc tiếp theo lập plan mới ở `active/` khi Nt0 quyết (bản Android v1.1: `android-v1.1.md` ở bước B1 của
+docs/product/plan-android-v1.md; bản iOS: docs/product/plan-ios-v1.md).
 
 Đã hoàn thành:
 
@@ -52,6 +52,7 @@ docs/product/plan-ios-v1.md; Nt0 chốt 2026-10-22 làm Android trước).
 - [completed/giai-doan-5-hoan-thien.md](completed/giai-doan-5-hoan-thien.md) (2026-10-18, không có cổng; test tay gom vào G3)
 - [completed/giai-doan-6-beta-rieng.md](completed/giai-doan-6-beta-rieng.md) (2026-10-19, qua G3; DMG, nền đọc, dự án cá
   nhân của Nt0, bản phát hành riêng v0.1.0)
+- [completed/android-v1.md](completed/android-v1.md) (2026-10-23, qua GA2, GA3; bản Android Học viên 0.1.0)
 
 Giai đoạn 6 (Beta riêng) là giai đoạn cuối của lộ trình v1 (docs/product/plan-macos-v1.md); plan lập trong PR đóng giai
 đoạn 5 (review-and-merge.md mục 4).

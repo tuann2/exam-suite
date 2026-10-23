@@ -14,7 +14,6 @@ import vn.io.nt0.examsuite.core.file.ExamFileError
 import vn.io.nt0.examsuite.core.file.ExamPackage
 import vn.io.nt0.examsuite.core.file.ExamPackageLimits
 import vn.io.nt0.examsuite.core.file.ExamPackageReader
-import vn.io.nt0.examsuite.core.file.QuestionFingerprint
 import vn.io.nt0.examsuite.core.model.StrictUuid
 import vn.io.nt0.examsuite.core.session.ExamSession
 import vn.io.nt0.examsuite.core.session.SessionMode
@@ -38,7 +37,8 @@ import java.util.zip.ZipOutputStream
 /**
  * Thư viện của bản Android: đề, lịch sử thi, phiên dở (docs/product/library.md, mobile.md). File đề **sao chép** vào
  * `<root>/exams/<examId>.exam` (bộ nhớ riêng của app, không sao lưu đám mây, không chuyển máy). Mọi thao tác file chạy
- * trên `Dispatchers.IO`.
+ * trên `Dispatchers.IO`; mã hoá, giải mã lần thi và phiên dở (đề 2.000 câu: cỡ 0,1 s trên emulator) trên
+ * `Dispatchers.Default`, không chặn luồng giao diện.
  *
  * Nhập đề nguyên tử: chép nguồn vào `exams/.incoming/<ngẫu nhiên>.part` (có trần), đọc **nghiêm** bằng `:core`, rồi đổi
  * tên thành file đích; ghi kho sau khi đổi tên. Cập nhật đề ghi file đánh dấu `<examId>.updating` trước khi đổi tên, xoá
@@ -251,9 +251,20 @@ class ExamLibrary(
      */
     suspend fun saveAttempt(session: ExamSession): AttemptSummary {
         check(session.phase == SessionPhase.Submitted) { "chỉ lưu phiên đã nộp" }
-        val payload = AttemptPayload.from(session, QuestionFingerprint.fingerprints(session.exam))
+        // Phiên chỉ đọc trên luồng gọi (`ExamSession` không dùng từ luồng khác); payload đã dựng không đổi nên mã hoá trên nền.
+        val payload = AttemptPayload.from(session, session.fingerprints)
+        val encoded = withContext(Dispatchers.Default) { payload.encode() }
+        val entity = attemptEntity(session, payload, encoded)
+        db.withTransaction {
+            db.attempts().insert(entity)
+            if (db.drafts().get()?.examId == entity.examId) db.drafts().clear()
+        }
+        return entity.toSummary()!!
+    }
+
+    private fun attemptEntity(session: ExamSession, payload: AttemptPayload, encoded: String): AttemptEntity {
         val result = payload.result
-        val entity = AttemptEntity(
+        return AttemptEntity(
             attemptId = UUID.randomUUID().toString(),
             examId = session.exam.id.toString(),
             examTitle = session.exam.title,
@@ -271,19 +282,14 @@ class ExamLibrary(
             passPercent = result.passPercent,
             passed = result.passed,
             payloadVersion = AttemptPayload.CURRENT_VERSION,
-            payload = payload.encode(),
+            payload = encoded,
         )
-        db.withTransaction {
-            db.attempts().insert(entity)
-            if (db.drafts().get()?.examId == entity.examId) db.drafts().clear()
-        }
-        return entity.toSummary()!!
     }
 
     suspend fun attemptDetail(attemptId: UUID): AttemptDetail? {
         val entity = db.attempts().get(attemptId.toString()) ?: return null
         return try {
-            AttemptDetail(entity.toSummary() ?: return null, AttemptPayload.decode(entity.payload), null)
+            AttemptDetail(entity.toSummary() ?: return null, withContext(Dispatchers.Default) { AttemptPayload.decode(entity.payload) }, null)
         } catch (e: AttemptPayloadException) {
             AttemptDetail(entity.toSummary() ?: return null, null, e.message)
         }
@@ -296,13 +302,14 @@ class ExamLibrary(
 
     /** Lưu phiên dở đã chụp: giao diện chụp ngay lúc xuống nền, ghi sau (phiên có thể đã đổi khi lệnh ghi chạy). */
     suspend fun saveDraft(snapshot: SessionSnapshot) {
-        db.drafts().upsert(DraftEntity(0, snapshot.examId.toString(), SnapshotCodec.encode(snapshot), now()))
+        val encoded = withContext(Dispatchers.Default) { SnapshotCodec.encode(snapshot) }
+        db.drafts().upsert(DraftEntity(0, snapshot.examId.toString(), encoded, now()))
     }
 
     suspend fun loadDraft(): DraftRecord? {
         val draft = db.drafts().get() ?: return null
         val snapshot = try {
-            SnapshotCodec.decode(draft.snapshot)
+            withContext(Dispatchers.Default) { SnapshotCodec.decode(draft.snapshot) }
         } catch (_: SnapshotCodec.DecodeException) {
             null
         }
