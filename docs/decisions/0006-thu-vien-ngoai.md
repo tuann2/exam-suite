@@ -20,7 +20,8 @@ tay" thêm phụ thuộc. Lõi phải test được trên Linux.
   - 2026-10-16 Nt0 duyệt: thêm ExamImport.
 - Thư viện thứ hai, **chỉ trong test**: [swift-snapshot-testing](https://github.com/pointfreeco/swift-snapshot-testing)
   (MIT) `from: "1.19.6"`, product `SnapshotTesting`, chỉ ở test target `ExamFeaturesSnapshotTests` của
-  `Packages/ExamFeatures` (ADR 0010, Nt0 duyệt 2026-10-16). Không target nào trong `Sources/`, không app nào phụ thuộc;
+  `Packages/ExamFeatures` (ADR 0010, Nt0 duyệt 2026-10-16) và, từ bản iOS, `MobileSnapshotTests` của
+  `Packages/MobileFeatures` (ADR 0010 sửa 2026-10-31, ADR 0013). Không target nào trong `Sources/`, không app nào phụ thuộc;
   `scripts/check_boundaries.py` chặn import, product lạ ở mọi target, gói ngoài khác, project.yml dùng gói không cục
   bộ và ghim lạ trong `Package.resolved`; `scripts/check_bundle_boundary.sh` kiểm hai app không có ký hiệu của nó.
   `Package.resolved` ghim thêm swift-custom-dump, swift-issue-reporting, swift-syntax vì manifest của gói khai báo cho

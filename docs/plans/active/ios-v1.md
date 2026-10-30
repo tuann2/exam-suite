@@ -4,7 +4,8 @@ Date: 2026-10-30
 
 ## Status
 
-Active. I0 (PR #8), I1 (PR #9) đã merge; cổng GI1 đạt. I2a trên nhánh `feature/ios-i2`.
+Active. I0 (PR #8), I1 (PR #9), I2a (PR #10) đã merge; cổng GI1 đạt. I2b trên nhánh `feature/ios-i2b`; sau đó cổng GI2
+(Nt0 thử trên iPhone thật).
 
 ## Outcome
 
@@ -59,16 +60,19 @@ Không có cặp song song.
       và MobileFeatures phụ thuộc nó, `MobileShell` gắn `.interfaceLocale()`, `MobileFeatureTests` (kho trên simulator),
       dời khoá catalog, script kiểm và tài liệu biết package mới, đường dẫn đề mẫu của Android và bộ lọc của CI Android.
       Review độc lập xong, đã sửa theo review.
-- [ ] I2a Giao diện iPhone, nhận file, tự tạm dừng (nhánh `feature/ios-i2`): `PauseReason.background`,
+- [x] I2a Giao diện iPhone, nhận file, tự tạm dừng (rủi ro cao; PR #10, merge 2026-10-31): `PauseReason.background`,
       `AttemptModel.autoPause(reason:)` (macOS gọi với `systemSleep`); LibraryData mở quyền security scope trên iOS
       (`SecurityScopedAccess`); `MobileFeature`: Thư viện danh sách (Gần đây, Lịch sử thi, tìm, sắp xếp, trạng thái file,
       Tìm file…, kéo để làm mới, vuốt để Xoá kèm Hoàn tác, dải chào mừng, Thêm đề), Trước khi thi, làm bài (đồng hồ ba
       mức, cảnh báo, che khi tạm dừng, Kiểm tra đáp án, bảng câu hỏi dạng sheet, ảnh phóng to), Rà soát & nộp, Kết quả,
       Xem lại bài, Luyện lại câu sai, Làm lại, mở lần thi cũ; điều phối phiên của iOS; file mở từ app khác (`Inbox` →
       `Received/`); catalog `vi`/`en`; 12 `MobileFeatureTests`; ba XCUITest kèm kiểm trợ năng;
-      `check_release_strings.sh` kiểm bản Release iOS.
-- [ ] I2b Snapshot iPhone sáng/tối và cỡ chữ lớn (`MobileSnapshotTests`, sửa ADR 0010 và `check_boundaries.py`). Cổng
-      GI2 sau I2b.
+      `check_release_strings.sh` kiểm bản Release iOS. Review độc lập và re-review xong, đã sửa theo review.
+- [ ] I2b Snapshot iPhone sáng/tối và cỡ chữ lớn (nhánh `feature/ios-i2b`): `MobileSnapshotTests` (12 ảnh: làm bài câu
+      dài và ảnh lớn, Kết quả nhiều phần, Xem lại bài đề ẩn đáp án, Thư viện, sáng/tối; làm bài và Kết quả ở cỡ chữ
+      `accessibility1`), ADR 0010 và 0006 ghi thêm test target này, `check_boundaries.py` luật 5 cho phép
+      `Packages/MobileFeatures/Tests`, `verify_local.sh` chạy ảnh cùng `MobileFeatureTests`; dòng đề chưa Sẵn sàng của
+      Thư viện không làm mờ (ảnh cho thấy lý do lỗi khó đọc). Cổng GI2 sau I2b.
 - [ ] I3 Hoàn thiện, bản 0.1.0. Cổng GI3.
 
 ## Decisions
@@ -263,6 +267,16 @@ Không có cặp song song.
   trình chuyển app có thể chụp câu hỏi; file iCloud chưa tải đọc lúc offline có thể báo "File hỏng" thay vì "Không
   tìm thấy file" (không dùng `NSFileCoordinator`; chỉ máy thật kiểm được); ảnh của câu giải mã trong `body`, không
   thu nhỏ (bộ nhớ, đo ở I3, QI15).
+- 2026-10-31, I2b, cách chụp ảnh iPhone: test của package chạy trong tiến trình `xctest` của simulator, không có
+  `UIApplication`, nên `drawHierarchy(in:afterScreenUpdates:)` ra ảnh trống; chụp bằng `CALayer.render(in:)`.
+  `Snapshotting.image(on:)` của thư viện chụp ngay sau khi dựng, nên `List` ra trống, thiếu tiêu đề và nút của thanh
+  điều hướng. Vì vậy test tự dựng cửa sổ 390×844 (vùng an toàn như `.iPhone13`), chụp tới khi hai lần liên tiếp giống
+  nhau, rồi so bằng `assertSnapshot` (chiến lược ảnh, `perceptualPrecision` 0,98). Thư viện chụp không có
+  `NavigationStack`: chia đôi cho thấy `.searchable` cùng `.refreshable` trong `NavigationStack` làm `render(in:)` không
+  vẽ gì của nội dung (từng modifier riêng thì vẽ được). Không sửa màn thật chỉ để chụp được.
+- 2026-10-31, I2b, dòng đề chưa Sẵn sàng (đề lỗi): I2a đặt `.disabled` cho cả dòng nên lý do lỗi bị làm mờ (thấy trên
+  ảnh Thư viện). Nay dòng không mờ, chạm không làm gì (`startSession` từ chối), VoiceOver không đọc là nút; giống thẻ
+  của macOS (chỉ nút Luyện tập/Thi tắt).
 
 ## Validation
 
@@ -309,6 +323,9 @@ I2a (nhánh `feature/ios-i2`):
   khởi động (lần chạy trước khi thêm chờ màn đứng yên có báo nhầm chập chờn ở Rà soát khoá); ảnh ở Accessibility L của
   Rà soát khoá và bảng câu hỏi (bằng chứng cho ngoại lệ); `check_localization.py --require-en`, `check_colors.py`,
   `check_quit_sheets.py`, `uitest_plan.py --self-test` đạt.
+
+I2a, sau review: `local/verify` xanh trên 2a32ae6 (mức full, UI test đủ bộ: Học viên 6, Admin 4, iOS 3; kho thật không
+đổi; Linux ok); PR #10 merge.
 
 ## Result
 

@@ -60,6 +60,39 @@ git status Packages/ExamFeatures/Tests/ExamFeaturesSnapshotTests/__Snapshots__
 - Thấy khối trắng hoặc chữ biến mất ở sidebar, inspector, thanh công cụ sau khi nâng macOS: cách vẽ Liquid Glass đã
   đổi; sửa `Support/GlassFlattener.swift` (tên lớp kính, bộ lọc `vibrantColorMatrix`) trước khi ghi lại.
 
+## Snapshot iPhone (bản iOS)
+
+Thẩm quyền: ADR 0010 (sửa 2026-10-31), ADR 0013, docs/product/plan-ios-v1.md Phần 5. Code:
+`Packages/MobileFeatures/Tests/MobileSnapshotTests` (`PhoneSnapshotTests.swift`: helper `PhoneSnapshot`, dữ liệu cố
+định `LibraryFixture`; `Support/SessionFixtures.swift` dựng phiên thi), ảnh ở
+`__Snapshots__/PhoneSnapshotTests/<tên test>.<tên ảnh>.png`.
+
+- Có gì: làm bài (câu dài 10 lựa chọn, câu có ảnh lớn), Kết quả nhiều phần, Xem lại bài của đề ẩn đáp án, Thư viện:
+  sáng và tối; cỡ chữ trợ năng `accessibility1` (UIKit `accessibilityMedium`, QI11) ở làm bài và Kết quả, chỉ sáng.
+  Màn dựng trong một cửa sổ 390×844 pt có vùng an toàn của iPhone có Dynamic Island (`PhoneWindow`), màu nhấn như gốc
+  của app, locale `vi`, múi giờ Asia/Ho_Chi_Minh; chụp bằng `CALayer.render(in:)` khi hai lần chụp liên tiếp giống
+  nhau (`List` và thanh điều hướng chỉ có sau một vòng runloop), ảnh 1x để file nhỏ.
+- Chạy trên simulator, không qua `swift test`: `verify_local.sh` mức full chạy cùng `MobileFeatureTests`
+  (`-only-testing:MobileSnapshotTests`), máy và runtime theo `EXAMSUITE_IOS_DESTINATION` (mặc định iPhone 17, iOS 26.1).
+  Đổi máy hay runtime thì ghi lại ảnh như sau khi nâng macOS/Xcode.
+- Ghi lại: simulator chỉ chuyển cho tiến trình test biến môi trường có tiền tố `TEST_RUNNER_`.
+
+  ```sh
+  xcodegen generate
+  TEST_RUNNER_EXAMSUITE_SNAPSHOT_RECORD=all xcodebuild -project ExamSuite.xcodeproj -scheme ExamSuiteiOS \
+    -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.1' -derivedDataPath build/DerivedData-iOS \
+    -only-testing:MobileSnapshotTests test
+  ```
+
+  Rồi chạy lại không biến (phải xanh) và xem từng ảnh như mục trên.
+- Test chạy trong tiến trình `xctest` của simulator, không có `UIApplication`: không dùng được
+  `drawHierarchy(in:afterScreenUpdates:)` (ra ảnh trống), nên lớp kính, làm mờ và ô tìm nổi của iOS 26 vẽ xấp xỉ hoặc
+  thiếu: tiêu đề và nút của thanh điều hướng vào ảnh ở một số màn (làm bài câu có ảnh, Xem lại bài), không vào ở màn
+  khác (làm bài câu dài), ổn định giữa các lần chạy. Kính và độ trong suốt thật cần test tay trên máy (cổng GI2).
+- Thư viện chụp không có `NavigationStack`: trong đó, `.searchable` cùng `.refreshable` làm `render(in:)` không vẽ gì
+  của nội dung (thử 2026-10-31; từng modifier riêng thì vẽ được). Ảnh Thư viện vì vậy không có tiêu đề, ô tìm và nút
+  của thanh điều hướng.
+
 ## Giới hạn
 
 - Phụ thuộc chỉ để test nhưng nằm trong đồ thị gói của `Packages/ExamFeatures`: mọi lần resolve (kể cả build app bằng

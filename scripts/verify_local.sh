@@ -370,18 +370,18 @@ done
 run "xcodebuild ExamSuiteiOS (simulator)" xcodebuild -project ExamSuite.xcodeproj -scheme ExamSuiteiOS \
   -configuration Debug -destination "$IOS_DESTINATION" -derivedDataPath build/DerivedData-iOS -quiet build
 IOS_PRODUCTS=build/DerivedData-iOS/Build/Products/Debug-iphonesimulator
-# Phần chỉ của iOS (Packages/MobileFeatures) trên simulator: kho thư viện, đề mẫu, bookmark (module dùng chung chạy được
-# trên iOS). Không có test nào chạy là thất bại.
+# Phần chỉ của iOS (Packages/MobileFeatures) trên simulator: kho thư viện, đề mẫu, bookmark, phiên thi của iOS
+# (MobileFeatureTests) và snapshot iPhone (MobileSnapshotTests, ADR 0010). Không có test nào chạy là thất bại.
 ios_unit_tests() {
   local out="build/verify-ios-unit-$SHORT.log"
   xcodebuild -project ExamSuite.xcodeproj -scheme ExamSuiteiOS -configuration Debug -destination "$IOS_DESTINATION" \
-    -derivedDataPath build/DerivedData-iOS -only-testing:MobileFeatureTests test > "$out" 2>&1 \
-    || { tail -40 "$out"; echo "MobileFeatureTests thất bại (log: $out)."; return 1; }
+    -derivedDataPath build/DerivedData-iOS -only-testing:MobileFeatureTests -only-testing:MobileSnapshotTests test \
+    > "$out" 2>&1 || { tail -40 "$out"; echo "MobileFeatureTests/MobileSnapshotTests thất bại (log: $out)."; return 1; }
   grep -E '^[✔✘] Test run with' "$out" || true
   grep -qE '^✔ Test run with [1-9][0-9]* tests? ' "$out" \
     || { echo "MobileFeatureTests: không có test nào chạy (log: $out)."; return 1; }
 }
-run "MobileFeatureTests (simulator)" ios_unit_tests
+run "MobileFeatureTests, MobileSnapshotTests (simulator)" ios_unit_tests
 run "kiểm bundle (ADR 0003)" scripts/check_bundle_boundary.sh build/DerivedData/Build/Products/Debug "$IOS_PRODUCTS"
 # String Catalog (docs/product/accessibility-localization.md, mục Kiểm): hai app có vi.lproj và en.lproj, chuỗi Info.plist
 # tra được và bằng bản của InfoPlist.xcstrings, mọi bundle catalog của package có cùng ngôn ngữ và có en (--require-en,

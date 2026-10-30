@@ -217,8 +217,12 @@ struct ExamRow: View {
             .padding(.vertical, 2)
         }
         .buttonStyle(.plain)
-        .disabled(!library.canStartSession(entry) && !status.nextSteps.contains(.locateFile))
+        // Đề chưa Sẵn sàng (lỗi, không đọc được): chạm không làm gì (`startSession` từ chối), nhưng dòng không làm mờ, vì
+        // lý do lỗi phải đọc được (snapshot I2b; thẻ của bản macOS cũng không mờ). VoiceOver không đọc là nút.
         .accessibilityElement(children: .combine)
+        .accessibilityRemoveTraits(
+            library.canStartSession(entry) || status.nextSteps.contains(.locateFile) ? [] : .isButton
+        )
         .accessibilityLabel(LibraryAccessibility.cardSummary(entry: entry, latestAttempt: latest, isAdmin: false))
         .accessibilityIdentifier("library.row.\(entry.examID.uuidString)")
         .swipeActions(edge: .trailing) {

@@ -32,16 +32,19 @@ Hai hướng:
 ## Decision
 
 Dùng **swift-snapshot-testing `from: "1.19.6"`**, product `SnapshotTesting`, **chỉ trong test target** của
-`Packages/ExamFeatures` (không link vào app nào):
+`Packages/ExamFeatures` (không link vào app nào). Sửa 2026-10-31 (bản iOS, ADR 0013 bước I2): thêm test target
+`MobileSnapshotTests` của `Packages/MobileFeatures` (snapshot iPhone), cùng các luật dưới đây.
 
-- `scripts/check_boundaries.py` chặn `import SnapshotTesting` ngoài `Packages/ExamFeatures/Tests/**`, và chặn product
-  này trong dependencies của target không phải test (kèm đối chứng âm như các luật hiện có).
+- `scripts/check_boundaries.py` chặn `import SnapshotTesting` ngoài `Packages/ExamFeatures/Tests/**` và
+  `Packages/MobileFeatures/Tests/**`, và chặn product này trong dependencies của target không phải test (kèm đối chứng
+  âm như các luật hiện có).
 - Ảnh tham chiếu (PNG) commit cạnh test (`__Snapshots__/`), mỗi ảnh ≤ 300 KB; tên có `light`/`dark` và kích thước.
 - So theo độ chính xác cảm nhận (`perceptualPrecision` khoảng 0,98) để chịu khác biệt khử răng cưa nhỏ giữa máy.
 - Ảnh tham chiếu ghi trên Mac của người điều phối (máy chạy `verify_local.sh`); đổi phiên bản macOS lớn làm lệch phông
   thì ghi lại ảnh trong một PR riêng, người duyệt xem ảnh khác biệt.
 - Chạy trong `swift test` của ExamFeatures (macOS, có Xcode), tức trong `check.sh` và `verify_local.sh`; không chạy
-  trên Linux (ExamFeatures chỉ macOS).
+  trên Linux (ExamFeatures chỉ macOS). Snapshot iPhone chạy trên simulator (`xcodebuild test -scheme ExamSuiteiOS`,
+  bước iOS của `verify_local.sh` mức full), một máy và một runtime cố định (`EXAMSUITE_IOS_DESTINATION`).
 - ADR 0006 (mục Decision) ghi thêm thư viện này (thư viện thứ hai, chỉ trong test) trong PR thêm phụ thuộc (bước 3
   của plan giai đoạn 5).
 
@@ -70,3 +73,10 @@ Tradeoffs:
 - 2026-10-16 Nt0 duyệt; ghi vào plan giai đoạn 5 (Decisions) và bảng ADR.
 - Bước snapshot của plan giai đoạn 5: thêm phụ thuộc, luật ranh giới, helper chụp sáng/tối, bộ ảnh đầu tiên (câu dài,
   8+ lựa chọn, ảnh lớn, nhiều phần, Kết quả, Xem lại, trang đầu PDF).
+- 2026-10-31, bước I2b của plan iOS (ADR 0013, docs/product/plan-ios-v1.md Phần 5): `MobileSnapshotTests` dựng màn
+  trong một cửa sổ cỡ iPhone 390×844, chụp bằng `CALayer.render(in:)` khi bố cục đã đứng yên, ảnh 1x, sáng/tối và cỡ
+  chữ trợ năng; so ảnh bằng `assertSnapshot` của thư viện (chiến lược ảnh, cùng độ chính xác cảm nhận). `Packages/MobileFeatures/Package.resolved`
+  ghim cùng bản với ExamFeatures; như ở ExamFeatures, resolve gói này (kể cả build app iOS) tải các gói mà manifest
+  của swift-snapshot-testing khai báo, không biên dịch vào app (`check_bundle_boundary.sh` kiểm cả app iOS). Simulator
+  chỉ nhận biến môi trường có tiền tố `TEST_RUNNER_`, nên ghi lại ảnh iPhone bằng
+  `TEST_RUNNER_EXAMSUITE_SNAPSHOT_RECORD` (docs/process/snapshot-tests.md).
