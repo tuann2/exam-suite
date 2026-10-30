@@ -352,6 +352,12 @@ I2b (nhánh `feature/ios-i2b`):
 - Re-review (phiên mới, trên 698e80b): APPROVE; sửa nốt các nit (tiêu đề inline, đuôi `-end` trong ADR 0010, bản
   snapshot-testing mà Xcode tự resolve, `verify_local.sh` kiểm thêm một suite của `MobileFeatureTests`). Còn lại: chưa
   chạy đối chứng múi giờ (máy ở +07), ảnh `-end` dựa trên bốn vòng cuộn.
+- `verify_local.sh --uitest` trên 819cc2e thất bại ở lần chạy đầu của luồng 2 (lần chạy lại đạt, script không nhận):
+  kiểm trợ năng của bảng câu hỏi ở Rà soát khoá đo lúc sheet chưa ở cỡ lớn (khung của tiêu đề phần ở giữa màn), báo
+  "Text clipped" và "Potentially inaccessible text". Sửa: ở Rà soát, bảng câu hỏi chỉ mở cỡ lớn (bảng để tham khảo toàn
+  đề; cỡ vừa để chữ của Rà soát phía sau thấy mà không đọc được); khi đang làm vẫn có cỡ vừa. Test bỏ thao tác kéo
+  sheet. Chạy lặp còn thấy một báo nhầm khác ở Trước khi thi (Thi) ngay sau khi bấm Xong của bàn phím: hai mục
+  "Dynamic Type" không có phần tử (bàn phím là tiến trình khác, đang thu lại). Test chờ bàn phím biến mất rồi mới kiểm.
 
 ## Result
 

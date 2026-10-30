@@ -82,7 +82,9 @@ struct AttemptScreen: View {
                 }
                 isNavigatorPresented = false
             }
-            .presentationDetents([.medium, .large])
+            // Đang làm: cỡ vừa để vẫn thấy câu phía trên. Rà soát: bảng để tham khảo toàn đề, mở cỡ lớn (ở cỡ vừa, chữ
+            // của Rà soát phía sau thấy mà không đọc được bằng VoiceOver).
+            .presentationDetents(attempt.reviewSummary == nil ? [.medium, .large] : [.large])
         }
         // Ảnh phóng to là nội dung câu: tạm dừng (kể cả tự tạm dừng khi xuống nền) hay sang Rà soát thì đóng theo câu,
         // không mở lại khi câu hiện lại (exam-taking.md: lớp phủ che toàn bộ nội dung câu; như sheet ảnh của macOS).
