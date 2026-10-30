@@ -4,11 +4,11 @@ Date: 2026-10-20
 
 ## Status
 
-Active. PR #62 "Chuẩn bị public: giấy phép Apache-2.0, 0.1.1, dọn dấu vết, tạo lại fixture v1" (nhánh
-`feature/chuan-bi-public`, rẽ từ `main` 1a17d05 = v0.1.0) mang plan này; đã sửa theo review độc lập #62 (REQUEST
-CHANGES, hai mục chặn) và theo tám quyết định thêm của Nt0 ngày 2026-10-20 (mục Decisions). Sau khi PR merge: các bước ở
-mục Các bước sau merge (repo mới để private, cổng, chuyển public, đẩy tag để CI phát hành v0.1.1), rồi ghi Result và
-chuyển plan sang `docs/plans/completed/`.
+Completed 2026-10-21. Repo `tuann2/exam-suite` public, một commit đầu tiên `265ab44`; cổng
+`verify_local.sh --clean --uitest` đạt trên commit đó; Release `v0.1.1` do job `release-dmg` tạo. PR mang plan này là PR
+#62 của repo riêng cũ (nay là `tuann2/exam-suite-archive`, private); số PR và SHA nhắc ở các mục dưới thuộc repo đó, trừ
+khi ghi rõ là repo public. Plan chuyển sang `completed/` theo yêu cầu của Nt0 (2026-10-30) trong một PR riêng của repo
+public.
 
 ## Outcome
 
@@ -195,23 +195,26 @@ e. **Nt0 đẩy tag, CI phát hành** (bước 9): trong bản sao mới, `git t
 
 ## Checklist (người điều phối và Nt0)
 
-- [ ] PR này: review độc lập APPROVE (rủi ro cao; review lại sau khi sửa); `local/verify` xanh trên SHA cuối, UI test đủ
-      bộ; Nt0 merge.
-- [ ] 0. Git toàn cục của Nt0 dùng `Nt0 <43159607+tuann2@users.noreply.github.com>`; GitHub bật hai tuỳ chọn giữ email
-      riêng tư.
-- [ ] a. Script bước a in `OK` (cây trùng `origin/main`, một commit, không dấu vết ở file chữ và nhị phân, danh tính Nt0
+- [x] PR này: review độc lập APPROVE (rủi ro cao; review lại sau khi sửa); `local/verify` xanh trên SHA cuối; Nt0
+      merge. UI test không chạy trên PR này (Nt0 chốt 2026-10-20: PR không đổi code app, chỉ comment, tài liệu, file
+      giấy phép, `Credits.rtf`, phiên bản; UI test đủ bộ chạy ở cổng bước c trên cùng cây).
+- [x] 0. Danh tính git của bản sao repo public là `Nt0 <43159607+tuann2@users.noreply.github.com>` (Nt0 chốt
+      2026-10-20: cấu hình riêng cho thư mục chứa bản sao public, cấu hình toàn cục giữ nguyên); merge trên web GitHub ra
+      tác giả noreply.
+- [x] a. Script bước a in `OK` (cây trùng `origin/main`, một commit, không dấu vết ở file chữ và nhị phân, danh tính Nt0
       noreply).
-- [ ] b. Repo riêng thành `exam-suite-archive`; `origin` của mọi bản sao cũ trỏ repo đó; hook `pre-push` chặn URL của
+- [x] b. Repo riêng thành `exam-suite-archive`; `origin` của mọi bản sao cũ trỏ repo đó; hook `pre-push` chặn URL của
       repo mới (hai lệnh thử ở bước b đúng); repo mới **private**, có đúng một commit.
-- [ ] c. Cổng `verify_local.sh --clean --uitest` đạt trên commit của repo private (một màn hình, Automation Mode, Full
+- [x] c. Cổng `verify_local.sh --clean --uitest` đạt trên commit của repo private (một màn hình, Automation Mode, Full
       Disk Access).
-- [ ] d. Nt0 xem repo private rồi chuyển public.
-- [ ] e. Đẩy tag `v0.1.1`; job `release-dmg` xanh; Release `v0.1.1` có hai DMG (build 1001) và ghi chú từ CHANGELOG;
+- [x] d. Nt0 xem repo private rồi chuyển public.
+- [x] e. Đẩy tag `v0.1.1`; job `release-dmg` xanh; Release `v0.1.1` có hai DMG (build 1001) và ghi chú từ CHANGELOG;
       sha256 ghi vào Result.
 - [ ] Nt0 thử tay DMG của Release: mở ba file giấy phép trong ổ (TextEdit, tiếng Việt đúng), cài, Vẫn mở, **Giới thiệu
       về Exam Suite** ghi 0.1.1 (1001) và giấy phép, ZIPFoundation (giao diện tiếng Việt và tiếng Anh, cả hai bản).
+      Chưa ghi nhận kết quả khi đóng plan.
 - [ ] Quyết định sau (không chặn bản public): bật CI cho PR, branch protection.
-- [ ] Result; chuyển plan sang `docs/plans/completed/`.
+- [x] Result; chuyển plan sang `docs/plans/completed/`.
 
 ## Progress
 
@@ -225,14 +228,18 @@ e. **Nt0 đẩy tag, CI phát hành** (bước 9): trong bản sao mới, `git t
 - [x] README public; ghi chú CI và branch protection cho repo public.
 - [x] Review độc lập #62: REQUEST CHANGES (B2 thông báo của harness, awk của `make_dmg.sh`; S1 tên máy trong status; S2
       chuỗi lộ trong binary; S5 thứ tự bước b; nit) và tám quyết định thêm của Nt0: đã sửa trong commit sau caf466c.
-- [ ] Review lại (rủi ro cao) phần sửa.
-- [ ] `verify_local.sh --uitest` trên SHA cuối sau review (đủ bộ: chạm `verify_local.sh`, `Apps/**`). Nhánh của PR #62
+- [x] Review lại (rủi ro cao) phần sửa: lần hai còn B3 (mẫu chuỗi cấm lộ trong cây) và S7 (kiểm danh tính chỉ HEAD),
+      lần ba APPROVE sau khi sửa (S8: bước b đặt lại `PUB`).
+- [x] `verify_local.sh` trên SHA cuối sau review (dfc84bf: success, UI test bỏ qua theo quyết định ở Checklist, miễn
+      danh tính 1 commit). Ghi chú gốc: `verify_local.sh --uitest` trên SHA cuối sau review (đủ bộ: chạm `verify_local.sh`, `Apps/**`). Nhánh của PR #62
       có commit caf466c (email cũ, trước khi có phép kiểm danh tính), nên lần chạy này đặt
       `EXAMSUITE_IDENTITY_ALLOW=caf466c` (chỉ cho lần chạy đó; status ghi "miễn danh tính 1 commit"); commit đó không
       bao giờ vào repo public (bước a dựng cây mới). Kiểm trước: `EXAMSUITE_IDENTITY_ALLOW=caf466c
       scripts/verify_local.sh --check-identity`.
-- [ ] Merge (Nt0).
-- [ ] Các bước sau merge 0, a–e; Result; chuyển plan sang `docs/plans/completed/` trong PR kế tiếp có code (mục 4).
+- [x] Merge (Nt0): `0eddd40` của repo riêng.
+- [x] Các bước sau merge 0, a–e (2026-10-20 đến 2026-10-21); Result.
+- [x] Chuyển plan sang `docs/plans/completed/` (2026-10-30, PR riêng của repo public theo yêu cầu của Nt0, thay cho "PR
+      kế tiếp có code" của mục 4).
 
 ## Decisions
 
@@ -336,9 +343,29 @@ e. **Nt0 đẩy tag, CI phát hành** (bước 9): trong bản sao mới, `git t
 - Kiểm của repo trên SHA của PR: xem PR (check.sh, check_localization.py thường/`--require-en`/`--freshness`/
   `--built-apps`, check_boundaries.py, uitest_plan.py `--self-test`, validate_exam.py `--all`, check_validator_parity.py,
   check_quit_sheets.py, check_colors.py, `make_dmg.sh --clean --out <thư mục tạm>`), các lệnh grep cuối.
-- Cổng repo mới: bước c (chưa chạy).
+- Cổng repo mới (bước c), repo còn private:
+  - `d0c3235` (2026-10-20): thất bại ở một vấn đề của kiểm trợ năng, cả hai lần chạy của `NewExamFlowUITests`: gợi ý
+    "Chọn 2 đáp án" (màu nhấn của nền đọc) ở xem trước của cửa sổ soạn đề phía sau, màn "Trước khi thi của Thử đề này";
+    cùng chữ đó đạt ở màn "Cửa sổ soạn đề" khi cửa sổ ở trước. 9 test UI khác đạt.
+  - Sửa: thêm "Chọn 2 đáp án" vào ngoại lệ có sẵn của màn đó (chữ của xem trước phía sau, `NewExamFlowUITests`); chạy
+    riêng lớp đó: đạt. Gộp vào commit đầu (Nt0 chốt, repo còn private) thành `265ab44`, đẩy bằng `--force-with-lease`;
+    quét chuỗi cấm lại: 0.
+  - `265ab44` (2026-10-21): `local/verify` success: macOS ok (clean), UI test ok (Học viên 6, Admin 4 test, đủ bộ, kho
+    thật không đổi, kiểm Autosave: bỏ qua), Linux ok, 19 phút.
 
 ## Result
 
-Chưa có: điền sau các bước 0, a–e (SHA commit public, status `local/verify`, link lần chạy `release-dmg`, sha256 hai
-DMG, link Release v0.1.1).
+- **Repo public:** https://github.com/tuann2/exam-suite, chuyển public 2026-10-21. Commit đầu tiên `265ab44` (tác giả
+  và người commit Nt0 noreply): cây của `main` repo riêng sau PR #62 (`0eddd40`) cộng bản sửa ngoại lệ kiểm trợ năng ở
+  mục Validation.
+- **Repo riêng cũ:** `tuann2/exam-suite-archive` (private) giữ lịch sử, PR #1–#62, status `local/verify` và Release
+  `v0.1.0`. Bản sao cũ trỏ repo đó, có hook `pre-push` chặn URL của repo public.
+- **Cổng:** `local/verify` success trên `265ab44` (mục Validation).
+- **Phát hành:** tag `v0.1.1` → `265ab44`. Job `release-dmg` chạy ở
+  https://github.com/tuann2/exam-suite/actions/runs/39617311893 (hai job kiểm skipped) và tạo Release
+  https://github.com/tuann2/exam-suite/releases/tag/v0.1.1 (2026-10-21, không phải prerelease): build 1001, runner
+  macOS 15.7.9, Xcode 26.3.
+  - `ExamSuite-0.1.1.dmg` sha256 `57ad4c39265c216b2573d641804c45bd6f8d7b844c167bc595323a825e523ff7`
+  - `ExamSuiteAdmin-0.1.1.dmg` sha256 `84e4d0bad1126e68eb65d7d560e22241d97a647c05b1e9d5959201fa3491446a`
+- **Còn mở (không chặn):** Nt0 thử tay DMG của Release (hộp Giới thiệu vi/en, sáng/tối, file giấy phép trong ổ); quyết
+  định bật CI cho PR và branch protection của repo public.
