@@ -67,11 +67,15 @@ Thẩm quyền: ADR 0010 (sửa 2026-10-31), ADR 0013, docs/product/plan-ios-v1.
 định `LibraryFixture`; `Support/SessionFixtures.swift` dựng phiên thi), ảnh ở
 `__Snapshots__/PhoneSnapshotTests/<tên test>.<tên ảnh>.png`.
 
-- Có gì: làm bài (câu dài 10 lựa chọn, câu có ảnh lớn), Kết quả nhiều phần, Xem lại bài của đề ẩn đáp án, Thư viện:
-  sáng và tối; cỡ chữ trợ năng `accessibility1` (UIKit `accessibilityMedium`, QI11) ở làm bài và Kết quả, chỉ sáng.
-  Màn dựng trong một cửa sổ 390×844 pt có vùng an toàn của iPhone có Dynamic Island (`PhoneWindow`), màu nhấn như gốc
-  của app, locale `vi`, múi giờ Asia/Ho_Chi_Minh; chụp bằng `CALayer.render(in:)` khi hai lần chụp liên tiếp giống
-  nhau (`List` và thanh điều hướng chỉ có sau một vòng runloop), ảnh 1x để file nhỏ.
+- Có gì: làm bài (câu dài 10 lựa chọn: đầu câu và cuối câu `-end`; câu có ảnh lớn), Kết quả nhiều phần (đầu và cuối
+  `-end`), Xem lại bài của đề ẩn đáp án, Thư viện: sáng và tối; cỡ chữ trợ năng `accessibility1` (UIKit
+  `accessibilityMedium`, QI11) ở làm bài, Kết quả, Xem lại bài, chỉ sáng (`-largeText`). Tên ảnh không ghi cỡ: mọi ảnh
+  là 390×844 pt.
+- Màn dựng trong một cửa sổ 390×844 pt có vùng an toàn của iPhone tai thỏ (trên 47, dưới 34 pt, như `.iPhone13` của thư
+  viện; `PhoneWindow`), màu nhấn như gốc của app, locale `vi`, múi giờ Asia/Ho_Chi_Minh (`NSTimeZone.default` của cả
+  tiến trình, vì ngày giờ định dạng theo múi giờ hệ thống); chụp bằng `CALayer.render(in:)` khi hai lần chụp liên tiếp
+  giống nhau, ít nhất ba lần (`List` và thanh điều hướng chỉ có sau một vòng runloop; ảnh không đứng yên sau 20 lần
+  thì test báo lỗi), ảnh 1x để file nhỏ. Ảnh `-end` cuộn vùng cuộn cao nhất tới cuối rồi chụp lại.
 - Chạy trên simulator, không qua `swift test`: `verify_local.sh` mức full chạy cùng `MobileFeatureTests`
   (`-only-testing:MobileSnapshotTests`), máy và runtime theo `EXAMSUITE_IOS_DESTINATION` (mặc định iPhone 17, iOS 26.1).
   Đổi máy hay runtime thì ghi lại ảnh như sau khi nâng macOS/Xcode.
@@ -87,16 +91,18 @@ Thẩm quyền: ADR 0010 (sửa 2026-10-31), ADR 0013, docs/product/plan-ios-v1.
   Rồi chạy lại không biến (phải xanh) và xem từng ảnh như mục trên.
 - Test chạy trong tiến trình `xctest` của simulator, không có `UIApplication`: không dùng được
   `drawHierarchy(in:afterScreenUpdates:)` (ra ảnh trống), nên lớp kính, làm mờ và ô tìm nổi của iOS 26 vẽ xấp xỉ hoặc
-  thiếu: tiêu đề và nút của thanh điều hướng vào ảnh ở một số màn (làm bài câu có ảnh, Xem lại bài), không vào ở màn
-  khác (làm bài câu dài), ổn định giữa các lần chạy. Kính và độ trong suốt thật cần test tay trên máy (cổng GI2).
-- Thư viện chụp không có `NavigationStack`: trong đó, `.searchable` cùng `.refreshable` làm `render(in:)` không vẽ gì
-  của nội dung (thử 2026-10-31; từng modifier riêng thì vẽ được). Ảnh Thư viện vì vậy không có tiêu đề, ô tìm và nút
-  của thanh điều hướng.
+  thiếu: tiêu đề, nút của thanh điều hướng và nút của thanh dưới hệ thống có trong ảnh **tối**, không có trong ảnh
+  **sáng** (ổn định giữa các lần chạy). Ảnh sáng vì vậy không bắt được hồi quy của các thanh đó. Kính và độ trong suốt
+  thật cần test tay trên máy (cổng GI2).
+- Ba ảnh chụp không có `NavigationStack`, vì trong đó `render(in:)` không vẽ gì của nội dung (thử 2026-10-31): Thư viện
+  (`.searchable` cùng `.refreshable`; từng modifier riêng thì vẽ được), cuối Kết quả (cuộn xuống thì tiêu đề lớn thu
+  vào thanh điều hướng), Xem lại bài ở cỡ chữ lớn (nội dung dưới thanh dưới của hệ thống). Các ảnh đó không có tiêu đề
+  và nút của các thanh.
 
 ## Giới hạn
 
-- Phụ thuộc chỉ để test nhưng nằm trong đồ thị gói của `Packages/ExamFeatures`: mọi lần resolve (kể cả build app bằng
-  `xcodebuild`) đều tải swift-snapshot-testing, swift-custom-dump, swift-issue-reporting, swift-syntax và bản build sẵn
+- Phụ thuộc chỉ để test nhưng nằm trong đồ thị gói của `Packages/ExamFeatures` và `Packages/MobileFeatures`: mọi lần
+  resolve (kể cả build app bằng `xcodebuild`) đều tải swift-snapshot-testing, swift-custom-dump, swift-issue-reporting, swift-syntax và bản build sẵn
   MacroSupport của swift-syntax (khoảng 115 MB mỗi thư mục build). Không gói nào được biên dịch hay link vào app (ADR
   0006).
 

@@ -378,8 +378,12 @@ ios_unit_tests() {
     -derivedDataPath build/DerivedData-iOS -only-testing:MobileFeatureTests -only-testing:MobileSnapshotTests test \
     > "$out" 2>&1 || { tail -40 "$out"; echo "MobileFeatureTests/MobileSnapshotTests thất bại (log: $out)."; return 1; }
   grep -E '^[✔✘] Test run with' "$out" || true
-  grep -qE '^✔ Test run with [1-9][0-9]* tests? ' "$out" \
-    || { echo "MobileFeatureTests: không có test nào chạy (log: $out)."; return 1; }
+  # Mỗi target một dòng "Test run" của Swift Testing: cả hai phải có test chạy (không gộp, để một target chạy 0 test
+  # cũng bị bắt).
+  [[ $(grep -cE '^✔ Test run with [1-9][0-9]* tests? ' "$out") -ge 2 ]] \
+    || { echo "MobileFeatureTests hoặc MobileSnapshotTests không có test nào chạy (log: $out)."; return 1; }
+  grep -qE '^✔ Suite "Snapshot iPhone" passed' "$out" \
+    || { echo "MobileSnapshotTests (Snapshot iPhone) không chạy (log: $out)."; return 1; }
 }
 run "MobileFeatureTests, MobileSnapshotTests (simulator)" ios_unit_tests
 run "kiểm bundle (ADR 0003)" scripts/check_bundle_boundary.sh build/DerivedData/Build/Products/Debug "$IOS_PRODUCTS"

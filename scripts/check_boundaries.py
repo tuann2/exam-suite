@@ -215,8 +215,8 @@ def normalized_location(location: object) -> str:
 
 
 def check_snapshot_imports(root: Path = ROOT) -> list[str]:
-    """Mọi file .swift trong Packages/*/{Sources,Tests} và Apps: chỉ Packages/ExamFeatures/Tests/** được import
-    module của swift-snapshot-testing."""
+    """Mọi file .swift trong Packages/*/{Sources,Tests} và Apps: chỉ Packages/ExamFeatures/Tests/** và
+    Packages/MobileFeatures/Tests/** được import module của swift-snapshot-testing."""
     problems: list[str] = []
     files = sorted((root / "Packages").glob("*/*/**/*.swift")) + sorted((root / "Apps").rglob("*.swift"))
     for swift in files:
@@ -363,7 +363,7 @@ def described_snapshot_problems(package: str, data: dict) -> list[str]:
 
 
 def project_yml_snapshot_mentions(raw: str) -> list[str]:
-    """project.yml (hai app, UI test) không nhắc swift-snapshot-testing (bỏ dòng comment)."""
+    """project.yml (các app, UI test, scheme) không nhắc swift-snapshot-testing (bỏ dòng comment)."""
     text = "\n".join(line for line in raw.splitlines() if not line.lstrip().startswith("#")) + "\n"
     return [
         f"project.yml nhắc tới {word}: swift-snapshot-testing chỉ dùng trong test của Packages/{{ExamFeatures,MobileFeatures}} "
@@ -400,7 +400,7 @@ def spec_package_problems(spec: dict) -> list[str]:
                                                  or dependency.get("package") == SNAPSHOT_PACKAGE):
                 problems.append(
                     f"project.yml target {target} phụ thuộc {dependency}: swift-snapshot-testing chỉ dùng trong test "
-                    "của Packages/ExamFeatures (docs/decisions/0010-snapshot-testing.md)."
+                    "của Packages/{ExamFeatures,MobileFeatures} (docs/decisions/0010-snapshot-testing.md)."
                 )
     return problems
 

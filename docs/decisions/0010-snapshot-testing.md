@@ -75,8 +75,11 @@ Tradeoffs:
   8+ lựa chọn, ảnh lớn, nhiều phần, Kết quả, Xem lại, trang đầu PDF).
 - 2026-10-31, bước I2b của plan iOS (ADR 0013, docs/product/plan-ios-v1.md Phần 5): `MobileSnapshotTests` dựng màn
   trong một cửa sổ cỡ iPhone 390×844, chụp bằng `CALayer.render(in:)` khi bố cục đã đứng yên, ảnh 1x, sáng/tối và cỡ
-  chữ trợ năng; so ảnh bằng `assertSnapshot` của thư viện (chiến lược ảnh, cùng độ chính xác cảm nhận). `Packages/MobileFeatures/Package.resolved`
-  ghim cùng bản với ExamFeatures; như ở ExamFeatures, resolve gói này (kể cả build app iOS) tải các gói mà manifest
-  của swift-snapshot-testing khai báo, không biên dịch vào app (`check_bundle_boundary.sh` kiểm cả app iOS). Simulator
+  chữ trợ năng; so ảnh bằng `assertSnapshot` của thư viện (chiến lược ảnh, cùng độ chính xác cảm nhận). Tên ảnh iPhone
+  không ghi cỡ (mọi ảnh 390×844), ghi `light`/`dark`, ảnh cỡ chữ lớn ghi `largeText` (chỉ sáng).
+  `Packages/MobileFeatures/Package.resolved` ghim cùng bản với ExamFeatures cho `swift package` (`check_boundaries.py`
+  đọc); bản build bằng `xcodebuild` (project do XcodeGen sinh, không commit) resolve theo `from: "1.19.6"`, như
+  ExamFeatures. Như ở ExamFeatures, resolve gói này (kể cả build app iOS) tải các gói mà manifest của
+  swift-snapshot-testing khai báo, không biên dịch vào app (`check_bundle_boundary.sh` kiểm cả app iOS). Simulator
   chỉ nhận biến môi trường có tiền tố `TEST_RUNNER_`, nên ghi lại ảnh iPhone bằng
   `TEST_RUNNER_EXAMSUITE_SNAPSHOT_RECORD` (docs/process/snapshot-tests.md).

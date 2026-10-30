@@ -68,9 +68,9 @@ Không có cặp song song.
       Xem lại bài, Luyện lại câu sai, Làm lại, mở lần thi cũ; điều phối phiên của iOS; file mở từ app khác (`Inbox` →
       `Received/`); catalog `vi`/`en`; 12 `MobileFeatureTests`; ba XCUITest kèm kiểm trợ năng;
       `check_release_strings.sh` kiểm bản Release iOS. Review độc lập và re-review xong, đã sửa theo review.
-- [ ] I2b Snapshot iPhone sáng/tối và cỡ chữ lớn (nhánh `feature/ios-i2b`): `MobileSnapshotTests` (12 ảnh: làm bài câu
-      dài và ảnh lớn, Kết quả nhiều phần, Xem lại bài đề ẩn đáp án, Thư viện, sáng/tối; làm bài và Kết quả ở cỡ chữ
-      `accessibility1`), ADR 0010 và 0006 ghi thêm test target này, `check_boundaries.py` luật 5 cho phép
+- [ ] I2b Snapshot iPhone sáng/tối và cỡ chữ lớn (nhánh `feature/ios-i2b`): `MobileSnapshotTests` (17 ảnh: làm bài câu
+      dài (đầu và cuối) và ảnh lớn, Kết quả nhiều phần (đầu và cuối), Xem lại bài đề ẩn đáp án, Thư viện, sáng/tối; làm
+      bài, Kết quả, Xem lại bài ở cỡ chữ `accessibility1`), ADR 0010 và 0006 ghi thêm test target này, `check_boundaries.py` luật 5 cho phép
       `Packages/MobileFeatures/Tests`, `verify_local.sh` chạy ảnh cùng `MobileFeatureTests`; dòng đề chưa Sẵn sàng của
       Thư viện không làm mờ (ảnh cho thấy lý do lỗi khó đọc). Cổng GI2 sau I2b.
 - [ ] I3 Hoàn thiện, bản 0.1.0. Cổng GI3.
@@ -273,7 +273,19 @@ Không có cặp song song.
   điều hướng. Vì vậy test tự dựng cửa sổ 390×844 (vùng an toàn như `.iPhone13`), chụp tới khi hai lần liên tiếp giống
   nhau, rồi so bằng `assertSnapshot` (chiến lược ảnh, `perceptualPrecision` 0,98). Thư viện chụp không có
   `NavigationStack`: chia đôi cho thấy `.searchable` cùng `.refreshable` trong `NavigationStack` làm `render(in:)` không
-  vẽ gì của nội dung (từng modifier riêng thì vẽ được). Không sửa màn thật chỉ để chụp được.
+  vẽ gì của nội dung (từng modifier riêng thì vẽ được). Không sửa màn thật chỉ để chụp được. Tiêu đề, nút của thanh
+  điều hướng và nút của thanh dưới hệ thống có trong ảnh tối, không có trong ảnh sáng (ổn định giữa các lần chạy):
+  ảnh sáng không bắt được hồi quy của các thanh đó, kính của iOS 26 kiểm tay ở GI2.
+- 2026-10-31, I2b, review độc lập (phiên mới, trên 8d191f1): REQUEST CHANGES, đã sửa: múi giờ ghim cho cả tiến trình
+  (`NSTimeZone.default`, như bản macOS; trước chỉ ghim `\.timeZone` của SwiftUI nên ngày giờ của Thư viện và Kết quả
+  theo múi giờ của máy); thêm ảnh cỡ chữ lớn của Xem lại bài (mobile.md đòi làm bài, Kết quả, Xem lại) và ảnh cuối màn
+  (`-end`: mười lựa chọn của câu dài, bảng Theo phần đủ tám phần), như ảnh `-end` của bản macOS; chụp ít nhất ba lần,
+  báo lỗi khi ảnh không đứng yên sau 20 lần (cuối Kết quả và Xem lại bài cỡ chữ lớn cũng chụp không có
+  `NavigationStack`, cùng lý do với Thư viện); `verify_local.sh` đòi cả hai target iOS có test chạy và suite "Snapshot
+  iPhone" đạt; tài liệu sửa cho đúng (thanh điều hướng, vùng an toàn của iPhone tai thỏ, `Package.resolved` chỉ ghim
+  cho `swift package`, project do XcodeGen sinh resolve theo `from:`). Còn lại: ảnh 390×844 (không phải cỡ iPhone 17
+  402×874, không có bề ngang 375); ngôn ngữ của simulator không ghim (chữ qua `localized` khoá `vi`, `Text` theo
+  `\.locale` của môi trường).
 - 2026-10-31, I2b, dòng đề chưa Sẵn sàng (đề lỗi): I2a đặt `.disabled` cho cả dòng nên lý do lỗi bị làm mờ (thấy trên
   ảnh Thư viện). Nay dòng không mờ, chạm không làm gì (`startSession` từ chối), VoiceOver không đọc là nút; giống thẻ
   của macOS (chỉ nút Luyện tập/Thi tắt).
@@ -326,6 +338,17 @@ I2a (nhánh `feature/ios-i2`):
 
 I2a, sau review: `local/verify` xanh trên 2a32ae6 (mức full, UI test đủ bộ: Học viên 6, Admin 4, iOS 3; kho thật không
 đổi; Linux ok); PR #10 merge.
+
+I2b (nhánh `feature/ios-i2b`):
+
+- `MobileSnapshotTests` trên simulator iPhone 17, iOS 26.1: 10 test (17 ảnh) đạt hai lần liên tiếp, lần hai từ
+  simulator vừa khởi động; `MobileFeatureTests` 12 test đạt cùng lần chạy.
+- Đối chứng âm: thay ảnh tham chiếu `library-light` bằng ảnh tối thì `libraryList` đỏ (suite "Snapshot iPhone" thất
+  bại); trả ảnh lại thì xanh.
+- Xem từng ảnh (390×844, ≤ 126 KB): đề ẩn đáp án không có "Đáp án đúng" và giải thích; dòng Đề có lỗi không mờ; ảnh
+  `-end` thấy lựa chọn C đang chọn tới J, và đủ tám phần cùng "Phần yếu nhất".
+- `check_boundaries.py` (có `swift package describe`), `check_localization.py --require-en`, `check_colors.py`,
+  `uitest_plan.py --self-test`, `verify_scope.py --self-test`: đạt.
 
 ## Result
 
