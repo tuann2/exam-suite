@@ -107,6 +107,9 @@ final class PhoneApp {
             let current = field.value as? String ?? ""
             field.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: current.count) + "\(minutes)")
             tap("keyboard.done")
+            // Bàn phím là tiến trình khác: cây trợ năng của app không cho biết nó còn đang thu lại, kiểm trợ năng lúc đó báo
+            // nhầm phần tử của bàn phím. Chờ bàn phím biến mất.
+            XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 5), "Bàn phím chưa đóng")
             XCTAssertEqual(field.value as? String, "\(minutes)", "Ô thời gian phải ghi \(minutes) phút")
             if auditPreExam { PhoneAccessibilityAudit.audit(app, screen: "Trước khi thi (Thi, ô thời gian)") }
         }

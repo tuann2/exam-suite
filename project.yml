@@ -308,5 +308,6 @@ schemes:
       targets:
         - ExamSuiteiOSUITests
         # Test của phần chỉ iOS (Packages/MobileFeatures), chạy trên simulator: `verify_local.sh` mức full
-        # (`-only-testing:MobileFeatureTests`).
+        # (`-only-testing:MobileFeatureTests`, `-only-testing:MobileSnapshotTests`).
         - package: MobileFeatures/MobileFeatureTests
+        - package: MobileFeatures/MobileSnapshotTests

@@ -21,8 +21,9 @@
    cùng test target của hai module đó; không ở module, test hay app nào khác.
    Thẩm quyền: docs/decisions/0006-thu-vien-ngoai.md (Nt0 duyệt thêm ExamImport 2026-10-16)
 5. swift-snapshot-testing (product SnapshotTesting) chỉ trong test: `import SnapshotTesting` chỉ ở
-   Packages/ExamFeatures/Tests/**; trong Package.swift product này chỉ nằm trong `.testTarget`; không target
-   nào khác của gói (theo `swift package describe`) phụ thuộc nó; project.yml (hai app, UI test) không nhắc tới nó
+   Packages/ExamFeatures/Tests/** và Packages/MobileFeatures/Tests/** (snapshot iPhone, ADR 0013 bước I2); trong
+   Package.swift product này chỉ nằm trong `.testTarget`; không target nào khác của gói (theo `swift package
+   describe`) phụ thuộc nó; project.yml (các app, UI test, scheme) không nhắc tới nó
    và chỉ dùng gói cục bộ `path: Packages/<tên>` (đọc spec đã phân giải bằng `xcodegen dump --type json` nếu có
    xcodegen, không thì theo ngữ pháp dòng chặt). Không dùng product khác của gói đó (InlineSnapshotTesting kéo
    swift-syntax).
@@ -188,7 +189,7 @@ SNAPSHOT_MODULE = "SnapshotTesting"
 SNAPSHOT_PACKAGE = "swift-snapshot-testing"
 SNAPSHOT_MODULES = {SNAPSHOT_MODULE, "InlineSnapshotTesting", "SnapshotTestingCustomDump"}
 # Thư mục (Packages/<gói>/<Sources|Tests>) được import SnapshotTesting (ADR 0010).
-SNAPSHOT_ALLOWED_DIRS = {("ExamFeatures", "Tests")}
+SNAPSHOT_ALLOWED_DIRS = {("ExamFeatures", "Tests"), ("MobileFeatures", "Tests")}
 # `.package(url:)` được phép (ADR 0006, 0010), so theo URL chữ thường đã bỏ `/` và `.git` ở cuối.
 ALLOWED_PACKAGE_URLS = {
     "https://github.com/weichsel/zipfoundation",
@@ -214,8 +215,8 @@ def normalized_location(location: object) -> str:
 
 
 def check_snapshot_imports(root: Path = ROOT) -> list[str]:
-    """Mọi file .swift trong Packages/*/{Sources,Tests} và Apps: chỉ Packages/ExamFeatures/Tests/** được import
-    module của swift-snapshot-testing."""
+    """Mọi file .swift trong Packages/*/{Sources,Tests} và Apps: chỉ Packages/ExamFeatures/Tests/** và
+    Packages/MobileFeatures/Tests/** được import module của swift-snapshot-testing."""
     problems: list[str] = []
     files = sorted((root / "Packages").glob("*/*/**/*.swift")) + sorted((root / "Apps").rglob("*.swift"))
     for swift in files:
@@ -228,7 +229,7 @@ def check_snapshot_imports(root: Path = ROOT) -> list[str]:
         for name in imported_modules(swift.read_text(encoding="utf-8")):
             if name in SNAPSHOT_MODULES:
                 problems.append(
-                    f"{rel} import {name}: swift-snapshot-testing chỉ dùng trong Packages/ExamFeatures/Tests "
+                    f"{rel} import {name}: swift-snapshot-testing chỉ dùng trong Packages/{{ExamFeatures,MobileFeatures}}/Tests "
                     "(docs/decisions/0010-snapshot-testing.md). Không đưa vào code app hay lõi."
                 )
     return problems
@@ -362,10 +363,10 @@ def described_snapshot_problems(package: str, data: dict) -> list[str]:
 
 
 def project_yml_snapshot_mentions(raw: str) -> list[str]:
-    """project.yml (hai app, UI test) không nhắc swift-snapshot-testing (bỏ dòng comment)."""
+    """project.yml (các app, UI test, scheme) không nhắc swift-snapshot-testing (bỏ dòng comment)."""
     text = "\n".join(line for line in raw.splitlines() if not line.lstrip().startswith("#")) + "\n"
     return [
-        f"project.yml nhắc tới {word}: swift-snapshot-testing chỉ dùng trong test của Packages/ExamFeatures "
+        f"project.yml nhắc tới {word}: swift-snapshot-testing chỉ dùng trong test của Packages/{{ExamFeatures,MobileFeatures}} "
         "(docs/decisions/0010-snapshot-testing.md)."
         for word in sorted(SNAPSHOT_MODULES | {SNAPSHOT_PACKAGE})
         if re.search(rf"\b{re.escape(word)}\b", text)
@@ -399,7 +400,7 @@ def spec_package_problems(spec: dict) -> list[str]:
                                                  or dependency.get("package") == SNAPSHOT_PACKAGE):
                 problems.append(
                     f"project.yml target {target} phụ thuộc {dependency}: swift-snapshot-testing chỉ dùng trong test "
-                    "của Packages/ExamFeatures (docs/decisions/0010-snapshot-testing.md)."
+                    "của Packages/{ExamFeatures,MobileFeatures} (docs/decisions/0010-snapshot-testing.md)."
                 )
     return problems
 
@@ -497,6 +498,8 @@ def snapshot_self_test(import_forms: tuple[str, ...]) -> list[str]:
     failures: list[str] = []
     cases = {
         "Packages/ExamFeatures/Tests/ExamFeaturesSnapshotTests/Ok.swift": ("import SnapshotTesting\n", False),
+        "Packages/MobileFeatures/Tests/MobileSnapshotTests/Ok.swift": ("import SnapshotTesting\n", False),
+        "Packages/MobileFeatures/Sources/MobileFeature/Bad.swift": ("import SnapshotTesting\n", True),
         "Packages/ExamFeatures/Tests/ExamFeaturesSnapshotTests/Support/Ok.swift": (
             "@testable import SessionFeature\nimport SnapshotTesting\n", False),
         "Packages/ExamFeatures/Sources/SessionFeature/Comment.swift": ("// import SnapshotTesting\n", False),
@@ -1197,7 +1200,7 @@ def main(argv: list[str]) -> int:
             print(f"  - {p}")
         return 1
     print("ok   ExamKit/ExamFile chỉ dùng Foundation(+ZIPFoundation); ZIPFoundation chỉ ở ExamFile/ExamImport; "
-          "SnapshotTesting chỉ ở test của ExamFeatures; gói ngoài chỉ ZIPFoundation, swift-snapshot-testing; "
+          "SnapshotTesting chỉ ở test của ExamFeatures, MobileFeatures; gói ngoài chỉ ZIPFoundation, swift-snapshot-testing; "
           "AuthoringData, ExamImport không giao diện; "
           f"StudentShell, MobileShell không chứa {', '.join(ADMIN_ONLY_MODULES)}; {TEST_ONLY_MODULE} chỉ ở test; "
           f"ReportFeature chỉ phụ thuộc {', '.join(sorted(REPORT_ALLOWED_DEPENDENCIES))} (đối chứng âm bị bắt)"

@@ -71,15 +71,9 @@ final class PhoneExamFlowUITests: XCTestCase {
         let firstCell = phone.app.buttons.matching(NSPredicate(format: "label BEGINSWITH %@", "Câu 1,")).firstMatch
         XCTAssertTrue(firstCell.waitForExistence(timeout: 5))
         XCTAssertFalse(firstCell.isEnabled, "Rà soát khoá: bảng câu hỏi chỉ để xem")
-        // Kéo sheet lên cỡ lớn: ở cỡ vừa, chữ của màn bên dưới vẫn thấy mà không đọc được (sheet chặn), kiểm báo
-        // "Potentially inaccessible text".
+        // Ở Rà soát, bảng câu hỏi mở cỡ lớn (cỡ vừa để chữ của màn bên dưới thấy mà không đọc được).
         let done = phone.element("navigator.done")
-        let largeSheetTop = phone.app.frame.height * 0.2
-        for _ in 0 ..< 3 where done.frame.minY > largeSheetTop {
-            phone.app.navigationBars["Bảng câu hỏi"].swipeUp()
-            sleep(1)
-        }
-        XCTAssertLessThan(done.frame.minY, largeSheetTop, "Bảng câu hỏi chưa lên cỡ lớn")
+        XCTAssertLessThan(done.frame.minY, phone.app.frame.height * 0.2, "Bảng câu hỏi ở Rà soát phải mở cỡ lớn")
         PhoneAccessibilityAudit.audit(phone.app, screen: "Bảng câu hỏi (Rà soát khoá)")
         phone.tap("navigator.done")
         phone.tap("review.submit")

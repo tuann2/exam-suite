@@ -18,6 +18,9 @@ let package = Package(
     dependencies: [
         .package(path: "../ExamKit"),
         .package(path: "../SharedFeatures"),
+        // Snapshot test iPhone (ADR 0010): CHỈ test target MobileSnapshotTests được dùng; không target nào trong Sources,
+        // không vào app (scripts/check_boundaries.py, check_bundle_boundary.sh kiểm). Cùng bản với ExamFeatures.
+        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.19.6"),
     ],
     targets: [
         // Màn hình iPhone: Thư viện, Trước khi thi, làm bài, Kết quả, Xem lại bài; điều phối phiên thi; file nhận từ
@@ -58,6 +61,22 @@ let package = Package(
                 .product(name: "ExamKit", package: "ExamKit"),
                 .product(name: "ExamFile", package: "ExamKit"),
             ],
+            swiftSettings: [.swiftLanguageMode(.v6)]
+        ),
+        // Snapshot iPhone sáng/tối và cỡ chữ trợ năng (docs/product/plan-ios-v1.md Phần 5, ADR 0010), chạy trên simulator
+        // cùng `MobileFeatureTests`; ảnh tham chiếu ở __Snapshots__/ (docs/process/snapshot-tests.md).
+        .testTarget(
+            name: "MobileSnapshotTests",
+            dependencies: [
+                "MobileFeature",
+                .product(name: "LibraryData", package: "SharedFeatures"),
+                .product(name: "InterfaceCore", package: "SharedFeatures"),
+                .product(name: "SessionModel", package: "SharedFeatures"),
+                .product(name: "ExamKit", package: "ExamKit"),
+                .product(name: "ExamFile", package: "ExamKit"),
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+            ],
+            exclude: ["__Snapshots__"],
             swiftSettings: [.swiftLanguageMode(.v6)]
         ),
     ]
