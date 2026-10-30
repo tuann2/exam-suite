@@ -4,8 +4,8 @@ Date: 2026-10-30
 
 ## Status
 
-Active. I0 (PR #8), I1 (PR #9), I2a (PR #10) đã merge; cổng GI1 đạt. I2b trên nhánh `feature/ios-i2b`; sau đó cổng GI2
-(Nt0 thử trên iPhone thật).
+Active. I0 (PR #8), I1 (PR #9), I2a (PR #10), I2b (PR #11) đã merge; cổng GI1 đạt. Chờ cổng GI2 (Nt0 thử trên iPhone
+thật). I3 trên nhánh `feature/ios-i3` (PR mở, chưa merge tới khi qua GI2).
 
 ## Outcome
 
@@ -68,12 +68,20 @@ Không có cặp song song.
       Xem lại bài, Luyện lại câu sai, Làm lại, mở lần thi cũ; điều phối phiên của iOS; file mở từ app khác (`Inbox` →
       `Received/`); catalog `vi`/`en`; 12 `MobileFeatureTests`; ba XCUITest kèm kiểm trợ năng;
       `check_release_strings.sh` kiểm bản Release iOS. Review độc lập và re-review xong, đã sửa theo review.
-- [ ] I2b Snapshot iPhone sáng/tối và cỡ chữ lớn (nhánh `feature/ios-i2b`): `MobileSnapshotTests` (17 ảnh: làm bài câu
+- [x] I2b Snapshot iPhone sáng/tối và cỡ chữ lớn (rủi ro cao; PR #11, merge 2026-10-31): `MobileSnapshotTests` (17 ảnh: làm bài câu
       dài (đầu và cuối) và ảnh lớn, Kết quả nhiều phần (đầu và cuối), Xem lại bài đề ẩn đáp án, Thư viện, sáng/tối; làm
       bài, Kết quả, Xem lại bài ở cỡ chữ `accessibility1`), ADR 0010 và 0006 ghi thêm test target này, `check_boundaries.py` luật 5 cho phép
       `Packages/MobileFeatures/Tests`, `verify_local.sh` chạy ảnh cùng `MobileFeatureTests`; dòng đề chưa Sẵn sàng của
       Thư viện không làm mờ (ảnh cho thấy lý do lỗi khó đọc). Cổng GI2 sau I2b.
-- [ ] I3 Hoàn thiện, bản 0.1.0. Cổng GI3.
+- [ ] Cổng GI2 (Nt0): cài lên iPhone thật, làm trọn một đề, nhận file qua Zalo/Drive, file iCloud qua app Tệp, cuộc
+      gọi đến khi đang làm bài (QI10), VoiceOver, kính iOS 26 ở giao diện sáng, dòng Đề có lỗi của Thư viện.
+- [ ] I3 Hoàn thiện, bản 0.1.0 (nhánh `feature/ios-i3`; chờ cổng GI2 trước khi merge). Đã làm: màn
+      Giới thiệu (QI13: phiên bản, Apache-2.0, NOTICE, ZIPFoundation; toàn văn giấy phép đi kèm app), biểu tượng tạm
+      1024 px (`make_icons.swift`), `PaletteContrastTests` thêm nền của iOS, đo đề chuẩn trên simulator
+      (`docs/notes/ios-measurements.md`) và sửa mục vượt ngân sách (ảnh của câu giải mã ngoài main thread),
+      `docs/install-ios.md`, `CHANGELOG-ios.md`. Còn lại (Nt0): sửa lỗi beta từ GI2, rà VoiceOver bốn màn chính trên máy
+      thật, cài 0.1.0 qua Xcode, `verify_local.sh --clean --uitest` trên SHA phát hành, tag `ios-v0.1.0`, cổng GI3, đóng
+      exec-plan.
 
 ## Decisions
 
@@ -289,6 +297,20 @@ Không có cặp song song.
 - 2026-10-31, I2b, dòng đề chưa Sẵn sàng (đề lỗi): I2a đặt `.disabled` cho cả dòng nên lý do lỗi bị làm mờ (thấy trên
   ảnh Thư viện). Nay dòng không mờ, chạm không làm gì (`startSession` từ chối), VoiceOver không đọc là nút; giống thẻ
   của macOS (chỉ nút Luyện tập/Thi tắt).
+- 2026-10-31, I3, màn Giới thiệu: mở từ menu của Thư viện (cùng menu Mục/Sắp xếp, nhãn trợ năng "Mục, sắp xếp, Giới
+  thiệu"), cùng chữ với hộp Giới thiệu của macOS (`Credits.rtf`), kèm toàn văn `LICENSE`, `NOTICE`,
+  `THIRD_PARTY_NOTICES.md` mà `project.yml` đưa vào tài nguyên của app (như ba file `.txt` trong app macOS của
+  `make_dmg.sh`). Không thêm bước kiểm bundle: luồng 1 của UI test mở Giới thiệu, đọc phiên bản, toàn văn Apache-2.0 và
+  giấy phép của ZIPFoundation, chạy kiểm trợ năng.
+- 2026-10-31, I3, changelog riêng ở `CHANGELOG-ios.md` (gốc repo): `Apps/StudentiOS` là thư mục nguồn của target nên
+  file đặt ở đó sẽ bị đóng vào app.
+- 2026-10-31, I3, đo đề chuẩn (QI15): test tạm trong `MobileFeatureTests` (không commit, như lượt đi của Android), số ở
+  `docs/notes/ios-measurements.md`. Vượt ngân sách: đổi sang câu có ảnh chậm nhất 74–103 ms vì ảnh giải mã đồng bộ trong
+  `body` (review I2a đã nghi). Sửa: `QuestionImage` giải mã ngoài main thread khi câu đổi, như `.task(id: data)` của bản
+  macOS; ảnh hỏng hiện "Không hiện được ảnh của câu này" như macOS (trước đó iOS không hiện gì). Nộp bài 762 ms (Debug,
+  ngân sách Release 500 ms): cùng code với macOS, không sửa ở v1, đo lại trên máy thật nếu GI3 thấy chậm.
+- 2026-10-31, I3, `PaletteContrastTests`: nền hệ thống của iOS (sáng `#FFFFFF`, `#F2F2F7`; tối `#000000`, `#1C1C1E`,
+  `#2C2C2E`, `#3A3A3C`) để riêng trong test, không thêm vào `LibraryPalette` (InterfaceCore, hợp đồng dùng chung).
 
 ## Validation
 
@@ -358,6 +380,21 @@ I2b (nhánh `feature/ios-i2b`):
   đề; cỡ vừa để chữ của Rà soát phía sau thấy mà không đọc được); khi đang làm vẫn có cỡ vừa. Test bỏ thao tác kéo
   sheet. Chạy lặp còn thấy một báo nhầm khác ở Trước khi thi (Thi) ngay sau khi bấm Xong của bàn phím: hai mục
   "Dynamic Type" không có phần tử (bàn phím là tiến trình khác, đang thu lại). Test chờ bàn phím biến mất rồi mới kiểm.
+
+I2b, sau review: `local/verify` xanh trên b867126 (mức full, UI test đủ bộ: Học viên 6, Admin 4, iOS 3; kho thật không
+đổi; Linux ok); PR #11 merge.
+
+I3 (nhánh `feature/ios-i3`):
+
+- `PaletteContrastTests` (có test nền iOS mới) và `GridFeedbackPaletteTests`: 20 test đạt.
+- `MobileFeatureTests` 12 test, `MobileSnapshotTests` 10 test (17 ảnh, không đổi ảnh nào sau khi dùng `QuestionImage`)
+  đạt trên simulator.
+- `ExamSuiteiOSUITests`: luồng 2, 3 đạt; luồng 1 (thêm Giới thiệu: phiên bản, toàn văn Apache-2.0 và giấy phép
+  ZIPFoundation, kiểm trợ năng) đạt sau ngoại lệ (d) (ảnh ở Accessibility XXXL: link xuống hai dòng).
+- `swift scripts/make_icons.swift`: PNG của hai app macOS không đổi từng byte; PNG iOS 1024 px không kênh alpha.
+- Đo đề chuẩn trước/sau: `docs/notes/ios-measurements.md`.
+- `xcodebuild -exportLocalizations` (iOS): lần thứ hai không đổi catalog; `check_localization.py --require-en`,
+  `check_boundaries.py`, `check_quit_sheets.py` đạt.
 
 ## Result
 

@@ -176,20 +176,10 @@ struct QuestionView: View {
                     Text(PlainMarkdown.attributed(attempt.currentQuestion.text))
                         .font(.body)
                         .textSelection(.enabled)
-                    if let data = attempt.currentImage, let image = UIImage(data: data) {
-                        Button {
+                    if let data = attempt.currentImage {
+                        QuestionImage(data: data) { image in
                             zoomedImage = ZoomedImage(image: image)
-                        } label: {
-                            Image(uiImage: image)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(maxHeight: 280)
-                                .frame(maxWidth: .infinity)
                         }
-                        .buttonStyle(.plain)
-                        .accessibilityIdentifier("question.image")
-                        .accessibilityLabel(localized("Ảnh của câu hỏi"))
-                        .accessibilityHint(localized("Chạm để phóng to"))
                     }
                     if let hint = attempt.selectionHint {
                         Text(hint)

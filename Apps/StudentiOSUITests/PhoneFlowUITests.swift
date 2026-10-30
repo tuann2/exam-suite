@@ -1,7 +1,8 @@
 import XCTest
 
 /// Luồng 1 trên iPhone (docs/product/plan-ios-v1.md Phần 4, I2): Luyện tập đề mẫu "Làm quen" tới Kết quả, Xem lại bài,
-/// rồi Luyện lại câu sai. Kiểm trợ năng ở Thư viện, Trước khi thi, làm bài, Rà soát & nộp, Kết quả, Xem lại bài.
+/// rồi Luyện lại câu sai. Kiểm trợ năng ở Thư viện, Giới thiệu (I3), Trước khi thi, làm bài, Rà soát & nộp, Kết quả, Xem
+/// lại bài.
 final class PhonePracticeFlowUITests: XCTestCase {
     @MainActor
     func testPracticeToReviewThenPracticeIncorrect() throws {
@@ -9,6 +10,27 @@ final class PhonePracticeFlowUITests: XCTestCase {
         phone.app.launch()
         XCTAssertTrue(phone.row(Samples.lamQuen).waitForExistence(timeout: 30), "Không thấy đề mẫu")
         PhoneAccessibilityAudit.audit(phone.app, screen: "Thư viện")
+
+        // Giới thiệu (QI13): phiên bản và số build của app, toàn văn giấy phép đi kèm app.
+        phone.tap("library.sections")
+        phone.tap("library.about")
+        let version = phone.element("about.version")
+        XCTAssertTrue(version.waitForExistence(timeout: 5), "Không mở được Giới thiệu")
+        let versionPattern = "Phiên bản [0-9]+\\.[0-9]+\\.[0-9]+ \\([0-9]+\\)"
+        XCTAssertTrue(
+            NSPredicate(format: "SELF MATCHES %@", versionPattern).evaluate(with: version.label),
+            "Giới thiệu phải ghi phiên bản và số build: \(version.label)"
+        )
+        PhoneAccessibilityAudit.audit(phone.app, screen: "Giới thiệu")
+        phone.tap("about.license")
+        let apache = phone.app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Apache License")).firstMatch
+        XCTAssertTrue(apache.waitForExistence(timeout: 5), "Giới thiệu phải có toàn văn giấy phép Apache-2.0")
+        phone.app.navigationBars["Giấy phép Apache 2.0"].buttons.element(boundBy: 0).tap()
+        phone.tap("about.thirdParty")
+        let zip = phone.app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Thomas Zoechling")).firstMatch
+        XCTAssertTrue(zip.waitForExistence(timeout: 5), "Giới thiệu phải có giấy phép của ZIPFoundation")
+        phone.app.navigationBars["Thư viện bên thứ ba"].buttons.element(boundBy: 0).tap()
+        phone.tap("about.done")
 
         phone.start(Samples.lamQuen, mode: "Luyện tập", auditPreExam: true)
 

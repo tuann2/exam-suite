@@ -217,12 +217,8 @@ struct ReviewDetailView: View {
                 Text(PlainMarkdown.attributed(text))
                     .textSelection(.enabled)
             }
-            if let path = detail.imagePath, let data = media[path], let image = UIImage(data: data) {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxHeight: 280)
-                    .accessibilityLabel(localized("Ảnh của câu hỏi"))
+            if let path = detail.imagePath, let data = media[path] {
+                QuestionImage(data: data)
             }
             if answersHidden, detail.text != nil {
                 Label(
