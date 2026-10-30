@@ -55,8 +55,10 @@ bản Release): app được cài đè, Thư viện, lịch sử thi và cài đ
 một iPhone; bản Release và bản Debug là hai app.
 
 Bundle ID `vn.io.nt0.examsuite.ios` đã đăng ký cho nhóm ký của Nt0. Người khác cài bằng Personal Team của mình thì đổi
-bundle ID khi build (ví dụ thêm `PRODUCT_BUNDLE_IDENTIFIER=<tên miền của bạn>.examsuite.ios` vào lệnh `xcodebuild`, hoặc
-sửa ở thẻ Signing & Capabilities), không sửa `project.yml`.
+**Bundle Identifier** của target ExamSuiteiOS ở thẻ Signing & Capabilities (ví dụ `<tên miền của bạn>.examsuite.ios`),
+không sửa `project.yml`. Đừng truyền `PRODUCT_BUNDLE_IDENTIFIER` ở dòng lệnh `xcodebuild`: cài đặt đó áp cho mọi target
+của lần build, kể cả bundle tài nguyên của các package. Thay đổi ở thẻ Signing nằm trong project do XcodeGen sinh: chạy
+lại `xcodegen generate` (mục Cập nhật) thì đổi lại.
 
 ## Mở đề
 

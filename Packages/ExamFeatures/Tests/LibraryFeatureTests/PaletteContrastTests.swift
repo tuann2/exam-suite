@@ -128,8 +128,8 @@ struct PaletteContrastTests {
         }
     }
 
-    /// Nền nội dung mà hàng lựa chọn của bản iOS nằm lên (màn làm bài, chi tiết Xem lại bài: nền màn và ô của
-    /// `secondarySystemBackground`). Nền sheet và ô nâng tối hơn (`#2C2C2E`, `#3A3A3C`) không có hàng lựa chọn; trên
+    /// Nền màn mà hàng lựa chọn đã chọn (nền nhạt teal) của màn làm bài bản iOS nằm lên (`systemBackground`) và nền ô
+    /// `secondarySystemBackground`. Nền sheet và ô nâng tối hơn (`#2C2C2E`, `#3A3A3C`) không có hàng lựa chọn; trên
     /// `#3A3A3C` màu Đúng/Sai/cảnh báo chỉ đạt khoảng 4,2–4,5:1, nên đặt hàng lựa chọn lên đó phải kiểm lại.
     static let iOSOptionRowBackgrounds: [Bool: [LibraryPalette.RGB]] = [
         false: [0xFFFFFF, 0xF2F2F7].map(LibraryPalette.RGB.init(hex:)),

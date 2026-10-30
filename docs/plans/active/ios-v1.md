@@ -397,11 +397,14 @@ I2b, sau review: `local/verify` xanh trên b867126 (mức full, UI test đủ b�
 
 I3 (nhánh `feature/ios-i3`):
 
-- `PaletteContrastTests` (có test nền iOS mới) và `GridFeedbackPaletteTests`: 20 test đạt.
+- `PaletteContrastTests` (có hai test nền iOS mới: bảng màu, chữ phụ, nền nhạt pha màu; chữ màu trên hàng lựa chọn đã
+  chọn) và `GridFeedbackPaletteTests` đạt.
 - `MobileFeatureTests` 12 test, `MobileSnapshotTests` 10 test (17 ảnh, không đổi ảnh nào sau khi dùng `QuestionImage`)
   đạt trên simulator.
-- `ExamSuiteiOSUITests`: luồng 2, 3 đạt; luồng 1 (thêm Giới thiệu: phiên bản, toàn văn Apache-2.0 và giấy phép
-  ZIPFoundation, kiểm trợ năng) đạt sau ngoại lệ (d) (ảnh ở Accessibility XXXL: link xuống hai dòng).
+- `ExamSuiteiOSUITests`: luồng 2, 3 đạt; luồng 1 (thêm Giới thiệu: phiên bản, có NOTICE, toàn văn Apache-2.0 và giấy
+  phép ZIPFoundation, kiểm trợ năng) đạt sau ngoại lệ (d) (ảnh ở Accessibility XXXL: link xuống hai dòng).
+- Sau review và re-review (APPROVE trên 400ea2c): `local/verify` xanh trên 400ea2c (mức full, UI test đủ bộ: Học viên
+  6, Admin 4, iOS 3; kho thật không đổi; Linux ok).
 - `swift scripts/make_icons.swift`: PNG của hai app macOS không đổi từng byte; PNG iOS 1024 px không kênh alpha.
 - Đo đề chuẩn trước/sau: `docs/notes/ios-measurements.md`.
 - `xcodebuild -exportLocalizations` (iOS): lần thứ hai không đổi catalog; `check_localization.py --require-en`,
