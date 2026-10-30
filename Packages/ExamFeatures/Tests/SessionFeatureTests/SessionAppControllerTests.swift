@@ -4,7 +4,6 @@ import Foundation
 import InterfaceCore
 import LibraryData
 @testable import SessionFeature
-import SessionModel
 import SwiftUI
 import Testing
 
@@ -116,7 +115,7 @@ struct SessionAppControllerTests {
         #expect(controller.coordinator.reportServices != nil)
         let preferences = try #require(controller.coordinator.reportPreferences)
         preferences.reportReviewLevel = .all
-        #expect(workspace.defaults.string(forKey: UserDefaultsSessionPreferences.reportReviewLevelKey) == "all")
+        #expect(workspace.defaults.string(forKey: "report.resultsReviewLevel") == "all")
     }
 
     /// Bắt đầu một bài Luyện tập chưa nộp.

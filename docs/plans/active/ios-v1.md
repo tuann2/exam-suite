@@ -189,6 +189,8 @@ Không có cặp song song.
     chờ Nt0 quyết (thêm một bước `swift test --package-path Packages/SharedFeatures`, hoặc gọi `scripts/check.sh`).
   - `PreExamModel.start()`, `rememberStartedChoices()` nay `public`: module khác gọi thẳng được, bỏ qua kiểm Huỷ và "mỗi
     lúc một phiên" của `SessionCoordinator.startPreExam()`. Màn iOS ở I2 đi qua một điều phối tương đương.
+- 2026-10-30, I1, re-review (cùng phiên review, trên 10a7263): APPROVE. Sửa thêm một nit: test
+  `appControllerWiresReportFlow` so chuỗi khoá `report.resultsReviewLevel`, không so hằng.
 
 ## Validation
 
