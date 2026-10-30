@@ -136,17 +136,19 @@ struct AppLaunchStorageTests {
         #expect(failure([flag, directory.path, scale, "inf"]) == .invalidTimeScale("inf"))
         #expect(failure([scale, "6"]) == .timeScaleWithoutDirectory)
         #expect(failure([UITestLaunchOptions.chosenFileArgument]) == .missingValue(UITestLaunchOptions.chosenFileArgument))
-        // Bundle ID thật: AppKit sẽ ghi vị trí cửa sổ vào defaults thật, nên không cho chạy.
-        for real in [LibraryConfiguration.studentBundleIdentifier, LibraryConfiguration.adminBundleIdentifier] {
+        // Bundle ID thật (hai bản macOS: AppKit sẽ ghi vị trí cửa sổ vào defaults thật; bản iOS và bản Debug của nó: dữ
+        // liệu thật trên iPhone), nên không cho chạy.
+        for real in LibraryConfiguration.productionBundleIdentifiers {
             #expect(failure([flag, directory.path], bundleID: real) == .productionBundleIdentifier(real))
         }
         // Bản build cho UI test chạy thiếu tham số cô lập: dừng, không rơi về kho thật (review #26 N1).
-        for testBuild in ["vn.io.nt0.examsuite.uitest", "vn.io.nt0.examsuite.admin.uitest"] {
+        for testBuild in ["vn.io.nt0.examsuite.uitest", "vn.io.nt0.examsuite.admin.uitest",
+                          "vn.io.nt0.examsuite.ios.debug.uitest"] {
             #expect(failure([], bundleID: testBuild) == .testBuildWithoutDirectory(testBuild))
         }
         // Bản thật và tiến trình khác (ví dụ trình chạy test) không có tham số: chạy bình thường.
-        for normal in [LibraryConfiguration.studentBundleIdentifier, LibraryConfiguration.adminBundleIdentifier,
-                       "com.apple.dt.xctest.tool", "vn.io.nt0.examsuitex"] {
+        let others = ["com.apple.dt.xctest.tool", "vn.io.nt0.examsuitex"]
+        for normal in LibraryConfiguration.productionBundleIdentifiers + others {
             #expect(failure([], bundleID: normal) == nil)
         }
     }
@@ -259,7 +261,7 @@ struct AppLaunchStorageTests {
     /// project.yml dựng bundle ID của hai bản app là `<bundle ID thật>$(EXAMSUITE_BUNDLE_ID_SUFFIX)`: build thường
     /// (đuôi rỗng) ra đúng bundle ID thật mà code dùng làm tên thư mục kho; build UI test (đuôi `.uitest`) ra bundle ID
     /// mà rào chắn nhận là bản build test (dừng khi thiếu tham số, không bị coi là bản thật).
-    @Test("project.yml: bundle ID hai bản app khớp code, đuôi .uitest được nhận là bản build test")
+    @Test("project.yml: bundle ID ba bản app khớp code, đuôi .uitest được nhận là bản build test")
     func projectBundleIdentifiers() throws {
         let lines = try Self.projectLines()
         /// Giá trị `PRODUCT_BUNDLE_IDENTIFIER` trong khối target `name`.
@@ -282,18 +284,34 @@ struct AppLaunchStorageTests {
             let testBuild = value.replacingOccurrences(of: suffix, with: ".uitest")
             #expect(UITestLaunchOptions.isTestBuild(bundleIdentifier: testBuild), "\(testBuild)")
         }
+        // Bản iOS: bản Debug thêm `.debug` (`EXAMSUITE_IOS_CONFIG_SUFFIX`), build UI test thêm `.uitest`. Cả bản Release
+        // và bản Debug đều là bản thật (dữ liệu trên iPhone); hai bản build UI test thì không.
+        let configSuffix = "$(EXAMSUITE_IOS_CONFIG_SUFFIX)"
+        let ios = try #require(
+            bundleIdentifier(ofTarget: "ExamSuiteiOS"), "project.yml thiếu bundle ID của ExamSuiteiOS"
+        )
+        #expect(ios == LibraryConfiguration.iosBundleIdentifier + configSuffix + suffix, "ExamSuiteiOS: \(ios)")
+        for (config, real) in [("", LibraryConfiguration.iosBundleIdentifier),
+                               (".debug", LibraryConfiguration.iosDebugBundleIdentifier)] {
+            let built = ios.replacingOccurrences(of: configSuffix, with: config)
+            #expect(built.replacingOccurrences(of: suffix, with: "") == real)
+            #expect(!UITestLaunchOptions.isTestBuild(bundleIdentifier: real))
+            let testBuild = built.replacingOccurrences(of: suffix, with: ".uitest")
+            #expect(UITestLaunchOptions.isTestBuild(bundleIdentifier: testBuild), "\(testBuild)")
+        }
     }
 
-    /// project.yml khai báo kiểu file `.exam` ở bốn chỗ: `LSItemContentTypes` và `UTTypeIdentifier` của hai bản app (bản
-    /// Học viên import, bản Admin export; exam-format.md, ADR 0003). Cả bốn phải là `ExamFileFormat.uniformTypeIdentifier`
-    /// mà `UTType.examPackage` dùng; lệch thì Finder và hộp chọn file không coi `.exam` là đề của app (đổi tên kiểu
-    /// 2026-10-18, plan giai đoạn 6 mục G6 Nt0).
-    @Test("project.yml: kiểu file .exam của hai bản app khớp ExamFileFormat.uniformTypeIdentifier")
+    /// project.yml khai báo kiểu file `.exam` ở sáu chỗ: `LSItemContentTypes` và `UTTypeIdentifier` của ba bản app (bản
+    /// Học viên macOS và bản iOS import, bản Admin export; exam-format.md, ADR 0003). Cả sáu phải là
+    /// `ExamFileFormat.uniformTypeIdentifier` mà `UTType.examPackage` dùng; lệch thì Finder và hộp chọn file không coi
+    /// `.exam` là đề của app (đổi tên kiểu 2026-10-18, plan giai đoạn 6 mục G6 Nt0).
+    @Test("project.yml: kiểu file .exam của ba bản app khớp ExamFileFormat.uniformTypeIdentifier")
     func projectExamTypeIdentifiers() throws {
         let lines = try Self.projectLines()
         let identifier = ExamFileFormat.uniformTypeIdentifier
         for (target, declarationKey) in [("ExamSuite", "UTImportedTypeDeclarations:"),
-                                         ("ExamSuiteAdmin", "UTExportedTypeDeclarations:")] {
+                                         ("ExamSuiteAdmin", "UTExportedTypeDeclarations:"),
+                                         ("ExamSuiteiOS", "UTImportedTypeDeclarations:")] {
             let block = try #require(Self.targetBlock(target, in: lines), "project.yml thiếu target \(target)")
             let trimmed = block.map { $0.trimmingCharacters(in: .whitespaces) }
             /// Mục đầu tiên ngay dưới khoá `key` trong khối target.
@@ -306,7 +324,7 @@ struct AppLaunchStorageTests {
         }
         // Không có khai báo kiểu nào khác (ví dụ tên cũ sót ở chỗ thứ năm).
         let declarations = lines.map { $0.trimmingCharacters(in: .whitespaces) }.filter { $0.hasPrefix("- UTTypeIdentifier:") }
-        #expect(declarations == Array(repeating: "- UTTypeIdentifier: " + identifier, count: 2), "\(declarations)")
+        #expect(declarations == Array(repeating: "- UTTypeIdentifier: " + identifier, count: 3), "\(declarations)")
     }
 
     /// Các dòng của project.yml ở gốc repo.

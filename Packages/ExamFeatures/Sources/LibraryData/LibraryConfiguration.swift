@@ -50,6 +50,18 @@ public struct LibraryConfiguration: Sendable, Equatable {
     public static let studentBundleIdentifier = "vn.io.nt0.examsuite"
     /// Bundle ID của bản Admin, khớp `project.yml` và ADR 0003.
     public static let adminBundleIdentifier = "vn.io.nt0.examsuite.admin"
+    /// Bundle ID của bản iOS (bản Học viên trên iPhone, docs/product/plan-ios-v1.md QI3), khớp `project.yml`. Kho của
+    /// bản iOS dùng cấu hình `student` trong container của app.
+    public static let iosBundleIdentifier = "vn.io.nt0.examsuite.ios"
+    /// Bundle ID của bản iOS build Debug: đuôi `.debug` để bản đang phát triển không đụng dữ liệu của bản cài trên cùng
+    /// iPhone (như bản debug của Android).
+    public static let iosDebugBundleIdentifier = "vn.io.nt0.examsuite.ios.debug"
+    /// Mọi bundle ID của bản thật (không phải bản build UI test). Chế độ cô lập của UI test từ chối chạy dưới các
+    /// bundle ID này; bundle ID cùng họ `vn.io.nt0.examsuite` mà không có ở đây là bản build UI test
+    /// (`UITestLaunchOptions`).
+    public static let productionBundleIdentifiers = [
+        studentBundleIdentifier, adminBundleIdentifier, iosBundleIdentifier, iosDebugBundleIdentifier,
+    ]
 
     /// Tên file kho trong thư mục của bản app.
     public static let storeFileName = "Library.store"

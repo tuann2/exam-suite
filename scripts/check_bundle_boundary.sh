@@ -9,10 +9,13 @@
 # Bundle tài nguyên của package (String Catalog, giai đoạn 5) đi theo module: bản Học viên không có
 # ExamFeatures_<module>.bundle của module chỉ bản Admin (kể cả AdminShell), bản Admin có của AuthoringFeature
 # (docs/product/accessibility-localization.md, mục Cách làm).
+# Bản iOS (docs/product/plan-ios-v1.md) là một bản Học viên: cùng các kiểm của bản Học viên macOS trên app iOS đã build
+# (bundle phẳng: bundle tài nguyên ở gốc .app), khi truyền thư mục Products thứ hai.
 # Thẩm quyền: docs/decisions/0003-hai-ban-app-mot-codebase.md, docs/decisions/0010-snapshot-testing.md
-#   scripts/check_bundle_boundary.sh <thư mục chứa "Exam Suite.app" và "Exam Suite Admin.app">
+#   scripts/check_bundle_boundary.sh <thư mục chứa "Exam Suite.app" và "Exam Suite Admin.app"> [<Products của bản iOS>]
 set -euo pipefail
 DIR="${1:-build/DerivedData/Build/Products/Debug}"
+IOS_DIR="${2:-}"
 MODULES=(AuthoringFeature AuthoringData ExamImport)
 TEST_ONLY=(SnapshotTesting CustomDump IssueReporting SwiftSyntax)
 
@@ -56,5 +59,22 @@ for module in "${TEST_ONLY[@]}"; do
     FAILED=1
   fi
 done
+IOS_NOTE=""
+if [[ -n "$IOS_DIR" ]]; then
+  IOS="$IOS_DIR/Exam Suite.app"
+  [[ -f "$IOS/Info.plist" ]] || { echo "check_bundle_boundary.sh: không thấy app iOS trong $IOS_DIR"; exit 2; }
+  for module in "${MODULES[@]}" "${TEST_ONLY[@]}"; do
+    I=$(count_symbols "$IOS" "$module")
+    F=$(find "$IOS" -iname "*$module*" | wc -l | tr -d ' ')
+    echo "$module symbols: iOS=$I; file=$F"
+    if [[ "$I" -ne 0 || "$F" -ne 0 ]]; then
+      echo "FAIL: bản iOS chứa $module (docs/decisions/0003, 0010). Kiểm project.yml và Packages/MobileFeatures."; FAILED=1
+    fi
+  done
+  if [[ -e "$IOS/ExamFeatures_AdminShell.bundle" ]]; then
+    echo "FAIL: bản iOS chứa bundle tài nguyên ExamFeatures_AdminShell.bundle (docs/decisions/0003)."; FAILED=1
+  fi
+  IOS_NOTE=", bản iOS cũng không"
+fi
 [[ $FAILED == 0 ]] || exit 1
-echo "ok   bản Học viên không chứa ${MODULES[*]} (ký hiệu và bundle tài nguyên); bản Admin có AuthoringFeature; không app nào chứa ${TEST_ONLY[*]}"
+echo "ok   bản Học viên không chứa ${MODULES[*]} (ký hiệu và bundle tài nguyên)${IOS_NOTE}; bản Admin có AuthoringFeature; không app nào chứa ${TEST_ONLY[*]}"

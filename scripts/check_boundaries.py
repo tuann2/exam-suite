@@ -8,7 +8,9 @@
 2. Bản Học viên không chứa code Soạn đề hay import đề: StudentShell (Packages/ExamFeatures)
    không phụ thuộc, trực tiếp hay gián tiếp, vào AuthoringFeature, AuthoringData, ExamImport;
    target ExamSuite trong project.yml chỉ phụ thuộc đúng product StudentShell (danh sách cho phép, không
-   target/framework/templates khác); Apps/Student không import chúng.
+   target/framework/templates khác); Apps/Student không import chúng. Bản iOS cũng là bản Học viên: MobileShell
+   (Packages/MobileFeatures) không phụ thuộc (gián tiếp) chúng hay AdminShell, target ExamSuiteiOS chỉ phụ thuộc đúng
+   product MobileShell, Apps/StudentiOS không import chúng (docs/product/plan-ios-v1.md Phần 3).
    Thẩm quyền: docs/decisions/0003-hai-ban-app-mot-codebase.md,
    docs/plans/completed/giai-doan-4-soan-de.md (Decisions 2026-10-16)
 3. AuthoringData (mô hình chỉnh sửa đề, không giao diện) chỉ import Foundation, ExamKit, ExamFile;
@@ -902,30 +904,48 @@ def examsuite_dependencies(block: str) -> tuple[list[dict[str, str]], list[str]]
     return deps, other_keys
 
 
-def project_yml_problems(raw: str) -> list[str]:
-    """Khối target ExamSuite của project.yml chỉ phụ thuộc đúng product StudentShell (danh sách cho phép:
-    không `target:`/`framework:`/`sdk:`/product khác, không `templates:`, vì phụ thuộc gián tiếp qua đó kiểm
-    tĩnh không lần được), và không nhắc module của bản Admin."""
+def project_yml_problems(raw: str, target: str = "ExamSuite",
+                         allowed: list[dict[str, str]] = ALLOWED_EXAMSUITE_DEPENDENCIES) -> list[str]:
+    """Khối target `target` (bản Học viên: ExamSuite, hay ExamSuiteiOS) của project.yml chỉ phụ thuộc đúng `allowed`
+    (danh sách cho phép: không `target:`/`framework:`/`sdk:`/product khác, không `templates:`, vì phụ thuộc gián tiếp
+    qua đó kiểm tĩnh không lần được), và không nhắc module của bản Admin."""
+    shell = allowed[0]["product"]
     # Bỏ comment để lời giải thích trong project.yml không gây báo sai.
     text = "\n".join(line for line in raw.splitlines() if not line.lstrip().startswith("#")) + "\n"
-    m = re.search(r"^  ExamSuite:\n(.*?)(?=^  \w|\Z)", text, re.S | re.M)
+    m = re.search(rf"^  {target}:\n(.*?)(?=^  \w|\Z)", text, re.S | re.M)
     if not m:
-        return ["project.yml: không tìm thấy target ExamSuite (bản Học viên)"]
+        return [f"project.yml: không tìm thấy target {target} (bản Học viên)"]
     block = m.group(1)
     problems = [
-        f"project.yml target ExamSuite nhắc tới {bad}: bản Học viên chỉ được phụ thuộc "
-        "StudentShell (docs/decisions/0003-hai-ban-app-mot-codebase.md)."
+        f"project.yml target {target} nhắc tới {bad}: bản Học viên chỉ được phụ thuộc "
+        f"{shell} (docs/decisions/0003-hai-ban-app-mot-codebase.md)."
         for bad in ("AdminShell",) + ADMIN_ONLY_MODULES if re.search(rf"\b{bad}\b", block)
     ]
     deps, other_keys = examsuite_dependencies(block)
-    if deps != ALLOWED_EXAMSUITE_DEPENDENCIES:
+    if deps != allowed:
         problems.append(
-            f"project.yml target ExamSuite phụ thuộc {deps}: chỉ được đúng {ALLOWED_EXAMSUITE_DEPENDENCIES} "
-            "(docs/decisions/0003-hai-ban-app-mot-codebase.md). Phần dùng chung đưa vào StudentShell."
+            f"project.yml target {target} phụ thuộc {deps}: chỉ được đúng {allowed} "
+            f"(docs/decisions/0003-hai-ban-app-mot-codebase.md). Phần dùng chung đưa vào {shell}."
         )
     for key in other_keys:
-        problems.append(f"project.yml target ExamSuite dùng `{key}:`: có thể kéo phụ thuộc không kiểm được; bỏ khoá này.")
+        problems.append(f"project.yml target {target} dùng `{key}:`: có thể kéo phụ thuộc không kiểm được; "
+                        "bỏ khoá này.")
     return problems
+
+
+ALLOWED_IOS_DEPENDENCIES = [{"package": "MobileFeatures", "product": "MobileShell"}]
+
+
+def mobile_graph_problems(graph: dict[str, set[str]]) -> list[str]:
+    """MobileShell (bản iOS, bản Học viên) không được phụ thuộc (gián tiếp) module chỉ của bản Admin hay AdminShell."""
+    if "MobileShell" not in graph:
+        return ["Packages/MobileFeatures: không thấy target MobileShell."]
+    deps = transitive(graph, "MobileShell")
+    return [
+        f"Packages/MobileFeatures: MobileShell phụ thuộc (gián tiếp) {bad}. Bản iOS là bản Học viên, không được chứa "
+        "code Soạn đề hay import đề (docs/decisions/0003-hai-ban-app-mot-codebase.md)."
+        for bad in ("AdminShell",) + ADMIN_ONLY_MODULES if bad in deps
+    ]
 
 
 def student_app_import_problems(files: list[tuple[str, str]]) -> list[str]:
@@ -938,12 +958,17 @@ def student_app_import_problems(files: list[tuple[str, str]]) -> list[str]:
     ]
 
 
-def check_student_shell(graph: dict[str, set[str]] | None) -> list[str]:
+def check_student_shell(graph: dict[str, set[str]] | None, mobile_graph: dict[str, set[str]] | None) -> list[str]:
     problems: list[str] = []
     if graph is not None:
         problems += student_graph_problems(graph)
-    problems += project_yml_problems((ROOT / "project.yml").read_text(encoding="utf-8"))
+    if mobile_graph is not None:
+        problems += mobile_graph_problems(mobile_graph)
+    raw = (ROOT / "project.yml").read_text(encoding="utf-8")
+    problems += project_yml_problems(raw)
+    problems += project_yml_problems(raw, "ExamSuiteiOS", ALLOWED_IOS_DEPENDENCIES)
     problems += student_app_import_problems(source_files(ROOT / "Apps" / "Student"))
+    problems += student_app_import_problems(source_files(ROOT / "Apps" / "StudentiOS"))
     return problems
 
 
@@ -1044,6 +1069,26 @@ def self_test() -> list[str]:
     expect("project.yml ExamSuite thiếu StudentShell",
            project_yml_problems(good_yml.replace("product: StudentShell", "product: LibraryFeature")), "StudentShell")
 
+    # Bản iOS (bản Học viên): target ExamSuiteiOS chỉ MobileShell; MobileShell không kéo module Admin.
+    ios_yml = good_yml + (
+        "  ExamSuiteiOS:\n    dependencies:\n      - package: MobileFeatures\n        product: MobileShell\n")
+    expect("project.yml ExamSuiteiOS đúng",
+           project_yml_problems(ios_yml, "ExamSuiteiOS", ALLOWED_IOS_DEPENDENCIES), None)
+    expect("project.yml thiếu ExamSuiteiOS", project_yml_problems(good_yml, "ExamSuiteiOS", ALLOWED_IOS_DEPENDENCIES),
+           "ExamSuiteiOS")
+    for bad in ("AdminShell",) + ADMIN_ONLY_MODULES:
+        extra = f"      - package: ExamFeatures\n        product: {bad}\n"
+        bad_yml = ios_yml.replace("        product: MobileShell\n", "        product: MobileShell\n" + extra)
+        expect(f"project.yml ExamSuiteiOS phụ thuộc {bad}",
+               project_yml_problems(bad_yml, "ExamSuiteiOS", ALLOWED_IOS_DEPENDENCIES), bad)
+    good_mobile = {"MobileShell": {"MobileFeature"}, "MobileFeature": {"LibraryData"}}
+    expect("đồ thị MobileFeatures đúng", mobile_graph_problems(good_mobile), None)
+    expect("thiếu target MobileShell", mobile_graph_problems({"MobileFeature": set()}), "MobileShell")
+    for bad in ("AdminShell",) + ADMIN_ONLY_MODULES:
+        graph = {k: set(v) for k, v in good_mobile.items()}
+        graph["MobileFeature"].add(bad)  # gián tiếp: MobileShell → MobileFeature → bad
+        expect(f"MobileShell → … → {bad}", mobile_graph_problems(graph), bad)
+
     expect("Apps/Student import đúng",
            student_app_import_problems([("Apps/Student/App.swift", "import SwiftUI\nimport StudentShell\n")]), None)
     # Mọi dạng câu lệnh import của Swift 6 (đối chứng âm cho regex).
@@ -1128,7 +1173,8 @@ def main(argv: list[str]) -> int:
             print(f"  - {f}")
         return 1
     graph = package_graph(ROOT / "Packages" / "ExamFeatures") if use_swift else None
-    problems = (check_module_imports() + check_zipfoundation_imports() + check_student_shell(graph)
+    mobile_graph = package_graph(ROOT / "Packages" / "MobileFeatures") if use_swift else None
+    problems = (check_module_imports() + check_zipfoundation_imports() + check_student_shell(graph, mobile_graph)
                 + check_external_packages(use_swift) + check_test_only_module(use_swift)
                 + check_report_feature(graph))
     if problems:
@@ -1139,7 +1185,7 @@ def main(argv: list[str]) -> int:
     print("ok   ExamKit/ExamFile chỉ dùng Foundation(+ZIPFoundation); ZIPFoundation chỉ ở ExamFile/ExamImport; "
           "SnapshotTesting chỉ ở test của ExamFeatures; gói ngoài chỉ ZIPFoundation, swift-snapshot-testing; "
           "AuthoringData, ExamImport không giao diện; "
-          f"StudentShell không chứa {', '.join(ADMIN_ONLY_MODULES)}; {TEST_ONLY_MODULE} chỉ ở test; "
+          f"StudentShell, MobileShell không chứa {', '.join(ADMIN_ONLY_MODULES)}; {TEST_ONLY_MODULE} chỉ ở test; "
           f"ReportFeature chỉ phụ thuộc {', '.join(sorted(REPORT_ALLOWED_DEPENDENCIES))} (đối chứng âm bị bắt)"
           + f"; project.yml kiểm theo {project_yml_mode()}"
           + ("" if use_swift else " (bỏ qua phần swift package describe)"))

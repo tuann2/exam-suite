@@ -22,5 +22,6 @@ the active execution plan and do not require a separate decision.
 | [0010](0010-snapshot-testing.md) | Snapshot test giao diện bằng swift-snapshot-testing, chỉ trong test | Accepted |
 | [0011](0011-android-kotlin-compose.md) | Bản Android: Kotlin + Compose, lõi viết lại bằng Kotlin (oracle chung), cùng repo `android/`, CI theo PR cho `android/` | Accepted |
 | [0012](0012-android-thu-vien.md) | Thư viện của bản Android: nền tảng AndroidX/Kotlin và công cụ test; ngoài danh sách phải có ADR | Accepted |
+| [0013](0013-ios-swiftui-hanh-vi-macos.md) | Bản iOS: SwiftUI, hành vi theo bản macOS, dùng lại lõi và tầng dữ liệu Swift; package theo nền tảng (ExamFeatures chỉ macOS, SharedFeatures dùng chung, MobileFeatures chỉ iOS) | Accepted |
 
-Quyết định tiếp theo lấy số 0013.
+Quyết định tiếp theo lấy số 0014.
