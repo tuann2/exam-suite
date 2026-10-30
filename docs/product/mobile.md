@@ -2,8 +2,11 @@
 
 Hợp đồng sản phẩm của bản mobile **là các tài liệu hiện có** (exam-format, scoring, exam-session, exam-taking, library,
 accessibility-localization, large-exams; export-print từ v1.1). Tài liệu này chỉ ghi chỗ mobile khác macOS; chỗ không
-ghi ở đây thì theo tài liệu macOS. Áp cho Android (docs/product/plan-android-v1.md) và iOS
-(docs/product/plan-ios-v1.md). Nt0 chốt 2026-10-21 (phạm vi) và 2026-10-22 (Q1–Q13 của plan Android).
+ghi ở đây thì theo tài liệu macOS. Áp cho Android (docs/product/plan-android-v1.md). Nt0 chốt 2026-10-21 (phạm vi) và
+2026-10-22 (Q1–Q13 của plan Android).
+
+**Bản iOS không theo các mục Phạm vi và "Khác macOS" dưới đây**: hành vi theo tài liệu macOS, chỉ khác ở mục "Bản iOS"
+cuối tài liệu này (Nt0 chốt 2026-10-30; docs/product/plan-ios-v1.md, ADR 0013).
 
 ## Phạm vi
 
@@ -39,3 +42,29 @@ ghi ở đây thì theo tài liệu macOS. Áp cho Android (docs/product/plan-an
 
 Không còn (ba câu của plan Android Nt0 chốt 2026-10-22: cỡ chữ, làm đề khác khi có bài dở, Cập nhật đề khi có bài dở;
 ghi vào bảng trên).
+
+## Bản iOS
+
+Bản Học viên trên iPhone (docs/product/plan-ios-v1.md, ADR 0013). Phạm vi chia v1 / v1.1 như plan-ios-v1.md Phần 2.
+**Hành vi theo các tài liệu macOS**; bảng dưới chỉ ghi chỗ iOS khác macOS (Nt0 chốt 2026-10-30, mã QI là câu của bảng
+Quyết định trong plan). Các mục Phạm vi và "Khác macOS" ở trên là của bản Android, không áp cho iOS.
+
+| Chủ đề | macOS (tài liệu gốc) | iOS |
+| --- | --- | --- |
+| File đề trong Thư viện | Bookmark tới file tại chỗ; Không tìm thấy file, Tìm file…, Làm mới; trùng id: cùng file thì chọn đề đã có, khác file thì hỏi Dùng file mới / Huỷ (library.md) | **Như macOS** với file thêm bằng hộp chọn file (app Tệp: iCloud Drive, Trên iPhone, Drive…): bookmark tạo trong lúc có quyền security scope, mở quyền mỗi lần đọc. File của nhà cung cấp đám mây chưa tải về có thể hiện Không tìm thấy file, như ổ ngoài chưa gắn trên macOS |
+| Mở `.exam` từ app khác | Finder mở file tại chỗ: thêm vào Thư viện, đưa cửa sổ Thư viện lên và chọn đề (library.md) | Hộp chia sẻ và "Mở bằng" (Zalo, Mail, AirDrop…): iOS giao một bản chép trong thư mục `Inbox` của app (cách giao kiểm ở bước I2). App dời file sang thư mục riêng trong Application Support rồi thêm như mọi file khác, **đúng luật macOS, không thêm luật** (QI12): nhận lại cùng đề từ Zalo là file khác nên hỏi Dùng file mới / Huỷ; Xoá khỏi thư viện không xoá bản chép |
+| App xuống nền khi đang làm bài | Mất tiêu điểm không tự tạm dừng (exam-taking.md phương án 11); máy sắp ngủ thì tự tạm dừng, lớp phủ "Đã tạm dừng vì máy ngủ" | **Tự tạm dừng** khi app sang `.background` (chuyển app, về màn hình chính, khoá màn hình), ở cả Luyện tập và Thi; lý do `background`, lớp phủ "Đã tạm dừng vì bạn rời app"; mở lại vẫn ở Tạm dừng tới khi bấm Tiếp tục. Chỉ tạm dừng khi đang làm hay rà soát chưa khoá, như máy ngủ. Không có lý do "máy ngủ" riêng: khoá màn hình đã là xuống nền (QI10) |
+| Phiên dở | Không lưu (phương án 2) | **Không lưu**, như macOS. iOS có thể dừng app khi app ở nền; khi đó bài đang làm mất, không báo (QI9; rủi ro chấp nhận ở v1, plan-ios-v1.md Phần 6) |
+| Đóng cửa sổ làm bài | Hỏi "Bỏ bài?" rồi bỏ bài (phương án 2) | Nút Quay lại ở màn làm bài hỏi như macOS; cử chỉ vuốt từ cạnh màn hình để quay lại bị tắt ở màn này |
+| Mỗi lúc một phiên | Đưa cửa sổ đang làm lên trước (phương án 6) | Màn làm bài che cả app nên không bắt đầu được đề khác từ giao diện. Nhận `.exam` từ app khác lúc đang có bài: **giữ màn làm bài** (đang Tạm dừng vì vừa rời app), đề vẫn được thêm; hộp Dùng file mới / Huỷ (nếu trùng id) và việc chọn đề hiện khi về Thư viện (QI12b) |
+| Bảng câu hỏi | Inspector bên phải; tạm dừng thì chỉ hiện số ô | Bảng kéo lên từ dưới (sheet có detent), nội dung như macOS; cột bên ở iPad (v1.1) |
+| Phím tắt, menu | Bảng phím (exam-session.md), menu Bài thi, Xem | Không có; mọi lệnh là nút trên màn |
+| Cỡ chữ nội dung, Nền đọc | Menu Xem: Phóng to / Thu nhỏ / Cỡ thật 100–150%, năm bộ màu Nền đọc | Cỡ chữ theo **Dynamic Type** (Cài đặt của iOS), không có nút Phóng to trong app; bố cục làm bài, Kết quả, Xem lại còn dùng được tới mức `accessibility1` (~165%, mức đầu tiên vượt 150% của macOS), kiểm bằng ảnh chụp. Nền đọc ở v1.1, v1 theo sáng/tối hệ thống (QI11) |
+| Hiện trong Finder | Có | Không có |
+| Giấy phép | Hộp Giới thiệu của macOS (`Credits.rtf`), file kèm DMG | Màn Giới thiệu mở từ Thư viện: phiên bản, giấy phép Apache-2.0, NOTICE, ZIPFoundation (MIT) (QI13) |
+| Sao lưu | Không có trong app; Time Machine sao lưu Application Support | Theo hệ thống, như macOS (QI9): dữ liệu app vào bản sao lưu iCloud hay máy tính. Khôi phục sang máy khác mà bookmark không phân giải được thì mục hiện Không tìm thấy file, dùng Tìm file… như macOS |
+| Ngôn ngữ | Theo macOS, không có ô chọn trong app | Theo hệ thống và mục "Ngôn ngữ" riêng của app trong Cài đặt (iOS 13 trở lên); không có ô chọn trong app |
+| Lịch sử thi | `AttemptRecord` v1 | Cùng `AttemptRecord` v1 (LibraryData dùng chung); khác Android (Q11 của plan Android) |
+| Xuất PDF (v1.1) | Hộp Lưu, hộp In | Hộp chia sẻ (`ShareLink`), In qua `UIPrintInteractionController`; ba mức xem lại như macOS |
+| Máy | Mac | v1 chỉ iPhone (`TARGETED_DEVICE_FAMILY = 1`; iPad chạy bản iPhone); iPad ở v1.1 |
+| Tên app | Exam Suite | Exam Suite, bundle ID `vn.io.nt0.examsuite.ios` (QI3); bản Debug thêm đuôi `.debug` và tên "Exam Suite Debug" như Android, để không đụng dữ liệu của bản cài trên cùng iPhone |

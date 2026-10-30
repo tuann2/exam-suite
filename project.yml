@@ -39,6 +39,10 @@ settings:
 packages:
   ExamFeatures:
     path: Packages/ExamFeatures
+  # Giao diện iPhone (docs/product/plan-ios-v1.md Phần 3): package riêng, chỉ build cho iOS. Bước I1 thêm package dùng
+  # chung Packages/SharedFeatures (macOS + iOS).
+  MobileFeatures:
+    path: Packages/MobileFeatures
 targets:
   ExamSuite:
     type: application
@@ -177,6 +181,97 @@ targets:
         TEST_TARGET_NAME: ExamSuiteAdmin
         CODE_SIGN_ENTITLEMENTS: Apps/UITestSupport/UITests.entitlements
         ENABLE_HARDENED_RUNTIME: NO
+  # Bản iOS: bản Học viên trên iPhone (docs/product/plan-ios-v1.md). Chỉ MobileShell của Packages/MobileFeatures (ADR
+  # 0003: không AuthoringFeature, AuthoringData, ExamImport; scripts/check_boundaries.py kiểm khối này). Bản Debug mang
+  # bundle ID `….ios.debug` và tên "Exam Suite Debug" để không đụng dữ liệu của bản cài trên cùng iPhone; build UI test
+  # thêm đuôi `.uitest` (`EXAMSUITE_BUNDLE_ID_SUFFIX`, như hai bản macOS). v1 chỉ cài qua Xcode bằng Personal Team (QI4):
+  # build cho máy thật truyền `DEVELOPMENT_TEAM=<team ID>` lúc build, không ghi team ID vào repo; simulator ký ad-hoc.
+  ExamSuiteiOS:
+    type: application
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - Apps/StudentiOS
+    dependencies:
+      - package: MobileFeatures
+        product: MobileShell
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: vn.io.nt0.examsuite.ios$(EXAMSUITE_IOS_CONFIG_SUFFIX)$(EXAMSUITE_BUNDLE_ID_SUFFIX)
+        PRODUCT_NAME: Exam Suite
+        EXAMSUITE_DISPLAY_NAME: Exam Suite
+        # Phiên bản riêng của bản iOS (QI4), tag phát hành `ios-v*`.
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        # v1 chỉ iPhone; iPad chạy bản iPhone (iPad ở v1.1).
+        TARGETED_DEVICE_FAMILY: "1"
+        SUPPORTS_MACCATALYST: NO
+        SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
+        SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD: NO
+        ENABLE_HARDENED_RUNTIME: NO
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_IDENTITY: Apple Development
+        CODE_SIGN_IDENTITY[sdk=iphonesimulator*]: "-"
+      configs:
+        Debug:
+          EXAMSUITE_IOS_CONFIG_SUFFIX: .debug
+          EXAMSUITE_DISPLAY_NAME: Exam Suite Debug
+        Release:
+          EXAMSUITE_IOS_CONFIG_SUFFIX: ""
+    info:
+      path: Apps/StudentiOS/Info.plist
+      properties:
+        CFBundleDevelopmentRegion: $(DEVELOPMENT_LANGUAGE)
+        CFBundleDisplayName: $(EXAMSUITE_DISPLAY_NAME)
+        CFBundleName: Exam Suite
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSHumanReadableCopyright: "© 2026 Nt0"
+        # Màn khởi động trống; thiếu khoá này thì iOS chạy app ở chế độ tương thích (có viền).
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        # Hành vi như macOS (QI9): file mở từ app Tệp được tham chiếu tại chỗ khi iOS cho phép.
+        LSSupportsOpeningDocumentsInPlace: true
+        # Bản Học viên: chỉ xem (Viewer), kiểu `.exam` khai báo import như bản Học viên macOS.
+        CFBundleDocumentTypes:
+          - CFBundleTypeName: Exam Suite Exam
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Alternate
+            LSItemContentTypes:
+              - vn.io.nt0.exam
+        UTImportedTypeDeclarations:
+          - UTTypeIdentifier: vn.io.nt0.exam
+            UTTypeDescription: Exam Suite Exam
+            UTTypeConformsTo:
+              - com.pkware.zip-archive
+            UTTypeTagSpecification:
+              public.filename-extension:
+                - exam
+  # XCUITest bản iOS trên simulator (docs/product/plan-ios-v1.md Phần 5), build với đuôi `.uitest` như hai bản macOS.
+  # Từ bước I2: chế độ cô lập của AppLaunchStorage, hỗ trợ test riêng, chỉ dùng chung đề mẫu của Apps/UITestSupport.
+  ExamSuiteiOSUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "18.0"
+    sources:
+      - Apps/StudentiOSUITests
+    dependencies:
+      - target: ExamSuiteiOS
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: vn.io.nt0.examsuite.ios.uitests
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: ExamSuiteiOS
+        TARGETED_DEVICE_FAMILY: "1"
+        ENABLE_HARDENED_RUNTIME: NO
+        CODE_SIGN_STYLE: Automatic
+        CODE_SIGN_IDENTITY: Apple Development
+        CODE_SIGN_IDENTITY[sdk=iphonesimulator*]: "-"
 schemes:
   ExamSuite:
     build:
@@ -198,3 +293,13 @@ schemes:
       config: Debug
       targets:
         - ExamSuiteAdminUITests
+  ExamSuiteiOS:
+    build:
+      targets:
+        ExamSuiteiOS: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - ExamSuiteiOSUITests

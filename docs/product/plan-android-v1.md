@@ -35,7 +35,8 @@ Căn cứ của cách chia bước và cách kiểm (số đo bản macOS, bư�
 ## Phần 1 · Phạm vi và hợp đồng sản phẩm
 
 Phạm vi xếp theo mức thiết yếu cho học viên dùng điện thoại (rà 2026-10-21, Nt0 đồng ý hoãn bậc 3 sang v1.1). Cùng
-danh sách áp cho iOS ([plan-ios-v1.md](plan-ios-v1.md)).
+cách chia v1 / v1.1 áp cho iOS ([plan-ios-v1.md](plan-ios-v1.md)), nhưng hành vi iOS theo tài liệu macOS, không theo
+các luật riêng của Android dưới đây (Nt0 chốt 2026-10-30).
 
 ### v1
 

@@ -22,17 +22,25 @@ Ba cơ chế mượn từ ai-workflow-template (ADR 0007), áp dụng cho mọi 
 - **Ở mỗi cổng** (G2 cuối giai đoạn 3, G3 cuối giai đoạn 6), trên SHA `main` sẽ đem đi test tay/phát hành: `scripts/verify_local.sh --clean --uitest` (build lại từ đầu, gần máy sạch, kèm UI test); ghi SHA và status vào phần Validation/Result của exec-plan.
 - **Hai job kiểm của workflow `CI` (máy sạch của GitHub; lúc repo còn private ~42 phút tính tiền, repo public miễn phí) chỉ chạy khi Nt0 báo** (Nt0 quyết 2026-10-16, thay quyết định chạy ở mọi cổng cùng ngày; cổng G2 không chạy; giai đoạn 6 không chạy hai job kiểm, Nt0 chốt 2026-10-19: bằng chứng cho SHA phát hành là cổng `verify_local.sh --clean --uitest`). Chạy tay: `gh workflow run CI --ref main`, ghi link run vào exec-plan đang active hoặc PR. Gắn tag `v*` chỉ chạy job `release-dmg` (đóng hai DMG trên runner macOS, tạo GitHub Release; từ v0.1.1 đây là DMG phát hành công khai, Nt0 chốt 2026-10-20), nên chỉ Nt0 đẩy tag.
 - **Bản Android (`android/`, Nt0 chốt Q8 2026-10-22, ADR 0011)**: ngoại lệ của quy tắc "CI không chạy theo PR". Workflow `Android` (`.github/workflows/android.yml`, runner Linux) chạy theo mọi PR chạm `android/**`, `fixtures/**`, `schema/**` hay đề mẫu; check `android` (`android/scripts/check_android.sh`: luật riêng, lint, test, so ảnh) xanh trên SHA cuối **thay** kiểm tại chỗ phần đó. PR chạm `android/app/**` và mọi cổng Android thêm status `local/verify-android` (`android/scripts/check_android.sh --ui`: test Compose trên emulator của Mac, không chạy lại lint + test). Tag phát hành Android là `android-v*` (không khớp `v*` của macOS), chỉ Nt0 đẩy.
+- **Bản iOS** (docs/product/plan-ios-v1.md, ADR 0013): ở mức full, `verify_local.sh` build bản iOS cho simulator, kiểm
+  ranh giới bundle (ADR 0003) và chữ Info.plist vi/en của app iOS, export String Catalog của scheme `ExamSuiteiOS`;
+  `--uitest` chạy thêm các lớp `ExamSuiteiOSUITests` mà `uitest_plan.py` chọn, trên simulator (máy và runtime:
+  `EXAMSUITE_IOS_DESTINATION`). Status vẫn một `local/verify`: success đã gồm mọi bước iOS; mô tả ghi "iOS K test" trong
+  phần UI test và "iOS ok" sau đó (chữ này có thể bị cắt ở 140 ký tự). Tag phát hành iOS là `ios-v*`, chỉ Nt0 đẩy.
 - **Mức kiểm của `local/verify` theo file đổi** (Nt0 chốt 2026-10-22, `scripts/verify_scope.py`): `verify_local.sh` vẫn chạy ở mọi PR và luôn kiểm danh tính git, nhưng chỉ chạy phần macOS bị ảnh hưởng. **none**: chỉ `android/**`, `docs/**`, `AGENTS.md`, `CLAUDE.md`, workflow Android: không bước macOS nào (vài giây). **core**: thêm oracle và test của lõi Swift mà test giao diện không đọc (`fixtures/invalid-json`, `vectors`, `packages`, `expected-verdicts.json`, `schema/`, `Packages/ExamKit/Tests`, `validate_exam.py`, `check_validator_parity.py`): `check.sh --core` trên macOS và Linux (khoảng 1,5 phút). **full**: mọi thứ khác (code app, lõi Swift, `fixtures/exams`, `fixtures/invalid`, script, project, workflow macOS), file chưa có trong bảng, và luôn khi `--clean` (cổng), `--uitest-all`, `--full`. Mô tả status mở đầu bằng tên mức ("mức none:", "mức core:", "mức full:"); file chuyển chỗ tính cả đường dẫn cũ. `verify_local.sh --scope-plan` in mức trước khi chạy.
 - **Danh tính git** (Nt0 chốt 2026-10-20, repo public): commit dùng địa chỉ ẩn của GitHub (`<id>+<tài khoản>@users.noreply.github.com`); `verify_local.sh` dừng trước mọi bước build khi một commit bất kỳ từ merge-base với `origin/main` tới HEAD (trên `main`: HEAD) có email tác giả khác địa chỉ đó, hay email người commit khác địa chỉ đó và khác `noreply@github.com` (merge trên web GitHub); đối chứng dương và âm chạy mỗi lần; `--check-identity` chỉ chạy bước này. Cách sửa: commit ở đỉnh chưa push thì `git commit --amend --no-edit --reset-author`, còn lại viết lại các commit của nhánh trước khi merge. Commit có từ trước khi công khai (chỉ ở repo riêng cũ) chỉ được miễn khi người điều phối đặt `EXAMSUITE_IDENTITY_ALLOW=<sha>[,<sha>]` cho đúng lần chạy đó (cảnh báo từng commit; status ghi "miễn danh tính N commit"). Trên GitHub: bật "Keep my email addresses private" và "Block command line pushes that expose my email".
 - **UI test** (`scripts/verify_local.sh --uitest`: XCUITest `ExamSuiteUITests` của bản Học viên, luồng bàn phím
   1–3 của overview.md, rồi `ExamSuiteAdminUITests` của bản Admin): PR chạm code app (`Packages/ExamFeatures/Sources/**`,
   lõi `Packages/ExamKit/Sources/{ExamKit,ExamFile}/**`, `Apps/**`) chạy **các lớp test bị ảnh hưởng** theo bảng map của
   `scripts/uitest_plan.py` (file đổi so với `git merge-base origin/main HEAD`, không dò đổi tên); **đủ bộ** khi chạm
-  hạ tầng chung (`Apps/UITestSupport/**`, `Apps/*UITests/**`, `project.yml`, `Package.swift`/`Package.resolved`, code
-  chế độ cô lập, `verify_local.sh`, `uitest_plan.py`), khi chạm module dùng chung mọi cửa sổ (LibraryFeature,
+  hạ tầng chung (`Apps/UITestSupport/**`, `Apps/StudentUITests/**`, `Apps/AdminUITests/**`, `project.yml`,
+  `Package.swift`/`Package.resolved` của ExamFeatures và ExamKit, code chế độ cô lập, `verify_local.sh`,
+  `uitest_plan.py`), khi chạm module dùng chung mọi cửa sổ (LibraryFeature,
   LibraryData kể cả đề mẫu, SessionFeature, lõi ExamKit/ExamFile: luồng UI lưu/mở lại đề, đọc nghiêm, đồng hồ phiên),
   khi file code app chưa có trong bảng, ở cổng (`--clean --uitest`) và khi người duyệt yêu cầu (`--uitest-all`).
-  `LargeExamSupport` (chỉ ở test), tài liệu, unit test, script khác: không chạy UI test. Target
+  `LargeExamSupport` (chỉ ở test), tài liệu, unit test, script khác: không chạy UI test. Phần chỉ của bản iOS
+  (`Packages/MobileFeatures/**`, `Apps/StudentiOS/**`, `Apps/StudentiOSUITests/**`) chỉ chạy lớp `ExamSuiteiOSUITests`
+  theo bảng map, không chạy hai bản macOS. Target
   không có lớp nào thì không build, không chạy; hai target dùng chung `build/DerivedData-UITest` (`build-for-testing`
   một lần mỗi scheme, rồi `test-without-building -only-testing:<target>/<lớp>`). Xem trước các lớp sẽ chạy:
   `scripts/verify_local.sh --uitest-plan` (không build, không ghi status). Sau khi sửa theo review độc lập mà không đổi
@@ -40,7 +48,7 @@ Ba cơ chế mượn từ ai-workflow-template (ADR 0007), áp dụng cho mọi 
   phải là lớp chính của ít nhất một dòng module của bảng (dòng shell không tính): thiếu thì `check.sh` thất bại
   (`uitest_plan.py --self-test`), còn `verify_local.sh` chạy đủ bộ kèm cảnh báo. Không vào CI (Nt0 quyết 2026-10-15; T1, T2, T5 của
   [notes/g5-ui-test-trung-lap.md](../notes/g5-ui-test-trung-lap.md), Nt0 chốt 2026-10-18).
-  Mô tả status ghi "UI test ok (Học viên N, Admin M test, theo file đổi, kho thật không đổi)" (N, M là số test **đã
+  Mô tả status ghi "UI test ok (Học viên N, Admin M, iOS K test, theo file đổi, kho thật không đổi)" (N, M, K là số test **đã
   chạy**; "đủ bộ" thay "theo file đổi" khi chạy đủ), thêm "; K lần chạy lại do lỗi hạ tầng" nếu có, "UI test bỏ qua
   (không lớp nào bị ảnh hưởng)" hoặc "UI test bỏ qua" (mô tả dài quá 140 ký tự, giới hạn của GitHub, bị cắt phần cuối). Mỗi test UI thất bại được chạy lại một lần; script chỉ chấp nhận khi mọi lỗi của lần đầu là lỗi hạ tầng của XCUITest (tổng hợp sự kiện hết giờ, mất kết nối, chưa được cấp quyền…), lỗi assert của test thì vẫn thất bại. Target không có test nào đạt hoặc có test bị bỏ qua (`skipped`) cũng là thất bại. App crash ở lần đầu XCUITest báo giống lỗi hạ tầng ("Lost connection… is not running"), nên script so tên file trong `~/Library/Logs/DiagnosticReports/` bắt đầu bằng `Exam Suite` (Học viên, Admin, cả bản `.uitest`; chỉ đọc tên, không đọc nội dung) trước và sau mỗi target: có báo cáo crash mới thì thất bại dù lần chạy lại đạt. Bản `.uitest` có vai `None` với `.exam` (LSHandlerRank theo `EXAMSUITE_DOC_HANDLER_RANK` trong project.yml) để Finder không chọn nó mở file; script kiểm Info.plist của bản `.uitest` vừa build sau khi chạy. Khi status có "lần chạy lại", người duyệt mở log `build/verify-<sha>.log` (người điều phối dán đoạn lỗi vào PR) để chắc đó là lỗi hạ tầng; người duyệt PR chạm giao diện
   kiểm dòng này. Cần: màn hình mở khoá, máy chỉ có một màn hình (rút màn hình ngoài: đã kiểm ở cổng G3; bật
@@ -64,7 +72,7 @@ Ba cơ chế mượn từ ai-workflow-template (ADR 0007), áp dụng cho mọi 
 | Chấm điểm, chọn câu | `Packages/ExamKit/Sources/ExamKit/**` (Scoring, Composer, Session) |
 | Đọc/ghi gói đề, chuyển phiên bản | `Packages/ExamKit/Sources/ExamFile/**`, `schema/**`, `fixtures/**` |
 | Lưu file soạn đề | `Packages/ExamFeatures/Sources/AuthoringFeature/**` (document, save, recovery) |
-| Ranh giới hai bản app | `project.yml`, `Packages/ExamFeatures/Package.swift`, `Apps/**`, `scripts/check_boundaries.py` |
+| Ranh giới hai bản app | `project.yml`, `Packages/ExamFeatures/Package.swift`, `Packages/MobileFeatures/Package.swift` (bản iOS là một bản Học viên, ADR 0013), `Apps/**`, `scripts/check_boundaries.py` |
 | Bản Android: lõi, lưu trữ | `android/core/**`, Room schema và `ExamStore` trong `android/data/**` (plan-android-v1.md Phần 4) |
 
 Với PR rủi ro cao:

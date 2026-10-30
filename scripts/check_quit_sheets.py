@@ -52,6 +52,9 @@ from check_localization import call_arguments, lex, split_label  # noqa: E402  (
 
 ROOT = Path(__file__).resolve().parent.parent
 SCAN_DIRS = (Path("Packages/ExamFeatures/Sources"), Path("Apps"))
+# Bản iOS (Apps/StudentiOS*, Packages/MobileFeatures, docs/product/plan-ios-v1.md): không có ⌘Q, Thoát từ Dock hay đăng
+# xuất, và `.presentationAllowsAppTermination()` dựa trên AppKit; luật này chỉ cho hai bản macOS.
+SKIP_PREFIXES = ("Apps/StudentiOS",)
 MODIFIER = "presentationAllowsAppTermination"
 SWIFTUI_CALLS = ("sheet", "fullScreenCover", "popover")
 APPKIT_CALLS = ("beginSheet", "beginCriticalSheet", "presentAsSheet")
@@ -256,7 +259,9 @@ def source_files(root: Path = ROOT) -> list[tuple[str, str]]:
     files: list[tuple[str, str]] = []
     for directory in SCAN_DIRS:
         for path in sorted((root / directory).rglob("*.swift")):
-            files.append((path.relative_to(root).as_posix(), path.read_text(encoding="utf-8")))
+            rel = path.relative_to(root).as_posix()
+            if not rel.startswith(SKIP_PREFIXES):
+                files.append((rel, path.read_text(encoding="utf-8")))
     return files
 
 
@@ -292,6 +297,15 @@ def self_test() -> list[str]:
         "}\n"
     )
     expect("sheet đã biết, có modifier", good, None)
+    # Bản iOS bỏ qua (không có ⌘Q); hai bản macOS vẫn quét (đối chứng: thư mục giả).
+    import tempfile
+    with tempfile.TemporaryDirectory(prefix="check-quit-sheets-") as tmp:
+        for rel in ("Apps/StudentiOS/A.swift", "Apps/Student/B.swift", "Packages/ExamFeatures/Sources/X/C.swift"):
+            (Path(tmp) / rel).parent.mkdir(parents=True, exist_ok=True)
+            (Path(tmp) / rel).write_text(good, encoding="utf-8")
+        scanned = sorted(rel for rel, _ in source_files(Path(tmp)))
+        if scanned != ["Apps/Student/B.swift", "Packages/ExamFeatures/Sources/X/C.swift"]:
+            failures.append(f"quét sai thư mục (bản iOS phải bỏ qua, hai bản macOS phải quét): {scanned}")
     expect("sheet đã biết, xuống dòng và khoảng trắng khác",
            good.replace(".sheet(isPresented: $isShown)", ". sheet (\n                isPresented:   $isShown\n            )"),
            None)

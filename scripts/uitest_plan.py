@@ -27,6 +27,7 @@ Kết quả (verify_local.sh đọc):
   reason: <lý do>
   ExamSuiteUITests: <lớp…>
   ExamSuiteAdminUITests: <lớp…>
+  ExamSuiteiOSUITests: <lớp…>      (bản iOS trên simulator, docs/product/plan-ios-v1.md)
   warning: <cảnh báo>            (0 hoặc nhiều dòng)
 
 Chỉ đọc tên file và mã nguồn UI test, không chạy gì.
@@ -42,7 +43,9 @@ from pathlib import Path
 
 STUDENT = "ExamSuiteUITests"
 ADMIN = "ExamSuiteAdminUITests"
-TARGET_DIRS = {STUDENT: "Apps/StudentUITests", ADMIN: "Apps/AdminUITests"}
+IOS = "ExamSuiteiOSUITests"
+TARGETS = (STUDENT, ADMIN, IOS)
+TARGET_DIRS = {STUDENT: "Apps/StudentUITests", ADMIN: "Apps/AdminUITests", IOS: "Apps/StudentiOSUITests"}
 CLASS_PATTERN = re.compile(r"\bclass\s+(\w+)\s*:\s*XCTestCase\b")
 
 
@@ -58,6 +61,7 @@ class Row:
 
 
 F = "Packages/ExamFeatures/Sources/"
+M = "Packages/MobileFeatures/"
 # ---- BẢNG MAP (sửa ở đây khi thêm lớp UI test hay target) -----------------------------------------------------------
 # Mẫu fnmatch trên đường dẫn từ gốc repo ("*" khớp cả "/"). Kiểm theo code thật 2026-10-18 (bước 9 giai đoạn 5, sửa
 # theo review độc lập #55; bước 10 gộp lớp chung đoạn mở đầu: xuất PDF kết quả nằm trong PracticeFlowUITests, đóng cửa sổ
@@ -102,14 +106,20 @@ ROWS: list[Row] = [
         classes={ADMIN: ["EditExamFlowUITests", "ImportExamUITests", "NewExamFlowUITests"]}),
     # Chữ giao diện của catalog (catalog của module đủ bộ đã chọn đủ bộ ở dòng của nó): giao diện tiếng Anh; luồng 1 có
     # đoạn xuất PDF kết quả với Region en_US (ngày giờ theo ngôn ngữ giao diện).
-    Row("String Catalog", ["*.xcstrings"], classes={STUDENT: ["EnglishInterfaceUITests", "PracticeFlowUITests"]}),
+    Row("String Catalog", ["Packages/ExamFeatures/*.xcstrings", "Apps/Student/*.xcstrings", "Apps/Admin/*.xcstrings"],
+        classes={STUDENT: ["EnglishInterfaceUITests", "PracticeFlowUITests"]}),
+    # Bản iOS (docs/product/plan-ios-v1.md): màn hình iPhone. Bước I0 chỉ có test mở app; ba luồng thay ở bước I2.
+    Row("MobileFeature", [M + "Sources/MobileFeature/*"], classes={IOS: ["LaunchUITests"]}),
     # Shell và điểm vào của từng bản: mọi lớp của bản đó.
     Row("StudentShell, Apps/Student", [F + "StudentShell/*", "Apps/Student/*"], shell=STUDENT),
     Row("AdminShell, Apps/Admin", [F + "AdminShell/*", "Apps/Admin/*"], shell=ADMIN),
+    # Shell, manifest, điểm vào, target UI test của bản iOS: mọi lớp iOS (không chạy hai bản macOS).
+    Row("MobileShell, Apps/StudentiOS", [M + "Sources/MobileShell/*", M + "Package.swift", M + "Package.resolved",
+                                         "Apps/StudentiOS/*", "Apps/StudentiOSUITests/*"], shell=IOS),
 ]
 
 # Đường dẫn code app mà không dòng nào ở trên khớp (target mới…): đủ bộ kèm cảnh báo, để map được bổ sung.
-CODE_PATTERNS = [F + "*", "Packages/ExamKit/Sources/*", "Apps/*"]
+CODE_PATTERNS = [F + "*", "Packages/ExamKit/Sources/*", M + "*", "Apps/*"]
 # Code chỉ của test: không chạy UI test.
 NO_UI_PATTERNS = ["Packages/ExamKit/Sources/LargeExamSupport/*"]
 # ---- HẾT BẢNG MAP ----------------------------------------------------------------------------------------------------
@@ -128,7 +138,7 @@ def discover_classes(root: Path) -> dict[str, set[str]]:
 
 def owners(rows: list[Row]) -> dict[str, set[str]]:
     """Lớp chính của các dòng module (không tính dòng shell)."""
-    names: dict[str, set[str]] = {STUDENT: set(), ADMIN: set()}
+    names: dict[str, set[str]] = {t: set() for t in TARGETS}
     for row in rows:
         if row.shell is None:
             for target, classes in row.classes.items():
@@ -139,7 +149,7 @@ def owners(rows: list[Row]) -> dict[str, set[str]]:
 def map_warnings(discovered: dict[str, set[str]], rows: list[Row]) -> list[str]:
     mapped = owners(rows)
     warnings = []
-    for target in (STUDENT, ADMIN):
+    for target in TARGETS:
         for name in sorted(discovered[target] - mapped[target]):
             warnings.append(f"lớp {target}/{name} chưa là lớp chính của dòng module nào trong scripts/uitest_plan.py: "
                             "chạy đủ bộ")
@@ -156,7 +166,7 @@ def plan(files: list[str], discovered: dict[str, set[str]], *, run_all: bool = F
          rows: list[Row] = ROWS) -> dict:
     """{mode, reason, classes: {target: [lớp…]}, warnings: […]}"""
     warnings = map_warnings(discovered, rows)
-    full = {t: sorted(discovered[t]) for t in (STUDENT, ADMIN)}
+    full = {t: sorted(discovered[t]) for t in TARGETS}
 
     def full_plan(why: str) -> dict:
         return {"mode": "full", "reason": why, "classes": full, "warnings": warnings}
@@ -174,7 +184,7 @@ def plan(files: list[str], discovered: dict[str, set[str]], *, run_all: bool = F
     shared = sorted({row.name for f in files for row in rows if row.full and matches(f, row.patterns)})
     if shared:
         return full_plan(f"chạm module dùng chung: {', '.join(shared)}")
-    selected: dict[str, set[str]] = {STUDENT: set(), ADMIN: set()}
+    selected: dict[str, set[str]] = {t: set() for t in TARGETS}
     unmapped = []
     for f in files:
         if matches(f, NO_UI_PATTERNS):
@@ -190,15 +200,15 @@ def plan(files: list[str], discovered: dict[str, set[str]], *, run_all: bool = F
     if unmapped:
         warnings.append(f"code app không có trong bảng map: {listed(unmapped)}")
         return full_plan("file code app chưa map")
-    classes = {t: sorted(selected[t]) for t in (STUDENT, ADMIN)}
-    if not classes[STUDENT] and not classes[ADMIN]:
+    classes = {t: sorted(selected[t]) for t in TARGETS}
+    if not any(classes.values()):
         return {"mode": "none", "reason": "không file nào đổi chạm giao diện", "classes": classes, "warnings": warnings}
     return {"mode": "selected", "reason": "theo file đổi", "classes": classes, "warnings": warnings}
 
 
 def render(result: dict) -> str:
     lines = [f"mode: {result['mode']}", f"reason: {result['reason']}"]
-    lines += [f"{t}: {' '.join(result['classes'][t])}".rstrip() for t in (STUDENT, ADMIN)]
+    lines += [f"{t}: {' '.join(result['classes'][t])}".rstrip() for t in TARGETS]
     lines += [f"warning: {w}" for w in result["warnings"]]
     return "\n".join(lines)
 
@@ -220,6 +230,7 @@ EXPECTED = {
     STUDENT: {"EnglishInterfaceUITests", "ExamFlowUITests", "LibraryWindowRestoreUITests", "PracticeFlowUITests",
               "SessionWindowRestoreUITests"},
     ADMIN: {"EditExamFlowUITests", "ImportExamUITests", "NewExamFlowUITests"},
+    IOS: {"LaunchUITests"},
 }
 
 
@@ -231,13 +242,14 @@ def self_test(root: Path) -> None:
     # Bảng map thật khớp (check.sh thất bại ở đây nếu có lớp chưa xếp vào module nào).
     assert not map_warnings(real, ROWS), map_warnings(real, ROWS)
     classes = {t: set(c) for t, c in EXPECTED.items()}
-    full_student, full_admin = sorted(classes[STUDENT]), sorted(classes[ADMIN])
+    full_student, full_admin, full_ios = sorted(classes[STUDENT]), sorted(classes[ADMIN]), sorted(classes[IOS])
 
     def is_full(result: dict) -> bool:
-        return result["mode"] == "full" and result["classes"] == {STUDENT: full_student, ADMIN: full_admin}
+        return result["mode"] == "full" and result["classes"] == {
+            STUDENT: full_student, ADMIN: full_admin, IOS: full_ios}
 
     # Đối chứng âm của tự kiểm: lớp mới chỉ có ở dòng shell (không là lớp chính của module nào) → đủ bộ + cảnh báo.
-    extra = {STUDENT: classes[STUDENT] | {"NewThingUITests"}, ADMIN: classes[ADMIN]}
+    extra = {**classes, STUDENT: classes[STUDENT] | {"NewThingUITests"}}
     result = plan(["Packages/ExamFeatures/Sources/StudentShell/StudentShell.swift"], extra)
     assert result["mode"] == "full" and "NewThingUITests" in result["classes"][STUDENT] and any(
         "NewThingUITests" in w for w in result["warnings"]), result
@@ -248,7 +260,7 @@ def self_test(root: Path) -> None:
     gap = plan(["docs/a.md"], classes, rows=trimmed)
     assert gap["mode"] == "full" and any("LibraryWindowRestoreUITests" in w for w in gap["warnings"]), gap
     # Tên thừa trong bảng (lớp đã xoá) → cảnh báo.
-    stale = {STUDENT: classes[STUDENT] - {"SessionWindowRestoreUITests"}, ADMIN: classes[ADMIN]}
+    stale = {**classes, STUDENT: classes[STUDENT] - {"SessionWindowRestoreUITests"}}
     assert any("SessionWindowRestoreUITests" in w for w in plan(["docs/a.md"], stale)["warnings"])
     # Lớp đã gộp ở bước 10 (giai đoạn 5) không còn trong bảng: tên cũ trong bảng là tên thừa.
     for merged in ["ExportResultsUITests", "CloseWindowUITests", "QuitWhileConfirmingUITests", "LaunchIsolationUITests",
@@ -268,16 +280,30 @@ def self_test(root: Path) -> None:
     # Chỉ ReportFeature: hai lớp có đoạn xuất PDF (luồng 1 + PDF kết quả, luồng 4 + PDF đề).
     report = plan([F + "ReportFeature/ReportFlow.swift"], classes)
     assert report["mode"] == "selected" and report["classes"] == {
-        STUDENT: ["PracticeFlowUITests"], ADMIN: ["NewExamFlowUITests"]}, report
+        STUDENT: ["PracticeFlowUITests"], ADMIN: ["NewExamFlowUITests"], IOS: []}, report
     # Chỉ AuthoringFeature: không build, không chạy bản Học viên.
     authoring = plan([F + "AuthoringFeature/Model/AuthoringEditor.swift"], classes)
-    assert authoring["classes"] == {STUDENT: [], ADMIN: full_admin}, authoring
+    assert authoring["classes"] == {STUDENT: [], ADMIN: full_admin, IOS: []}, authoring
     # Shell của bản Học viên: mọi lớp Học viên, không lớp Admin.
     shell = plan([F + "StudentShell/StudentShell.swift"], classes)
-    assert shell["classes"] == {STUDENT: full_student, ADMIN: []}, shell
+    assert shell["classes"] == {STUDENT: full_student, ADMIN: [], IOS: []}, shell
     # Catalog của AuthoringFeature: lớp Admin + tiếng Anh, xuất PDF kết quả.
     strings = plan([F + "AuthoringFeature/Resources/Localizable.xcstrings"], classes)
-    assert strings["classes"] == {STUDENT: ["EnglishInterfaceUITests", "PracticeFlowUITests"], ADMIN: full_admin}, strings
+    assert strings["classes"] == {STUDENT: ["EnglishInterfaceUITests", "PracticeFlowUITests"], ADMIN: full_admin,
+                                  IOS: []}, strings
+    # Bản iOS: màn hình iPhone chỉ chọn lớp iOS; shell, manifest, điểm vào, catalog của app iOS, target UI test iOS
+    # chọn mọi lớp iOS; không chạy hai bản macOS (đối chứng âm: kèm file của bản Học viên macOS thì có lớp Học viên).
+    mobile = plan([M + "Sources/MobileFeature/RootView.swift"], classes)
+    assert mobile["mode"] == "selected", mobile
+    assert mobile["classes"] == {STUDENT: [], ADMIN: [], IOS: ["LaunchUITests"]}, mobile
+    for ios_file in [M + "Sources/MobileShell/MobileShell.swift", M + "Package.swift",
+                     "Apps/StudentiOS/InfoPlist.xcstrings", "Apps/StudentiOSUITests/LaunchUITests.swift"]:
+        ios_only = plan([ios_file], classes)
+        assert ios_only["classes"] == {STUDENT: [], ADMIN: [], IOS: full_ios}, (ios_file, ios_only)
+    both = plan([M + "Sources/MobileFeature/RootView.swift", "Apps/Student/StudentApp.swift"], classes)
+    assert both["classes"] == {STUDENT: full_student, ADMIN: [], IOS: ["LaunchUITests"]}, both
+    # Module dùng chung và hạ tầng chung: đủ bộ gồm cả bản iOS.
+    assert is_full(plan(["project.yml"], classes)) and full_ios
     # Tài liệu, unit test, script khác, LargeExamSupport: không lớp nào.
     none = plan(["docs/plans/active/x.md", "Packages/ExamFeatures/Tests/SessionFeatureTests/A.swift", "scripts/check.sh",
                  "Packages/ExamKit/Sources/LargeExamSupport/Timing.swift"], classes)

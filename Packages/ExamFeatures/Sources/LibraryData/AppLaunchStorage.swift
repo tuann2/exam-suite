@@ -157,9 +157,8 @@ public struct UITestLaunchOptions: Sendable, Equatable {
 
     /// Bundle ID của một bản build cho UI test: cùng họ `vn.io.nt0.examsuite` nhưng không phải bản thật.
     public static func isTestBuild(bundleIdentifier: String) -> Bool {
-        let real = [LibraryConfiguration.studentBundleIdentifier, LibraryConfiguration.adminBundleIdentifier]
-        return bundleIdentifier.hasPrefix(LibraryConfiguration.studentBundleIdentifier + ".")
-            && !real.contains(bundleIdentifier)
+        bundleIdentifier.hasPrefix(LibraryConfiguration.studentBundleIdentifier + ".")
+            && !LibraryConfiguration.productionBundleIdentifiers.contains(bundleIdentifier)
     }
 
     public init(directory: URL, timeScale: Double = 1, chosenFile: URL? = nil) {
@@ -169,8 +168,8 @@ public struct UITestLaunchOptions: Sendable, Equatable {
     }
 
     /// Đọc tham số dòng lệnh. `nil`: không có tham số cô lập (chạy bình thường).
-    /// - Parameter bundleIdentifier: bundle ID đang chạy; trùng bản thật (`vn.io.nt0.examsuite`,
-    ///   `vn.io.nt0.examsuite.admin`) thì từ chối.
+    /// - Parameter bundleIdentifier: bundle ID đang chạy; trùng bản thật
+    ///   (`LibraryConfiguration.productionBundleIdentifiers`) thì từ chối.
     public static func parse(
         arguments: [String],
         bundleIdentifier: String?,
@@ -184,8 +183,7 @@ public struct UITestLaunchOptions: Sendable, Equatable {
             if chosenValue != nil { throw Failure.chosenFileWithoutDirectory }
             return nil
         }
-        let productionIdentifiers = [LibraryConfiguration.studentBundleIdentifier, LibraryConfiguration.adminBundleIdentifier]
-        if let bundleIdentifier, productionIdentifiers.contains(bundleIdentifier) {
+        if let bundleIdentifier, LibraryConfiguration.productionBundleIdentifiers.contains(bundleIdentifier) {
             throw Failure.productionBundleIdentifier(bundleIdentifier)
         }
         guard directoryValue.hasPrefix("/") else { throw Failure.relativePath(directoryValue) }

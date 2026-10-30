@@ -37,6 +37,10 @@
 # vn.io.nt0.examsuite, vn.io.nt0.examsuite.admin), khác nhau thì thất bại;
 # và so ~/Library/Autosave Information/ (chỉ tên, mtime, cỡ): có mục mới của Exam Suite (đề chưa lưu do UI test bỏ lại)
 # thì thất bại.
+# Bản iOS (docs/product/plan-ios-v1.md) ở mức full: build cho simulator (build/DerivedData-iOS), kiểm ranh giới bundle
+# (ADR 0003) và chữ Info.plist vi/en của app iOS, export String Catalog của scheme ExamSuiteiOS; --uitest chạy thêm các
+# lớp ExamSuiteiOSUITests đã chọn trên simulator. Máy và runtime simulator: EXAMSUITE_IOS_DESTINATION (mặc định bên
+# dưới, cùng máy với ảnh snapshot của bản iOS). Simulator đã tách dữ liệu khỏi máy Mac nên không so kho thật cho iOS.
 # App Debug/Release mang bundle ID thật mà script build (build/DerivedData/Build/Products, build/DerivedData-Release/Build/
 # Products) bị xoá ngay sau bước kiểm cuối dùng chúng và khi script dừng ở bất cứ đâu, để LaunchServices không chọn bản
 # Debug (dùng chung kho thật) mở `.exam`; bản `.uitest` của bước UI test giữ lại.
@@ -52,6 +56,7 @@ UITEST_PLAN_ONLY=0
 AUTOSAVE_CHECK=1
 CHECK_IDENTITY_ONLY=0
 FORCE_FULL=0
+IOS_DESTINATION="${EXAMSUITE_IOS_DESTINATION:-platform=iOS Simulator,name=iPhone 17,OS=26.1}"
 SCOPE_PLAN_ONLY=0
 for arg in "$@"; do
   case "$arg" in
@@ -358,7 +363,11 @@ for scheme in ExamSuite ExamSuiteAdmin; do
     -configuration Debug -destination 'platform=macOS,arch=arm64' \
     -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO -quiet build
 done
-run "kiểm bundle (ADR 0003)" scripts/check_bundle_boundary.sh build/DerivedData/Build/Products/Debug
+# Bản iOS: build cho simulator (ký ad-hoc), cùng phép kiểm ranh giới bundle với bản Học viên macOS.
+run "xcodebuild ExamSuiteiOS (simulator)" xcodebuild -project ExamSuite.xcodeproj -scheme ExamSuiteiOS \
+  -configuration Debug -destination "$IOS_DESTINATION" -derivedDataPath build/DerivedData-iOS -quiet build
+IOS_PRODUCTS=build/DerivedData-iOS/Build/Products/Debug-iphonesimulator
+run "kiểm bundle (ADR 0003)" scripts/check_bundle_boundary.sh build/DerivedData/Build/Products/Debug "$IOS_PRODUCTS"
 # String Catalog (docs/product/accessibility-localization.md, mục Kiểm): hai app có vi.lproj và en.lproj, chuỗi Info.plist
 # tra được và bằng bản của InfoPlist.xcstrings, mọi bundle catalog của package có cùng ngôn ngữ và có en (--require-en,
 # review #50 N2); rồi Xcode đồng bộ catalog nguồn với code của cả hai scheme (khoá mới, khoá không còn dùng, khoá Info.plist)
@@ -366,9 +375,11 @@ run "kiểm bundle (ADR 0003)" scripts/check_bundle_boundary.sh build/DerivedDat
 # catalog rồi chạy lại.
 run "String Catalog: hai app có vi/en (check_localization.py --built-apps --require-en)" \
   python3 scripts/check_localization.py --require-en --built-apps build/DerivedData/Build/Products/Debug
+run "String Catalog: app iOS có vi/en (check_localization.py --built-apps --require-en)" \
+  python3 scripts/check_localization.py --require-en --built-apps "$IOS_PRODUCTS"
 export_localizations() {
   local scheme
-  for scheme in ExamSuite ExamSuiteAdmin; do
+  for scheme in ExamSuite ExamSuiteAdmin ExamSuiteiOS; do
     rm -rf "build/l10n-export/$scheme"
     xcodebuild -exportLocalizations -project ExamSuite.xcodeproj -scheme "$scheme" -exportLanguage en \
       -localizationPath "build/l10n-export/$scheme" -derivedDataPath build/DerivedData-L10n -quiet
@@ -497,10 +508,13 @@ run_ui_tests() { # nhãn, scheme, target UI test, tên app, lớp…; đặt UI_
   for class in "${classes[@]}"; do only+=("-only-testing:$target/$class"); done
   crashes_before="$(crash_reports)"
   start=$(wc -l < "$LOG")
+  # Bản iOS chạy trên simulator; vai với `.exam` (LSHandlerRank, doc_rank_problems) chỉ kiểm cho hai bản macOS.
+  local destination='platform=macOS,arch=arm64'
+  [[ "$scheme" != ExamSuiteiOS ]] || destination="$IOS_DESTINATION"
   local common=(-project ExamSuite.xcodeproj -scheme "$scheme" -configuration Debug
-    -destination 'platform=macOS,arch=arm64' -derivedDataPath "$UI_DERIVED" EXAMSUITE_BUNDLE_ID_SUFFIX=.uitest)
+    -destination "$destination" -derivedDataPath "$UI_DERIVED" EXAMSUITE_BUNDLE_ID_SUFFIX=.uitest)
   if run "UI test $target: build-for-testing ($label)" xcodebuild "${common[@]}" -quiet build-for-testing; then
-    UI_BUILT_APPS+=("$UI_DERIVED/Build/Products/Debug/$app")
+    [[ "$scheme" == ExamSuiteiOS ]] || UI_BUILT_APPS+=("$UI_DERIVED/Build/Products/Debug/$app")
     run "UI test $target ($label, chế độ cô lập): ${classes[*]}" xcodebuild "${common[@]}" "${only[@]}" \
       -retry-tests-on-failure -test-iterations 2 test-without-building || failed=1
   else
@@ -544,6 +558,7 @@ if [[ $UITEST == 1 ]]; then
   UI_MODE="$(sed -n 's/^mode: //p' <<< "$UI_PLAN")"
   UI_STUDENT_CLASSES="$(sed -n 's/^ExamSuiteUITests: *//p' <<< "$UI_PLAN")"
   UI_ADMIN_CLASSES="$(sed -n 's/^ExamSuiteAdminUITests: *//p' <<< "$UI_PLAN")"
+  UI_IOS_CLASSES="$(sed -n 's/^ExamSuiteiOSUITests: *//p' <<< "$UI_PLAN")"
   UI_SCOPE="theo file đổi"; [[ "$UI_MODE" == full ]] && UI_SCOPE="đủ bộ"
   [[ "$UI_MODE" =~ ^(selected|full|none)$ ]] || { echo "verify_local.sh: kế hoạch UI test sai dạng" | tee -a "$LOG"; exit 1; }
 fi
@@ -574,8 +589,10 @@ elif [[ $UITEST == 1 ]]; then
   # Chạy cả hai target kể cả khi target đầu thất bại, để so kho thật sau MỌI lần lái app.
   read -r -a STUDENT_CLASSES <<< "$UI_STUDENT_CLASSES"
   read -r -a ADMIN_CLASSES <<< "$UI_ADMIN_CLASSES"
+  read -r -a IOS_CLASSES <<< "$UI_IOS_CLASSES"
   run_ui_tests "Học viên" ExamSuite ExamSuiteUITests "Exam Suite.app" ${STUDENT_CLASSES[@]+"${STUDENT_CLASSES[@]}"}
   run_ui_tests "Admin" ExamSuiteAdmin ExamSuiteAdminUITests "Exam Suite Admin.app" ${ADMIN_CLASSES[@]+"${ADMIN_CLASSES[@]}"}
+  run_ui_tests "iOS" ExamSuiteiOS ExamSuiteiOSUITests "Exam Suite.app" ${IOS_CLASSES[@]+"${IOS_CLASSES[@]}"}
   AFTER="$(real_state)"
   { echo "== kho/defaults thật sau UI test"; echo "$AFTER"; } | tee -a "$LOG"
   if [[ "$BEFORE" != "$AFTER" ]]; then
@@ -619,7 +636,8 @@ elif [[ $UITEST == 1 ]]; then
     { echo "== $STEP"; echo "$UI_ASSERT_ERRORS"; } | tee -a "$LOG"
     exit 1
   fi
-  UI_COUNTS="Học viên ${UI_COUNT_ExamSuiteUITests}, Admin ${UI_COUNT_ExamSuiteAdminUITests} test, $UI_SCOPE"
+  UI_COUNTS="Học viên ${UI_COUNT_ExamSuiteUITests}, Admin ${UI_COUNT_ExamSuiteAdminUITests}"
+  UI_COUNTS+=", iOS ${UI_COUNT_ExamSuiteiOSUITests} test, $UI_SCOPE"
   # Bỏ kiểm Autosave thì ghi ngay sau "kho thật không đổi" (trước phần có thể bị cắt ở 140 ký tự).
   AUTOSAVE_NOTE=""
   [[ $AUTOSAVE_CHECK == 1 ]] || AUTOSAVE_NOTE=", kiểm Autosave: bỏ qua"
@@ -633,5 +651,7 @@ STEP="ghi status"
 MINUTES=$(( ($(date +%s) - START + 59) / 60 ))
 MODE="incremental"; [[ $CLEAN == 1 ]] && MODE="clean"
 [[ $FORCED_REBUILD == 1 ]] && MODE="incremental, ExamFeatures build lại"
-post_status success "mức full: macOS ok ($MODE)$IDENTITY_NOTE, $UI_NOTE, $LINUX_NOTE, ${MINUTES} phút"
+# "iOS ok" đặt sau phần UI test: GitHub cắt mô tả ở 140 ký tự, và "kiểm Autosave: bỏ qua" phải còn trong trường hợp hay
+# gặp (incremental, chọn lớp theo file đổi).
+post_status success "mức full: macOS ok ($MODE)$IDENTITY_NOTE, $UI_NOTE, iOS ok, $LINUX_NOTE, ${MINUTES} phút"
 echo "== OK: $SHORT ($UI_NOTE; $LINUX_NOTE). Log: $LOG"
