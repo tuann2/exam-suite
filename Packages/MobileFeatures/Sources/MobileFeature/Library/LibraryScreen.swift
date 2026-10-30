@@ -36,10 +36,12 @@ struct LibraryScreen: View {
                 }
             }
             // Đề vừa thêm, vừa dùng file mới hay vừa Hoàn tác xoá (`LibraryModel.reveal` chọn đề): cuộn tới dòng của
-            // nó (bản macOS chọn thẻ; danh sách iOS không có trạng thái chọn).
+            // nó (bản macOS chọn thẻ; danh sách iOS không có trạng thái chọn, nên bỏ chọn ngay để lần sau cùng đề vẫn
+            // cuộn tới).
             .onChange(of: library.selection) { _, examID in
                 guard let examID else { return }
                 withAnimation { proxy.scrollTo(examID, anchor: .center) }
+                library.selection = nil
             }
         }
         .listStyle(.insetGrouped)

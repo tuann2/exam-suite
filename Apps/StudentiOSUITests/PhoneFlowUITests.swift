@@ -60,7 +60,7 @@ final class PhoneExamFlowUITests: XCTestCase {
         XCTAssertTrue(useNew.waitForExistence(timeout: 10), "Cùng đề, khác file phải hỏi Dùng file mới / Huỷ")
         useNew.tap()
 
-        phone.start(Samples.lamQuen, mode: "Thi", minutes: 1)
+        phone.start(Samples.lamQuen, mode: "Thi", minutes: 1, auditPreExam: true)
         // 1 phút ở hệ số 60 là khoảng 1 giây: hết giờ, sang Rà soát khoá (không kịp làm câu nào).
         XCTAssertTrue(phone.element("review.submit").waitForExistence(timeout: 20), "Hết giờ chưa sang Rà soát")
         XCTAssertFalse(phone.element("review.back").exists, "Rà soát khoá không được quay lại làm bài")
@@ -74,11 +74,12 @@ final class PhoneExamFlowUITests: XCTestCase {
         // Kéo sheet lên cỡ lớn: ở cỡ vừa, chữ của màn bên dưới vẫn thấy mà không đọc được (sheet chặn), kiểm báo
         // "Potentially inaccessible text".
         let done = phone.element("navigator.done")
-        for _ in 0 ..< 3 where done.frame.minY > 150 {
+        let largeSheetTop = phone.app.frame.height * 0.2
+        for _ in 0 ..< 3 where done.frame.minY > largeSheetTop {
             phone.app.navigationBars["Bảng câu hỏi"].swipeUp()
             sleep(1)
         }
-        XCTAssertLessThan(done.frame.minY, 150, "Bảng câu hỏi chưa lên cỡ lớn")
+        XCTAssertLessThan(done.frame.minY, largeSheetTop, "Bảng câu hỏi chưa lên cỡ lớn")
         PhoneAccessibilityAudit.audit(phone.app, screen: "Bảng câu hỏi (Rà soát khoá)")
         phone.tap("navigator.done")
         phone.tap("review.submit")

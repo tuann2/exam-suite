@@ -108,6 +108,7 @@ final class PhoneApp {
             field.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: current.count) + "\(minutes)")
             tap("keyboard.done")
             XCTAssertEqual(field.value as? String, "\(minutes)", "Ô thời gian phải ghi \(minutes) phút")
+            if auditPreExam { PhoneAccessibilityAudit.audit(app, screen: "Trước khi thi (Thi, ô thời gian)") }
         }
         tap("preExam.start")
         XCTAssertTrue(element("attempt.clock").waitForExistence(timeout: 15), "Chưa vào màn làm bài")
@@ -152,12 +153,14 @@ enum PhoneAccessibilityAudit {
 
     /// (a) Nút đang tắt (Bắt đầu khi chưa có tên thí sinh): WCAG 1.4.3 miễn tương phản cho thành phần không dùng được,
     /// iOS vẽ nút tắt mờ đi. (b) Nút của thanh điều hướng (Huỷ, Bắt đầu, Thư viện, Tạm dừng, Xong của sheet): thanh của
-    /// iOS giữ cỡ chữ cố định và hiện Large Content Viewer khi nhấn giữ ở cỡ chữ trợ năng, app không đổi được. Xét mọi
+    /// iOS giữ cỡ chữ cố định và hiện Large Content Viewer khi nhấn giữ ở cỡ chữ trợ năng, app không đổi được; tương
+    /// phản của chúng phụ thuộc nền kính lấy từ nội dung cuộn bên dưới. Xét mọi
     /// thanh điều hướng đang có (màn bên dưới và sheet), không chỉ thanh đầu tiên. (c) Báo nhầm có bằng chứng: "Dynamic
     /// Type partially unsupported" với chữ trong dòng của `List` (lúc thì "Theo phần", "Không còn câu chưa làm.", lúc thì
     /// "Đánh dấu", "0" của Rà soát khoá: đổi theo lần chạy). Chữ của MobileFeature chỉ dùng text style (cỡ cố định chỉ
     /// ở biểu tượng trang trí), và ảnh chụp ở Accessibility L (bước I2a, 2026-10-31: Kết quả, Rà soát, Rà soát khoá)
-    /// cho thấy các dòng đó phóng to và xuống dòng như mọi dòng khác. Chỉ miễn loại kiểm này, chỉ chữ tĩnh trong `List`.
+    /// cho thấy các dòng đó phóng to và xuống dòng như mọi dòng khác. Chỉ miễn báo "partially unsupported" (không miễn
+    /// "unsupported": cỡ chữ cố định thật), chỉ chữ tĩnh của `List`/`Form` (cùng nhãn và cùng khung).
     static func exceptions(in app: XCUIApplication) -> [Exception] {
         let bars = app.navigationBars
         func inNavigationBar(_ element: XCUIElement) -> Bool {
@@ -171,37 +174,51 @@ enum PhoneAccessibilityAudit {
                 guard let element = issue.element, element.exists else { return false }
                 return inNavigationBar(element)
             },
+            // Nút của thanh là kính Liquid Glass của hệ thống, lấy màu từ nội dung cuộn bên dưới: "Huỷ" của Trước khi
+            // thi đạt khi form chưa cuộn (luồng 1) và bị báo khi form đã cuộn tới ô thời gian (luồng 2). Màu chữ là màu
+            // nhấn #006666 (≈7:1 trên nền trắng, `PaletteContrastTests`); nền kính app không đặt được.
+            Exception(type: .contrast, reason: "nút của thanh điều hướng iOS trên kính Liquid Glass") { issue in
+                guard let element = issue.element, element.exists else { return false }
+                return inNavigationBar(element)
+            },
             Exception(type: .textClipped, reason: "nút của thanh điều hướng iOS") { issue in
                 guard let element = issue.element, element.exists else { return false }
                 return inNavigationBar(element)
             },
             Exception(type: .dynamicType, reason: "báo nhầm: chữ có text style trong List, ảnh ở Accessibility L") { issue in
-                // Chữ tĩnh thuộc một `List` (kể cả dòng đã cuộn khỏi khung, nằm dưới thanh nút).
-                guard let element = issue.element, element.exists, element.elementType == .staticText,
-                      !element.label.isEmpty else { return false }
-                return app.collectionViews.staticTexts[element.label].exists
+                // Chữ tĩnh thuộc một `List` (kể cả dòng đã cuộn khỏi khung, nằm dưới thanh nút): cùng nhãn và cùng khung.
+                guard issue.compactDescription.contains("partially"), let element = issue.element, element.exists,
+                      element.elementType == .staticText, !element.label.isEmpty else { return false }
+                let frame = element.frame
+                return app.collectionViews.staticTexts.matching(NSPredicate(format: "label == %@", element.label))
+                    .allElementsBoundByIndex.contains { $0.frame == frame }
             },
         ]
     }
 
+    /// Kiểm tương phản trước, trên màn chưa bị đổi gì, rồi mới các loại còn lại: kiểm Dynamic Type đổi cỡ chữ, `List`
+    /// dựng lại dòng có hoạt cảnh, và tương phản đo trong lúc đó báo nhầm chập chờn ở chữ chính trên nền trắng (tiêu đề
+    /// nhóm của Rà soát khoá; bước I2a, 2026-10-31).
     static func audit(_ app: XCUIApplication, screen: String, file: StaticString = #filePath, line: UInt = #line) {
         waitUntilStill(app)
         let exceptions = exceptions(in: app)
+        let handler: (XCUIAccessibilityAuditIssue) throws -> Bool = { issue in
+            if exceptions.contains(where: { $0.type == issue.auditType && $0.matches(issue) }) { return true }
+            let element = issue.element
+            let frame = element.flatMap { $0.exists ? "\($0.frame)" : nil } ?? "-"
+            let lists = app.collectionViews.allElementsBoundByIndex.map { "\($0.frame)" }.joined(separator: ",")
+            XCTFail(
+                "Trợ năng (\(screen)): \(issue.compactDescription) — \(issue.detailedDescription) "
+                    + "[\(element?.identifier ?? "")|\(element?.label ?? "")|\(element.map { "\($0.elementType.rawValue)" } ?? "")"
+                    + "|khung \(frame)|List \(lists)]",
+                file: file,
+                line: line
+            )
+            return true
+        }
         do {
-            try app.performAccessibilityAudit(for: .all) { issue in
-                if exceptions.contains(where: { $0.type == issue.auditType && $0.matches(issue) }) { return true }
-                let element = issue.element
-                let frame = element.flatMap { $0.exists ? "\($0.frame)" : nil } ?? "-"
-                let lists = app.collectionViews.allElementsBoundByIndex.map { "\($0.frame)" }.joined(separator: ",")
-                XCTFail(
-                    "Trợ năng (\(screen)): \(issue.compactDescription) — \(issue.detailedDescription) "
-                        + "[\(element?.identifier ?? "")|\(element?.label ?? "")|\(element.map { "\($0.elementType.rawValue)" } ?? "")"
-                        + "|khung \(frame)|List \(lists)]",
-                    file: file,
-                    line: line
-                )
-                return true
-            }
+            try app.performAccessibilityAudit(for: .contrast, handler)
+            try app.performAccessibilityAudit(for: XCUIAccessibilityAuditType.all.subtracting(.contrast), handler)
         } catch {
             XCTFail("Không chạy được kiểm trợ năng (\(screen)): \(error)", file: file, line: line)
         }

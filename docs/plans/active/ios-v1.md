@@ -223,8 +223,9 @@ Không có cặp song song.
 - 2026-10-31, I2a, màu và trợ năng: màu nhấn teal và màu trạng thái từ bảng màu số (`MobilePalette.swift`, file bảng
   màu của `check_colors.py`); chữ phụ là chữ chính mờ 75% (màu `.secondary` của iOS chỉ khoảng 3,5:1 với chữ nhỏ, kiểm
   trợ năng báo); tiêu đề nhóm là dòng đầu của nhóm (header của `List` bị ép chữ phụ); thanh nút dưới nền đặc. Kiểm trợ
-  năng của iOS (mọi loại) ở mọi màn mà ba luồng đi qua: Thư viện, Trước khi thi, làm bài, Rà soát & nộp, Kết quả (Đậu,
-  Trượt), Xem lại bài (luồng 1); Rà soát khoá, bảng câu hỏi (luồng 2); Tạm dừng (luồng 3). Ngoại lệ ghi trong
+  năng của iOS (mọi loại) ở các màn: Thư viện, Trước khi thi (Luyện tập), làm bài, Rà soát & nộp, Kết quả Đậu, Xem lại
+  bài (luồng 1); Trước khi thi (Thi), Rà soát khoá, bảng câu hỏi, Kết quả Trượt (luồng 2); Tạm dừng (luồng 3). Không kiểm
+  hộp thoại (Bỏ bài?, Dùng file mới), ảnh phóng to, bảng câu hỏi ở cỡ vừa. Ngoại lệ ghi trong
   `Support/PhoneApp.swift`: nút đang tắt (WCAG
   1.4.3), nút của mọi thanh điều hướng đang có (cỡ chữ cố định, Large Content Viewer), chữ tĩnh trong `List` báo nhầm
   "Dynamic Type partially unsupported" (ảnh chụp ở Accessibility L cho thấy chúng phóng to và xuống dòng).
@@ -235,9 +236,20 @@ Không có cặp song song.
      ở Rà soát xuống dòng ("1/0") ở cỡ chữ lớn (ô rộng theo cỡ chữ, số dài thu nhỏ); hiệu ứng mờ mép dưới của iOS 26
      làm nhạt chữ sát thanh nút (tắt ở vùng cuộn ngay trên thanh nút nền đặc: câu hỏi, Rà soát, Xem lại bài). Kiểm báo
      nhầm khi màn đang chuyển (Rà soát khoá hiện ra bằng hoạt cảnh mờ dần, cây trợ năng không đổi): kiểm chờ ít nhất
-     1 giây rồi tới khi cây trợ năng đứng yên; ngoại lệ "Dynamic Type" theo nhãn đổi thành mọi chữ tĩnh trong `List`
-     (nhãn báo nhầm đổi theo lần chạy; chữ của MobileFeature chỉ dùng text style), có ảnh ở Accessibility L làm bằng
-     chứng; bảng câu hỏi kiểm ở cỡ lớn của sheet (ở cỡ vừa, chữ của màn bên dưới thấy mà không đọc được).
+     1 giây rồi tới khi cây trợ năng đứng yên; ngoại lệ "Dynamic Type" theo nhãn đổi thành chữ tĩnh của `List`/`Form`
+     (khớp nhãn và khung, chỉ báo "partially unsupported"; nhãn báo nhầm đổi theo lần chạy; chữ của MobileFeature chỉ
+     dùng text style), có ảnh ở Accessibility L làm bằng chứng; bảng câu hỏi kiểm ở cỡ lớn của sheet (ở cỡ vừa, chữ của
+     màn bên dưới thấy mà không đọc được, kiểm báo nhầm; cỡ vừa không được kiểm).
+  Re-review (phiên mới, trên ecd5844): APPROVE. Làm thêm theo gợi ý: thu hẹp ngoại lệ như trên; kiểm Trước khi thi ở
+  Thi sau khi gõ số phút (ô số mới); Thư viện bỏ chọn sau khi cuộn để lần sau cùng đề vẫn cuộn; ngưỡng cỡ lớn của sheet
+  theo chiều cao màn. Chưa có máy kiểm nào giữ "MobileFeature không dùng cỡ chữ cố định"; snapshot cỡ chữ lớn ở I2b phủ
+  một phần. Kiểm mới ở Trước khi thi (Thi) và các lần chạy lặp cho thấy thêm hai chỗ báo nhầm, đã xử lý:
+  - Tương phản chập chờn ở chữ chính của `List` (tiêu đề nhóm của Rà soát khoá), vì lượt kiểm Dynamic Type đổi cỡ chữ
+    và `List` dựng lại dòng có hoạt cảnh. Nay kiểm tương phản chạy riêng, trước các loại khác, trên màn chưa đổi gì:
+    hai lần chạy liên tiếp đạt.
+  - Tương phản của nút trên thanh điều hướng ("Huỷ" của Trước khi thi, khi form đã cuộn tới ô thời gian): nút là kính
+    Liquid Glass lấy màu từ nội dung cuộn bên dưới. Cùng nút đó đạt khi form chưa cuộn; màu chữ #006666 ≈7:1 trên nền
+    trắng. Ngoại lệ tương phản cho phần tử nằm trọn trong thanh điều hướng, như cỡ chữ của thanh.
   Sửa thêm theo các mục không chặn, để iOS theo macOS: hộp "Bỏ bài?" có dòng phụ (exam-taking.md phương án 16); Rà
   soát mở được bảng câu hỏi từ thanh điều hướng (chỉ để xem khi khoá, chạm ô ở Rà soát chưa khoá thì quay lại làm bài
   tại câu đó, như macOS); Trước khi thi có ô số cho Số câu và Thời gian cạnh nút tăng/giảm; Thư viện cuộn tới đề vừa thêm/chọn
@@ -293,6 +305,10 @@ I2a (nhánh `feature/ios-i2`):
 - `ExamSuiteiOSUITests`: ba lớp đạt (`PhonePracticeFlowUITests`, `PhoneExamFlowUITests`, `PhoneLeaveAppUITests`), kiểm
   trợ năng không còn vấn đề ngoài ngoại lệ đã ghi.
 - `xcodebuild -exportLocalizations` ba scheme: lần thứ hai không đổi catalog; `check_localization.py --require-en` đạt.
+- Sau review và re-review: `MobileFeatureTests` 12 test đạt; ba lớp `ExamSuiteiOSUITests` đạt, kể cả từ simulator vừa
+  khởi động (lần chạy trước khi thêm chờ màn đứng yên có báo nhầm chập chờn ở Rà soát khoá); ảnh ở Accessibility L của
+  Rà soát khoá và bảng câu hỏi (bằng chứng cho ngoại lệ); `check_localization.py --require-en`, `check_colors.py`,
+  `check_quit_sheets.py`, `uitest_plan.py --self-test` đạt.
 
 ## Result
 
