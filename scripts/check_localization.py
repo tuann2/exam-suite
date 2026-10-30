@@ -1057,6 +1057,12 @@ BUILT_APPS = {
 BUILT_IOS_APPS = {
     "Exam Suite.app": ("Apps/StudentiOS/InfoPlist.xcstrings", ()),
 }
+# Khoá Info.plist được đánh dấu không dịch (`shouldTranslate: false`), theo catalog. Chỉ `CFBundleDisplayName` của bản
+# iOS ("Exam Suite Debug" ở Debug, theo cấu hình build). Khoá khác đánh dấu không dịch là lỗi: `--require-en` bỏ qua
+# khoá không dịch, nên bản dịch của nó mất mà không bước nào báo.
+UNTRANSLATED_INFO_KEYS = {
+    "Apps/StudentiOS/InfoPlist.xcstrings": ("CFBundleDisplayName",),
+}
 APP_LANGUAGES = ("vi", "en")
 
 
@@ -1095,7 +1101,8 @@ def lproj_languages(bundle: Path) -> set[str]:
             if any(f.suffix in (".strings", ".stringsdict") for f in d.iterdir())}
 
 
-def built_app_problems(app: Path, catalog: dict, targets: tuple[str, ...], require_en: bool) -> list[Problem]:
+def built_app_problems(app: Path, catalog: dict, targets: tuple[str, ...], require_en: bool,
+                       untranslated: tuple[str, ...] = ()) -> list[Problem]:
     """Bundle chính có `vi.lproj` và `en.lproj` (package đi theo ngôn ngữ bundle chính chọn: thiếu một trong hai thì
     cả app kẹt một ngôn ngữ, spike giai đoạn 5); `CFBundleDevelopmentRegion` là vi; mỗi khoá của InfoPlist.xcstrings
     tra được ở cả hai ngôn ngữ, khác rỗng, và bằng đúng giá trị của catalog cho ngôn ngữ đó (không có bản của ngôn ngữ
@@ -1106,7 +1113,10 @@ def built_app_problems(app: Path, catalog: dict, targets: tuple[str, ...], requi
     Bundle tài nguyên của mỗi target có catalog nằm trong app, ngôn ngữ nguồn vi, và **mọi bundle có chữ đã biên dịch
     có cùng tập `*.lproj`** (review độc lập #50 N2): `InterfaceLocale` chọn ngôn ngữ định dạng theo `*.lproj` của bundle
     LibraryFeature, nên bundle nào thiếu một ngôn ngữ sẽ ra chữ ngôn ngữ nguồn cạnh số/ngày của ngôn ngữ kia. Đòi en thì
-    tập đó phải có en."""
+    tập đó phải có en.
+
+    Khoá trong `untranslated` (`UNTRANSLATED_INFO_KEYS`) đánh dấu không dịch thì không có trong `InfoPlist.strings`
+    (app dùng giá trị của Info.plist); khoá khác đánh dấu không dịch là lỗi."""
     name = app.name
     problems: list[Problem] = []
 
@@ -1135,6 +1145,10 @@ def built_app_problems(app: Path, catalog: dict, targets: tuple[str, ...], requi
             # Khoá không dịch (`shouldTranslate: false`, ví dụ `CFBundleDisplayName` của bản iOS theo cấu hình build:
             # "Exam Suite Debug" ở Debug): catalog không biên dịch nó, app dùng giá trị của Info.plist.
             if entry.get("shouldTranslate", True) is False:
+                if key not in untranslated:
+                    problem(f"{key!r} đánh dấu không dịch (shouldTranslate: false) trong InfoPlist.xcstrings: chỉ "
+                            f"{list(untranslated)} được (UNTRANSLATED_INFO_KEYS của scripts/check_localization.py).")
+                    continue
                 if key in table:
                     problem(f"{language}.lproj: {key!r} có trong InfoPlist.strings dù catalog đánh dấu không dịch.")
                 continue
@@ -1185,7 +1199,7 @@ def check_built_apps(products: Path, require_en: bool, root: Path = ROOT) -> lis
             problems.append(Problem(app_name, 0, "built-app", f"không thấy {app} (build hai scheme trước)."))
             continue
         catalog = json.loads((root / catalog_path).read_text(encoding="utf-8"))
-        problems += built_app_problems(app, catalog, targets, require_en)
+        problems += built_app_problems(app, catalog, targets, require_en, UNTRANSLATED_INFO_KEYS.get(catalog_path, ()))
         problems += unlisted_bundles(app, targets)
     return problems
 
@@ -1289,10 +1303,22 @@ def built_app_self_test() -> list[str]:
         ]
         for name, tables, expected in ios_cases:
             app = build(Path(tmp), ios_info, tables, None, flat=True)
-            got = built_app_problems(app, ios_catalog, (), True)
+            got = built_app_problems(app, ios_catalog, (), True, ("CFBundleDisplayName",))
             if len(got) != expected:
                 kind = "dương" if expected == 0 else "âm"
                 failures.append(f"đối chứng {kind} app '{name}': cần {expected} lỗi, được {[str(p) for p in got]}")
+        # Khoá không dịch ngoài danh sách (ví dụ tên kiểu tài liệu của bản macOS): bản dịch mất mà `--require-en` không
+        # báo, nên bước này phải báo (một lỗi mỗi ngôn ngữ). Xcode không biên dịch khoá không dịch vào
+        # InfoPlist.strings.
+        no_translate = {**catalog["strings"]["Exam Suite Exam"], "shouldTranslate": False}
+        hidden = {"strings": {**catalog["strings"], "Exam Suite Exam": no_translate}}
+        names_only = {"CFBundleName": "Exam Suite"}
+        app = build(Path(tmp), info, {"vi": names_only, "en": names_only}, english)
+        if len(built_app_problems(app, hidden, targets, True)) != 2:
+            failures.append("đối chứng âm app 'khoá macOS đánh dấu không dịch' không bị bắt")
+        app = build(Path(tmp), ios_info, {"vi": vi, "en": en}, None, flat=True)
+        if len(built_app_problems(app, ios_catalog, (), True)) != 2:
+            failures.append("đối chứng âm app 'iOS khoá không dịch không có trong danh sách' không bị bắt")
         # Bundle có chữ mà không có trong BUILT_APPS.
         app = build(Path(tmp), info, {"vi": vi, "en": en}, {**english, "NewFeature": ["en"]})
         if len(unlisted_bundles(app, targets)) != 1 or unlisted_bundles(app, (*targets, "NewFeature")):

@@ -651,5 +651,7 @@ STEP="ghi status"
 MINUTES=$(( ($(date +%s) - START + 59) / 60 ))
 MODE="incremental"; [[ $CLEAN == 1 ]] && MODE="clean"
 [[ $FORCED_REBUILD == 1 ]] && MODE="incremental, ExamFeatures build lại"
-post_status success "mức full: macOS ok ($MODE), iOS ok$IDENTITY_NOTE, $UI_NOTE, $LINUX_NOTE, ${MINUTES} phút"
+# "iOS ok" đặt sau phần UI test: GitHub cắt mô tả ở 140 ký tự, và "kiểm Autosave: bỏ qua" phải còn trong trường hợp hay
+# gặp (incremental, chọn lớp theo file đổi).
+post_status success "mức full: macOS ok ($MODE)$IDENTITY_NOTE, $UI_NOTE, iOS ok, $LINUX_NOTE, ${MINUTES} phút"
 echo "== OK: $SHORT ($UI_NOTE; $LINUX_NOTE). Log: $LOG"

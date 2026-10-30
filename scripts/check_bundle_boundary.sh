@@ -74,7 +74,15 @@ if [[ -n "$IOS_DIR" ]]; then
   if [[ -e "$IOS/ExamFeatures_AdminShell.bundle" ]]; then
     echo "FAIL: bản iOS chứa bundle tài nguyên ExamFeatures_AdminShell.bundle (docs/decisions/0003)."; FAILED=1
   fi
-  IOS_NOTE=", bản iOS cũng không"
+  # Bằng chứng dương như AuthoringFeature của bản Admin: app iOS có ký hiệu của MobileShell, để phép quét không đạt
+  # khi thật ra không quét được gì.
+  I=$(count_symbols "$IOS" MobileShell)
+  echo "MobileShell symbols: iOS=$I"
+  if [[ "$I" -eq 0 ]]; then
+    echo "FAIL: bản iOS không có ký hiệu MobileShell; phép quét không còn đúng hoặc target ExamSuiteiOS mất phụ thuộc."
+    FAILED=1
+  fi
+  IOS_NOTE=", bản iOS cũng không (bản iOS có MobileShell)"
 fi
 [[ $FAILED == 0 ]] || exit 1
 echo "ok   bản Học viên không chứa ${MODULES[*]} (ký hiệu và bundle tài nguyên)${IOS_NOTE}; bản Admin có AuthoringFeature; không app nào chứa ${TEST_ONLY[*]}"

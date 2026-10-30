@@ -284,16 +284,20 @@ struct AppLaunchStorageTests {
             let testBuild = value.replacingOccurrences(of: suffix, with: ".uitest")
             #expect(UITestLaunchOptions.isTestBuild(bundleIdentifier: testBuild), "\(testBuild)")
         }
-        // Bản iOS: bản Debug thêm `.debug` (`EXAMSUITE_IOS_CONFIG_SUFFIX`), build UI test thêm `.uitest`. Cả bản Release
-        // và bản Debug đều là bản thật (dữ liệu trên iPhone); hai bản build UI test thì không.
+        // Bản iOS: đuôi theo cấu hình build (`EXAMSUITE_IOS_CONFIG_SUFFIX`, đọc từ khối `configs:` của target), build
+        // UI test thêm `.uitest`. Cả bản Release và bản Debug đều là bản thật (dữ liệu trên iPhone); hai bản build UI
+        // test thì không.
         let configSuffix = "$(EXAMSUITE_IOS_CONFIG_SUFFIX)"
         let ios = try #require(
             bundleIdentifier(ofTarget: "ExamSuiteiOS"), "project.yml thiếu bundle ID của ExamSuiteiOS"
         )
         #expect(ios == LibraryConfiguration.iosBundleIdentifier + configSuffix + suffix, "ExamSuiteiOS: \(ios)")
-        for (config, real) in [("", LibraryConfiguration.iosBundleIdentifier),
-                               (".debug", LibraryConfiguration.iosDebugBundleIdentifier)] {
-            let built = ios.replacingOccurrences(of: configSuffix, with: config)
+        let configSuffixes = try Self.iosConfigSuffixes(lines)
+        #expect(configSuffixes.keys.sorted() == ["Debug", "Release"], "\(configSuffixes)")
+        for (config, real) in [("Release", LibraryConfiguration.iosBundleIdentifier),
+                               ("Debug", LibraryConfiguration.iosDebugBundleIdentifier)] {
+            let value = try #require(configSuffixes[config], "project.yml: ExamSuiteiOS thiếu đuôi của \(config)")
+            let built = ios.replacingOccurrences(of: configSuffix, with: value)
             #expect(built.replacingOccurrences(of: suffix, with: "") == real)
             #expect(!UITestLaunchOptions.isTestBuild(bundleIdentifier: real))
             let testBuild = built.replacingOccurrences(of: suffix, with: ".uitest")
@@ -325,6 +329,24 @@ struct AppLaunchStorageTests {
         // Không có khai báo kiểu nào khác (ví dụ tên cũ sót ở chỗ thứ năm).
         let declarations = lines.map { $0.trimmingCharacters(in: .whitespaces) }.filter { $0.hasPrefix("- UTTypeIdentifier:") }
         #expect(declarations == Array(repeating: "- UTTypeIdentifier: " + identifier, count: 3), "\(declarations)")
+    }
+
+    /// Giá trị `EXAMSUITE_IOS_CONFIG_SUFFIX` theo tên cấu hình (`Debug:`, `Release:`) trong khối target ExamSuiteiOS,
+    /// bỏ dấu nháy (`""` là đuôi rỗng).
+    static func iosConfigSuffixes(_ lines: [String]) throws -> [String: String] {
+        let block = try #require(targetBlock("ExamSuiteiOS", in: lines), "project.yml thiếu target ExamSuiteiOS")
+        let key = "EXAMSUITE_IOS_CONFIG_SUFFIX:"
+        var config: String?
+        var result: [String: String] = [:]
+        for line in block.map({ $0.trimmingCharacters(in: .whitespaces) }) {
+            if line == "Debug:" || line == "Release:" {
+                config = String(line.dropLast())
+            } else if line.hasPrefix(key), let config {
+                result[config] = line.dropFirst(key.count).trimmingCharacters(in: .whitespaces)
+                    .trimmingCharacters(in: CharacterSet(charactersIn: "\""))
+            }
+        }
+        return result
     }
 
     /// Các dòng của project.yml ở gốc repo.

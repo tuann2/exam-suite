@@ -32,11 +32,14 @@ Ba cơ chế mượn từ ai-workflow-template (ADR 0007), áp dụng cho mọi 
   1–3 của overview.md, rồi `ExamSuiteAdminUITests` của bản Admin): PR chạm code app (`Packages/ExamFeatures/Sources/**`,
   lõi `Packages/ExamKit/Sources/{ExamKit,ExamFile}/**`, `Apps/**`) chạy **các lớp test bị ảnh hưởng** theo bảng map của
   `scripts/uitest_plan.py` (file đổi so với `git merge-base origin/main HEAD`, không dò đổi tên); **đủ bộ** khi chạm
-  hạ tầng chung (`Apps/UITestSupport/**`, `Apps/*UITests/**`, `project.yml`, `Package.swift`/`Package.resolved`, code
-  chế độ cô lập, `verify_local.sh`, `uitest_plan.py`), khi chạm module dùng chung mọi cửa sổ (LibraryFeature,
+  hạ tầng chung (`Apps/UITestSupport/**`, `Apps/StudentUITests/**`, `Apps/AdminUITests/**`, `project.yml`,
+  `Package.swift`/`Package.resolved` của ExamFeatures và ExamKit, code chế độ cô lập, `verify_local.sh`,
+  `uitest_plan.py`), khi chạm module dùng chung mọi cửa sổ (LibraryFeature,
   LibraryData kể cả đề mẫu, SessionFeature, lõi ExamKit/ExamFile: luồng UI lưu/mở lại đề, đọc nghiêm, đồng hồ phiên),
   khi file code app chưa có trong bảng, ở cổng (`--clean --uitest`) và khi người duyệt yêu cầu (`--uitest-all`).
-  `LargeExamSupport` (chỉ ở test), tài liệu, unit test, script khác: không chạy UI test. Target
+  `LargeExamSupport` (chỉ ở test), tài liệu, unit test, script khác: không chạy UI test. Phần chỉ của bản iOS
+  (`Packages/MobileFeatures/**`, `Apps/StudentiOS/**`, `Apps/StudentiOSUITests/**`) chỉ chạy lớp `ExamSuiteiOSUITests`
+  theo bảng map, không chạy hai bản macOS. Target
   không có lớp nào thì không build, không chạy; hai target dùng chung `build/DerivedData-UITest` (`build-for-testing`
   một lần mỗi scheme, rồi `test-without-building -only-testing:<target>/<lớp>`). Xem trước các lớp sẽ chạy:
   `scripts/verify_local.sh --uitest-plan` (không build, không ghi status). Sau khi sửa theo review độc lập mà không đổi
@@ -68,7 +71,7 @@ Ba cơ chế mượn từ ai-workflow-template (ADR 0007), áp dụng cho mọi 
 | Chấm điểm, chọn câu | `Packages/ExamKit/Sources/ExamKit/**` (Scoring, Composer, Session) |
 | Đọc/ghi gói đề, chuyển phiên bản | `Packages/ExamKit/Sources/ExamFile/**`, `schema/**`, `fixtures/**` |
 | Lưu file soạn đề | `Packages/ExamFeatures/Sources/AuthoringFeature/**` (document, save, recovery) |
-| Ranh giới hai bản app | `project.yml`, `Packages/ExamFeatures/Package.swift`, `Apps/**`, `scripts/check_boundaries.py` |
+| Ranh giới hai bản app | `project.yml`, `Packages/ExamFeatures/Package.swift`, `Packages/MobileFeatures/Package.swift` (bản iOS là một bản Học viên, ADR 0013), `Apps/**`, `scripts/check_boundaries.py` |
 | Bản Android: lõi, lưu trữ | `android/core/**`, Room schema và `ExamStore` trong `android/data/**` (plan-android-v1.md Phần 4) |
 
 Với PR rủi ro cao:

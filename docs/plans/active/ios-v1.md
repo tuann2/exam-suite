@@ -51,7 +51,8 @@ Không có cặp song song.
       package `MobileFeatures` (khung, chưa phụ thuộc); target `ExamSuiteiOS` (Info.plist, `InfoPlist.xcstrings` vi/en),
       `ExamSuiteiOSUITests` (một test mở app); `check_boundaries.py`, `check_bundle_boundary.sh`,
       `check_localization.py`, `check_quit_sheets.py`, `uitest_plan.py`, `verify_local.sh` biết bản iOS; spike
-      (Decisions). Còn: `verify_local.sh --uitest` trên SHA cuối, PR.
+      (Decisions). Rủi ro cao (vùng ranh giới hai bản app): review độc lập xong, đã sửa theo review. Còn:
+      `verify_local.sh --uitest` trên SHA cuối, PR.
 - [ ] I1 `Packages/SharedFeatures`: dời LibraryData, tách model trình bày (rủi ro cao). Cổng GI1.
 - [ ] I2 Giao diện iPhone, nhận file, tự tạm dừng. Cổng GI2.
 - [ ] I3 Hoàn thiện, bản 0.1.0. Cổng GI3.
@@ -99,10 +100,48 @@ Không có cặp song song.
 - 2026-10-30, I0, chưa làm (để đúng bước): luật `scene-locale` cho bản iOS (I1, khi `.interfaceLocale()` ở InterfaceCore);
   mức `ios` của `verify_scope.py` (đường dẫn iOS hiện là mức full; đề xuất khi cần ở I2, Nt0 duyệt); nhận `.exam` từ app
   Tệp, Safari, hộp chia sẻ và thư mục `Inbox` (I2, khi app có màn Thư viện).
+- 2026-10-30, I0, review độc lập (phiên agent mới, trên 176972a): REQUEST CHANGES, một mục chặn: plan-ios-v1.md xếp I0
+  là rủi ro thường, trái review-and-merge.md mục 3 (I0 chạm `project.yml`, `Apps/**`, `scripts/check_boundaries.py`).
+  Sửa: I0 là rủi ro cao, một review độc lập (chính lần này). Bảy mục không chặn sửa trong cùng PR:
+  - AGENTS.md, docs/README.md ghi ADR 0013 và plan iOS đã chốt;
+  - review-and-merge.md khớp `uitest_plan.py` (phần chỉ của iOS chỉ chạy lớp iOS), thêm
+    `Packages/MobileFeatures/Package.swift` vào vùng ranh giới hai bản app;
+  - plan-ios-v1.md bỏ chữ cũ (module dùng chung, mức `ios`, vùng rủi ro của SharedFeatures, việc lùi sang I2);
+  - `check_localization.py --built-apps` chỉ cho `CFBundleDisplayName` của bản iOS đánh dấu không dịch
+    (`UNTRANSLATED_INFO_KEYS`): trước đó khoá Info.plist của macOS đánh dấu không dịch thì mất bản dịch mà không bước
+    nào báo; có đối chứng âm cho khoá macOS và khoá iOS ngoài danh sách (tắt phép kiểm thì đối chứng báo: đã thử);
+  - `check_bundle_boundary.sh` đòi ký hiệu MobileShell trong app iOS (đối chứng dương, như AuthoringFeature của bản
+    Admin; app iOS chỉ có Info.plist thì thất bại: đã thử);
+  - `AppLaunchStorageTests` đọc `EXAMSUITE_IOS_CONFIG_SUFFIX` theo cấu hình từ project.yml (đổi đuôi Debug thì test
+    đỏ: đã thử);
+  - mô tả status đặt "iOS ok" sau phần UI test: trước đó "kiểm Autosave: bỏ qua" bị cắt ở 140 ký tự khi chạy
+    incremental, chọn lớp theo file đổi.
+
+  Việc review nêu cho bước sau ghi vào dòng I1, I2 của plan-ios-v1.md: bảng map `uitest_plan.py`, `unlisted_bundles`,
+  `check_test_only_module` biết `Packages/SharedFeatures` (I1); `check_release_strings.sh` thêm bản Release iOS,
+  `LaunchUITests` thay bằng test chế độ cô lập (I2).
+- 2026-10-30, I0: LaunchServices của macOS ghi nhận các app iOS build cho simulator (`build/DerivedData-iOS*`, cả bản
+  `.uitest` có `LSHandlerRank` Alternate) và chúng khai báo nhận `vn.io.nt0.exam`, nhưng mang cờ `launch-disabled`,
+  `requires-iphone-simulator` (`lsregister -dump`): macOS không mở `.exam` bằng chúng. `verify_local.sh` không xoá
+  chúng (khác app Debug/Release macOS mang bundle ID thật).
+- 2026-10-30, I0, Nt0: VS Code chưa có Full Disk Access, chạy `verify_local.sh --uitest --no-autosave-check` (status
+  ghi "kiểm Autosave: bỏ qua", như cổng 265ab44).
 
 ## Validation
 
 Ghi theo từng bước.
+
+I0:
+
+- 176972a: `scripts/verify_local.sh --no-status` (mức full, chưa UI test): đạt, gồm build và ranh giới bundle của app
+  iOS (AuthoringFeature, AuthoringData: 0 ký hiệu), chữ Info.plist vi/en của app iOS, export ba scheme không đổi
+  catalog, bước Linux. `ExamSuiteiOSUITests` (`LaunchUITests`) đạt trên simulator iPhone 17, iOS 26.1.
+- 176972a: `scripts/verify_local.sh --uitest --no-autosave-check` (đủ bộ): Admin 4 test, iOS 1 test đạt; kho,
+  `defaults` thật không đổi; bản Học viên không chạy được test nào ("Timed out while enabling automation mode": trình
+  chạy test không bật được Automation Mode, lỗi hạ tầng, không phải lỗi test). Status `local/verify` failure trên SHA
+  này; chạy lại trên SHA sau khi sửa theo review.
+- Sau khi sửa theo review: tự kiểm của `check_localization.py --require-en`, `--built-apps` trên app iOS,
+  `check_bundle_boundary.sh` (bản `.uitest` macOS và app iOS; đối chứng âm), `AppLaunchStorageTests` (16 test) đạt.
 
 ## Result
 
