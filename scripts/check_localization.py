@@ -96,6 +96,8 @@ MOBILE_SOURCES = Path("Packages/MobileFeatures/Sources")
 PACKAGE_SOURCES = (SOURCES, SHARED_SOURCES, MOBILE_SOURCES)
 # Gói của target dùng chung: bundle tài nguyên trong app mang tên `<gói>_<target>.bundle` (SwiftPM).
 SHARED_TARGETS = ("LibraryData", "InterfaceCore", "SessionModel")
+# Target của gói giao diện iPhone.
+MOBILE_TARGETS = ("MobileFeature", "MobileShell")
 APP_DIRS = (Path("Apps/Student"), Path("Apps/Admin"), Path("Apps/StudentiOS"))
 # Điểm vào của app có luật `scene-locale` (cùng scene của các shell, `SHELL_DIRS`).
 SCENE_LOCALE_APP_DIRS = (Path("Apps/Student"), Path("Apps/Admin"), Path("Apps/StudentiOS"))
@@ -1010,7 +1012,8 @@ def check_freshness(build_dir: Path, allow_missing: bool = False, root: Path = R
         return [Problem(str(build_dir), 0, "freshness", "cần xcrun xcstringstool (macOS có Xcode).")]
     problems: list[Problem] = []
     # (catalog, thư mục nguồn của target). Thư mục build của ExamFeatures có cả target của SharedFeatures (phụ thuộc);
-    # MobileFeatures chỉ build cho iOS, chưa có catalog.
+    # MobileFeatures chỉ build cho iOS: catalog của nó đồng bộ bằng -exportLocalizations (scheme ExamSuiteiOS,
+    # verify_local.sh).
     catalogs = [(c, c.parent.parent) for package in (SOURCES, SHARED_SOURCES)
                 for c in sorted((root / package).rglob("Localizable.xcstrings"))]
     if catalogs and not any(stringsdata_for(build_dir, sources.name, sources) for _, sources in catalogs):
@@ -1068,13 +1071,15 @@ BUILT_APPS = {
 # tên app với bản Học viên macOS nên có bảng riêng; `check_built_apps` chọn bảng theo thư mục Products (`…-iphoneos`,
 # `…-iphonesimulator`). Từ bước I1 app iOS mang catalog của hai module dùng chung.
 BUILT_IOS_APPS = {
-    "Exam Suite.app": ("Apps/StudentiOS/InfoPlist.xcstrings", ("InterfaceCore", "SessionModel")),
+    "Exam Suite.app": ("Apps/StudentiOS/InfoPlist.xcstrings", ("InterfaceCore", "SessionModel", "MobileFeature")),
 }
 
 
 def bundle_name(target: str) -> str:
     """Tên bundle tài nguyên của target trong app (SwiftPM: `<gói>_<target>.bundle`)."""
-    return f"{'SharedFeatures' if target in SHARED_TARGETS else 'ExamFeatures'}_{target}.bundle"
+    if target in SHARED_TARGETS:
+        return f"SharedFeatures_{target}.bundle"
+    return f"{'MobileFeatures' if target in MOBILE_TARGETS else 'ExamFeatures'}_{target}.bundle"
 # Khoá Info.plist được đánh dấu không dịch (`shouldTranslate: false`), theo catalog. Chỉ `CFBundleDisplayName` của bản
 # iOS ("Exam Suite Debug" ở Debug, theo cấu hình build). Khoá khác đánh dấu không dịch là lỗi: `--require-en` bỏ qua
 # khoá không dịch, nên bản dịch của nó mất mà không bước nào báo.
@@ -1226,7 +1231,8 @@ def unlisted_bundles(app: Path, targets: tuple[str, ...]) -> list[Problem]:
     """Bundle tài nguyên có chữ đã biên dịch mà không có trong `BUILT_APPS`: phép so `*.lproj` ở trên sẽ bỏ sót nó."""
     out: list[Problem] = []
     resources = bundle_layout(app)[1]
-    for bundle in sorted([*resources.glob("ExamFeatures_*.bundle"), *resources.glob("SharedFeatures_*.bundle")]):
+    for bundle in sorted([*resources.glob("ExamFeatures_*.bundle"), *resources.glob("SharedFeatures_*.bundle"),
+                          *resources.glob("MobileFeatures_*.bundle")]):
         target = bundle.stem.split("_", 1)[1]
         if target not in targets and lproj_languages(bundle):
             out.append(Problem(app.name, 0, "built-app", f"{bundle.name} có chữ đã biên dịch nhưng {target} không có "

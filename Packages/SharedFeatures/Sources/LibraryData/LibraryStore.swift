@@ -137,6 +137,11 @@ public final class LibraryStore {
 
     // MARK: - Đọc trạng thái
 
+    /// Bookmark của file đề của mục (để đọc file ngoài container của app trên iOS: `SecurityScopedAccess.readableURL`).
+    public func fileBookmark(_ examID: UUID) -> Data? {
+        records[examID]?.location.bookmark
+    }
+
     public func entry(_ examID: UUID) -> LibraryEntry? {
         entries.first { $0.examID == examID }
     }

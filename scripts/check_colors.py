@@ -9,9 +9,9 @@ của AuthoringFeature, `ReportPaletteTests`) chỉ kiểm được màu có tro
 khỏi mọi test.
 
 Quét mã Swift của các target giao diện (LibraryFeature, SessionFeature, AuthoringFeature, ReportFeature, AdminShell,
-StudentShell; InterfaceCore, SessionModel của Packages/SharedFeatures) và điểm vào hai app (`Apps/Student`,
-`Apps/Admin`; không gồm UI test: ảnh tự dựng của test không phải màu giao diện), bỏ comment và nội dung chuỗi, giữ mã
-trong nội suy:
+StudentShell; InterfaceCore, SessionModel của Packages/SharedFeatures; MobileFeature, MobileShell của bản iOS) và điểm
+vào các app (`Apps/Student`, `Apps/Admin`, `Apps/StudentiOS`; không gồm UI test: ảnh tự dựng của test không phải màu giao
+diện), bỏ comment và nội dung chuỗi, giữ mã trong nội suy:
 1. Số hex 24 hoặc 32 bit (`0xRRGGBB`, `0xAARRGGBB`, kể cả ngăn từng cặp `0x01_77_77`) chỉ được ở file bảng màu
    (`PALETTE_FILES`); ngăn từng nhóm 4 (`0x0605_4B50`) là hằng nhị phân, không phải màu.
 2. Hàm dựng màu từ thành phần (`Color(red:`, `SwiftUI.Color(red:`, `Color.init(red:`, `Color(white:`, `Color(hue:`,
@@ -43,9 +43,12 @@ ROOT = Path(__file__).resolve().parent.parent
 SOURCES = Path("Packages/ExamFeatures/Sources")
 # Phần dùng chung macOS và iOS (docs/product/plan-ios-v1.md Phần 3): bảng màu dạng số, model trình bày.
 SHARED_SOURCES = Path("Packages/SharedFeatures/Sources")
+# Giao diện iPhone (docs/product/plan-ios-v1.md).
+MOBILE_SOURCES = Path("Packages/MobileFeatures/Sources")
 SCAN_DIRS = tuple(SOURCES / target for target in (
     "LibraryFeature", "SessionFeature", "AuthoringFeature", "ReportFeature", "AdminShell", "StudentShell",
-)) + (SHARED_SOURCES / "InterfaceCore", SHARED_SOURCES / "SessionModel", Path("Apps/Student"), Path("Apps/Admin"))
+)) + (SHARED_SOURCES / "InterfaceCore", SHARED_SOURCES / "SessionModel", MOBILE_SOURCES / "MobileFeature",
+      MOBILE_SOURCES / "MobileShell", Path("Apps/Student"), Path("Apps/Admin"), Path("Apps/StudentiOS"))
 # Bảng màu dạng số (có test tương phản) và nơi dựng màu SwiftUI/AppKit từ giá trị của bảng.
 PALETTE_FILES = frozenset({
     SHARED_SOURCES / "InterfaceCore/Presentation/LibraryPalette.swift",
@@ -54,6 +57,8 @@ PALETTE_FILES = frozenset({
     SOURCES / "ReportFeature/ReportTypography.swift",
     # Bộ màu của năm nền đọc (giai đoạn 6 bước 1; test tương phản: ReadingBackgroundTests).
     SOURCES / "SessionFeature/Presentation/ReadingPalette.swift",
+    # Màu của bảng màu số thành màu SwiftUI của bản iOS (UIKit).
+    MOBILE_SOURCES / "MobileFeature/Presentation/MobilePalette.swift",
 })
 
 # Số hex 24 bit (RRGGBB) hoặc 32 bit (AARRGGBB/RRGGBBAA), kể cả có dấu `_` ngăn (`0x01_77_77`, `0xFF017777`).

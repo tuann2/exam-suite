@@ -400,13 +400,15 @@ struct AttemptModelTests {
         #expect(attempt.pauseCommandTitle == "Tạm dừng")
     }
 
-    @Test("Máy ngủ: tự tạm dừng “Đã tạm dừng vì máy ngủ”, giờ ngủ không bị trừ, thức dậy vẫn tạm dừng")
-    func systemSleep() async throws {
+    /// `.background`: app xuống nền ở bản iOS, cùng luật với máy ngủ (mobile.md, mục Bản iOS).
+    @Test("Máy ngủ, app xuống nền: tự tạm dừng kèm lý do, giờ ngủ không bị trừ, thức dậy vẫn tạm dừng",
+          arguments: zip([PauseReason.systemSleep, .background], ["Đã tạm dừng vì máy ngủ", "Đã tạm dừng vì bạn rời app"]))
+    func systemSleep(reason: PauseReason, message: String) async throws {
         let harness = Harness()
         let attempt = try await harness.start(exam, mode: .exam) { $0.timeLimitMinutes = 10 }
-        attempt.systemWillSleep()
+        attempt.autoPause(reason: reason)
         #expect(attempt.phase == .paused)
-        #expect(attempt.pauseMessage == "Đã tạm dừng vì máy ngủ")
+        #expect(attempt.pauseMessage == message)
         harness.clock.advance(8 * 3600)
         attempt.tick()
         #expect(attempt.phase == .paused)
@@ -415,8 +417,11 @@ struct AttemptModelTests {
         #expect(attempt.phase == .inProgress)
     }
 
-    @Test("Tạm dừng được ở Rà soát chưa khoá và quay về đúng Rà soát; Rà soát khoá thì máy ngủ không đổi gì")
-    func pauseInReview() async throws {
+    @Test(
+        "Tạm dừng được ở Rà soát chưa khoá và quay về đúng Rà soát; Rà soát khoá thì máy ngủ hay rời app không đổi gì",
+        arguments: [PauseReason.systemSleep, .background]
+    )
+    func pauseInReview(reason: PauseReason) async throws {
         let harness = Harness()
         let attempt = try await harness.start(exam, mode: .exam) { $0.timeLimitMinutes = 1 }
         attempt.openReview()
@@ -428,7 +433,7 @@ struct AttemptModelTests {
 
         harness.clock.advance(90)
         attempt.tick()
-        attempt.systemWillSleep()
+        attempt.autoPause(reason: reason)
         #expect(attempt.phase == .reviewing(locked: true))
     }
 

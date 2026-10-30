@@ -288,7 +288,7 @@ public struct ExamSession: Sendable {
     // MARK: - Lệnh: tạm dừng
 
     /// Tạm dừng từ `inProgress` hoặc `reviewing(locked: false)`; đồng hồ dừng.
-    /// Gọi với `.systemSleep` khi máy sắp ngủ.
+    /// Gọi với `.systemSleep` khi máy sắp ngủ, `.background` khi app xuống nền (bản iOS).
     public mutating func pause(reason: PauseReason) throws {
         let t = clock.uptime()
         syncClock(at: t)

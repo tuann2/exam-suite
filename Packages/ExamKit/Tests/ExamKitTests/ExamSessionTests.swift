@@ -532,15 +532,17 @@ struct ExamSessionPauseTests {
         #expect(s.remaining == 600)
     }
 
-    @Test("Máy ngủ: phiên tạm dừng, thời gian ngủ không bị trừ, thức dậy vẫn tạm dừng tới khi tiếp tục")
-    func systemSleep() throws {
+    /// `.background`: app xuống nền ở bản iOS, cùng luật với máy ngủ (mobile.md, mục Bản iOS).
+    @Test("Máy ngủ, app xuống nền: phiên tạm dừng, thời gian ngủ không bị trừ, thức dậy vẫn tạm dừng tới khi tiếp tục",
+          arguments: [PauseReason.systemSleep, .background])
+    func systemSleep(reason: PauseReason) throws {
         let clock = FakeClock()
         var s = try makeSession(.exam, minutes: 10, clock: clock)
         clock.advance(minutes: 2)
-        try s.pause(reason: .systemSleep)
+        try s.pause(reason: reason)
         clock.advance(minutes: 60) // ngủ một giờ
         #expect(s.phase == .paused)
-        #expect(s.pauseReason == .systemSleep)
+        #expect(s.pauseReason == reason)
         #expect(s.tick() == [])
         #expect(s.remaining == 480)
         try s.resume()
@@ -549,13 +551,14 @@ struct ExamSessionPauseTests {
         #expect(s.phase == .inProgress)
     }
 
-    @Test("Máy ngủ khi đang rà soát: thức dậy quay về rà soát, không trừ giờ")
-    func systemSleepWhileReviewing() throws {
+    @Test("Máy ngủ, app xuống nền khi đang rà soát: thức dậy quay về rà soát, không trừ giờ",
+          arguments: [PauseReason.systemSleep, .background])
+    func systemSleepWhileReviewing(reason: PauseReason) throws {
         let clock = FakeClock()
         var s = try makeSession(.exam, minutes: 10, clock: clock)
         try s.openReview()
         clock.advance(minutes: 1)
-        try s.pause(reason: .systemSleep)
+        try s.pause(reason: reason)
         clock.advance(minutes: 30)
         try s.resume()
         #expect(s.phase == .reviewing(locked: false))

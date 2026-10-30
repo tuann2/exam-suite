@@ -165,26 +165,6 @@ public final class SessionWindowModel: Identifiable {
     }
 }
 
-/// Phản hồi khi yêu cầu mở Trước khi thi hoặc một lần thi.
-public enum SessionOpenOutcome: Hashable, Sendable {
-    case opened
-    /// Đang có bài chưa nộp: cửa sổ làm bài được đưa lên trước, `notice` là "Đang có bài chưa nộp".
-    case blockedByUnsubmittedSession
-    /// Không mở được; lý do tiếng Việt (cũng ở `notice`).
-    case failed(String)
-}
-
-/// Thông báo không chặn cho cửa sổ Thư viện.
-public struct SessionNotice: Identifiable, Hashable, Sendable {
-    public let id: UUID
-    public let message: String
-
-    public init(message: String, id: UUID = UUID()) {
-        self.id = id
-        self.message = message
-    }
-}
-
 /// Hộp thoại hỏi trước khi đóng cửa sổ làm bài hoặc thoát app khi chưa nộp.
 public struct SessionCloseConfirmation: Hashable, Sendable {
     /// "Bài chưa nộp sẽ mất. Bỏ bài?"
@@ -369,7 +349,7 @@ public final class SessionCoordinator {
 
     /// Máy sắp ngủ: tạm dừng bài đang làm (`systemSleep`).
     public func systemWillSleep() {
-        window?.attempt?.systemWillSleep()
+        window?.attempt?.autoPause(reason: .systemSleep)
     }
 
     public func dismissNotice() {

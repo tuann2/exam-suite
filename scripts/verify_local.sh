@@ -36,10 +36,9 @@
 # vn.io.nt0.examsuite.admin.uitest); script so kho và defaults thật của CẢ HAI bản trước và sau (bundle ID
 # vn.io.nt0.examsuite, vn.io.nt0.examsuite.admin), khác nhau thì thất bại;
 # và so ~/Library/Autosave Information/ (chỉ tên, mtime, cỡ): có mục mới của Exam Suite (đề chưa lưu do UI test bỏ lại)
-# thì thất bại.
-# Bản iOS (docs/product/plan-ios-v1.md) ở mức full: build cho simulator (build/DerivedData-iOS), test phần chỉ của iOS
-# (MobileFeatureTests) trên simulator, kiểm ranh giới bundle (ADR 0003) và chữ Info.plist vi/en của app iOS, export
-# String Catalog của scheme ExamSuiteiOS; --uitest chạy thêm các
+# thì thất bại. Bản iOS (docs/product/plan-ios-v1.md) ở mức full: build cho simulator (build/DerivedData-iOS), test phần
+# chỉ của iOS (MobileFeatureTests) trên simulator, kiểm ranh giới bundle (ADR 0003) và chữ Info.plist vi/en của app iOS,
+# export String Catalog của scheme ExamSuiteiOS; --uitest chạy thêm các
 # lớp ExamSuiteiOSUITests đã chọn trên simulator. Máy và runtime simulator: EXAMSUITE_IOS_DESTINATION (mặc định bên
 # dưới, cùng máy với ảnh snapshot của bản iOS). Simulator đã tách dữ liệu khỏi máy Mac nên không so kho thật cho iOS.
 # App Debug/Release mang bundle ID thật mà script build (build/DerivedData/Build/Products, build/DerivedData-Release/Build/
@@ -415,8 +414,12 @@ for scheme in ExamSuite ExamSuiteAdmin; do
     -configuration Release -destination 'platform=macOS,arch=arm64' \
     -derivedDataPath build/DerivedData-Release CODE_SIGNING_ALLOWED=NO -quiet build
 done
+# Bản iOS: Release cho simulator (bản Debug ở build/DerivedData-iOS là đối chứng âm).
+run "xcodebuild ExamSuiteiOS (Release, simulator)" xcodebuild -project ExamSuite.xcodeproj -scheme ExamSuiteiOS \
+  -configuration Release -destination "$IOS_DESTINATION" -derivedDataPath build/DerivedData-iOS-Release -quiet build
 run "Release không có code UI test" scripts/check_release_strings.sh build/DerivedData-Release/Build/Products/Release \
-  build/DerivedData/Build/Products/Debug
+  build/DerivedData/Build/Products/Debug build/DerivedData-iOS-Release/Build/Products/Release-iphonesimulator \
+  "$IOS_PRODUCTS"
 # Bước cuối dùng app mang bundle ID thật: xoá ngay (xem remove_real_apps), trước khi lái app ở bước UI test.
 STEP="xoá app mang bundle ID thật vừa build (${REAL_APP_PRODUCTS[*]})"
 echo "== $STEP" | tee -a "$LOG"

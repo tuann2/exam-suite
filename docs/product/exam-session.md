@@ -45,7 +45,7 @@ AnswerReview → PreExam (Luyện lại câu sai, Practice)        điều hư�
 - Chỉ ở `inProgress` mới chọn/xoá đáp án, đánh dấu, chuyển câu, Check answer.
 - Từ `timeUp` và `reviewing(locked: true)` không sửa được đáp án, không quay lại làm bài, không tạm dừng.
 - `paused` che nội dung câu hỏi (UI); đồng hồ dừng. Tiếp tục mới hiện lại.
-- Máy ngủ: UI gọi `pause(reason: .systemSleep)` khi máy sắp ngủ; thời gian ngủ không bị trừ; thức dậy phiên vẫn ở `paused` tới khi người dùng tiếp tục.
+- Máy ngủ: UI gọi `pause(reason: .systemSleep)` khi máy sắp ngủ; thời gian ngủ không bị trừ; thức dậy phiên vẫn ở `paused` tới khi người dùng tiếp tục. Bản iOS: app xuống nền thì `pause(reason: .background)`, cùng luật (mobile.md, mục Bản iOS).
 - Lệnh sai trạng thái ném `SessionError.invalidCommand(lệnh, phase:)`. Lệnh bị từ chối không đổi đáp án, đánh dấu, câu hiện tại hay trạng thái do lệnh gây ra; riêng phần đồng hồ (cảnh báo tới mốc, hết giờ) vẫn được ghi nhận, xem mục Đồng hồ.
 
 ### Lệnh
@@ -57,7 +57,7 @@ AnswerReview → PreExam (Luyện lại câu sai, Practice)        điều hư�
 | `toggleFlag()` | `inProgress` | Bật/tắt đánh dấu (được cả khi câu đã khoá) |
 | `goTo(index:)`, `next()`, `previous()` | `inProgress` | Chuyển câu; `next` ở câu cuối và `previous` ở câu đầu đứng yên, không lỗi |
 | `checkAnswer()` | Practice, `inProgress`, câu đã có đáp án | Trả đúng/sai, tập đáp án đúng, giải thích; khoá đáp án câu đó; gọi lại trả cùng kết quả |
-| `pause(reason:)` | `inProgress`, `reviewing(locked: false)` | Lý do `user` hoặc `systemSleep` |
+| `pause(reason:)` | `inProgress`, `reviewing(locked: false)` | Lý do `user`, `systemSleep` hoặc `background` (bản iOS: app xuống nền) |
 | `resume()` | `paused` | Về trạng thái trước khi tạm dừng |
 | `openReview()` | `inProgress`, `timeUp` | Mở rà soát (khoá nếu từ `timeUp`) |
 | `returnToAttempt(at:)` | `reviewing(locked: false)` | Quay lại làm bài |

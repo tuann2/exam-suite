@@ -4,7 +4,7 @@ Date: 2026-10-30
 
 ## Status
 
-Active. I0 đã merge (PR #8). I1 trên nhánh `feature/ios-i1`.
+Active. I0 (PR #8), I1 (PR #9) đã merge; cổng GI1 đạt. I2a trên nhánh `feature/ios-i2`.
 
 ## Outcome
 
@@ -53,12 +53,22 @@ Không có cặp song song.
       `check_localization.py`, `check_quit_sheets.py`, `uitest_plan.py`, `verify_local.sh` biết bản iOS; spike
       (Decisions). Rủi ro cao (vùng ranh giới hai bản app): review độc lập xong, đã sửa theo review. `local/verify`
       xanh trên 72b6dac.
-- [ ] I1 `Packages/SharedFeatures`: dời LibraryData, tách model trình bày (rủi ro cao). Cổng GI1. Đã làm: package
+- [x] I1 `Packages/SharedFeatures`: dời LibraryData, tách model trình bày (rủi ro cao; PR #9, merge 2026-10-30).
+      Cổng GI1 đạt (`local/verify` xanh trên c7aa612, UI test đủ bộ, macOS không đổi). Đã làm: package
       `SharedFeatures` (LibraryData, InterfaceCore, SessionModel; macOS và iOS), ExamKit thêm `.iOS(.v18)`, ExamFeatures
       và MobileFeatures phụ thuộc nó, `MobileShell` gắn `.interfaceLocale()`, `MobileFeatureTests` (kho trên simulator),
       dời khoá catalog, script kiểm và tài liệu biết package mới, đường dẫn đề mẫu của Android và bộ lọc của CI Android.
-      Review độc lập xong, đã sửa theo review. Còn: `verify_local.sh --uitest` đủ bộ, check `android` của CI, PR.
-- [ ] I2 Giao diện iPhone, nhận file, tự tạm dừng. Cổng GI2.
+      Review độc lập xong, đã sửa theo review.
+- [ ] I2a Giao diện iPhone, nhận file, tự tạm dừng (nhánh `feature/ios-i2`): `PauseReason.background`,
+      `AttemptModel.autoPause(reason:)` (macOS gọi với `systemSleep`); LibraryData mở quyền security scope trên iOS
+      (`SecurityScopedAccess`); `MobileFeature`: Thư viện danh sách (Gần đây, Lịch sử thi, tìm, sắp xếp, trạng thái file,
+      Tìm file…, kéo để làm mới, vuốt để Xoá kèm Hoàn tác, dải chào mừng, Thêm đề), Trước khi thi, làm bài (đồng hồ ba
+      mức, cảnh báo, che khi tạm dừng, Kiểm tra đáp án, bảng câu hỏi dạng sheet, ảnh phóng to), Rà soát & nộp, Kết quả,
+      Xem lại bài, Luyện lại câu sai, Làm lại, mở lần thi cũ; điều phối phiên của iOS; file mở từ app khác (`Inbox` →
+      `Received/`); catalog `vi`/`en`; 12 `MobileFeatureTests`; ba XCUITest kèm kiểm trợ năng;
+      `check_release_strings.sh` kiểm bản Release iOS.
+- [ ] I2b Snapshot iPhone sáng/tối và cỡ chữ lớn (`MobileSnapshotTests`, sửa ADR 0010 và `check_boundaries.py`). Cổng
+      GI2 sau I2b.
 - [ ] I3 Hoàn thiện, bản 0.1.0. Cổng GI3.
 
 ## Decisions
@@ -189,6 +199,70 @@ Không có cặp song song.
     lúc một phiên" của `SessionCoordinator.startPreExam()`. Màn iOS ở I2 đi qua một điều phối tương đương.
 - 2026-10-30, I1, re-review (cùng phiên review, trên 10a7263): APPROVE. Sửa thêm một nit: test
   `appControllerWiresReportFlow` so chuỗi khoá `report.resultsReviewLevel`, không so hằng.
+- 2026-10-31, I2, tách đôi: I2a (giao diện, nhận file, tự tạm dừng, UI test) và I2b (snapshot iPhone). Snapshot cần
+  sửa ADR 0010 (SnapshotTesting chỉ ở test của ExamFeatures), `check_boundaries.py` luật 5, `Package.resolved` của
+  MobileFeatures: một thay đổi chính sách riêng nên để PR riêng cho dễ review; I2a không thiếu bằng chứng hành vi
+  (unit test, UI test, kiểm trợ năng). Plan cho phép tách đôi I2.
+- 2026-10-31, I2a, điều phối phiên của iOS (`MobileSessionCoordinator`, `MobileSession`): viết riêng ở MobileFeature,
+  không dời `SessionCoordinator` của macOS (gắn cửa sổ, Xuất PDF/In, hộp hỏi AppKit). Cùng luật: mỗi lúc một phiên, đọc
+  lại file đề khi mở và khi bắt đầu, kiểm lại sau mỗi lần chờ, Làm lại / Luyện lại câu sai, Bỏ bài không lưu.
+  `SessionOpenOutcome`, `SessionNotice` dời sang SessionModel để hai bên dùng chung; chữ của hộp hỏi Thư viện
+  (`LibraryPrompt.alertTitle`, `alertMessage`) dời từ LibraryFeature sang InterfaceCore.
+- 2026-10-31, I2a, mở file từ app khác: hộp chia sẻ, "Mở bằng" (Zalo, Mail, AirDrop) giao bản chép trong
+  `Documents/Inbox`; app dời sang `Application Support/<bundle ID>/Received/` (trùng tên thì thêm số) rồi đi qua đúng
+  luồng Thêm đề của Thư viện (`LibraryModel.openFromFinder`). App Tệp mở tại chỗ (`LSSupportsOpeningDocumentsInPlace`):
+  không dời, thêm bằng bookmark trong lúc mở quyền security scope. Đang có phiên thì hộp hỏi của Thư viện chờ tới khi
+  về Thư viện (QI12b).
+- 2026-10-31, I2a, quyền đọc file ngoài container trên iOS: `SecurityScopedAccess.with(_:)` bọc mọi chỗ đọc file đề của
+  Thư viện (kiểm file, đọc, tạo bookmark khi thêm, làm mới) và lần đọc của phiên thi (`LibraryStoreSessionLibrary`,
+  phân giải lại bookmark: `fileBookmark(_:)`). macOS: `#if os(iOS)`, gọi thẳng, không đổi hành vi.
+- 2026-10-31, I2a, UI test luồng 2 (plan để I2 chốt cách mở file): XCUITest không lái được hộp chia sẻ của app khác
+  hay hộp chọn file của iOS, nên luồng 2 thêm file bằng Thêm đề với file truyền vào (`-ExamSuiteUITestChosenFile`, như
+  bản Admin macOS): bản chép của đề mẫu, nên Thư viện hỏi Dùng file mới / Huỷ. Phần dời khỏi `Inbox` kiểm bằng
+  `MobileFeatureTests`; nhận file thật từ Zalo/Drive kiểm tay ở GI2.
+- 2026-10-31, I2a, màu và trợ năng: màu nhấn teal và màu trạng thái từ bảng màu số (`MobilePalette.swift`, file bảng
+  màu của `check_colors.py`); chữ phụ là chữ chính mờ 75% (màu `.secondary` của iOS chỉ khoảng 3,5:1 với chữ nhỏ, kiểm
+  trợ năng báo); tiêu đề nhóm là dòng đầu của nhóm (header của `List` bị ép chữ phụ); thanh nút dưới nền đặc. Kiểm trợ
+  năng của iOS (mọi loại) ở các màn: Thư viện, Trước khi thi (Luyện tập), làm bài, Rà soát & nộp, Kết quả Đậu, Xem lại
+  bài (luồng 1); Trước khi thi (Thi), Rà soát khoá, bảng câu hỏi, Kết quả Trượt (luồng 2); Tạm dừng (luồng 3). Không kiểm
+  hộp thoại (Bỏ bài?, Dùng file mới), ảnh phóng to, bảng câu hỏi ở cỡ vừa. Ngoại lệ ghi trong
+  `Support/PhoneApp.swift`: nút đang tắt (WCAG
+  1.4.3), nút của mọi thanh điều hướng đang có (cỡ chữ cố định, Large Content Viewer), chữ tĩnh trong `List` báo nhầm
+  "Dynamic Type partially unsupported" (ảnh chụp ở Accessibility L cho thấy chúng phóng to và xuống dòng).
+- 2026-10-31, I2a, review độc lập (phiên mới, trên 8d6ee99): REQUEST CHANGES, hai mục chặn, đã sửa:
+  1. Ảnh phóng to vẫn hiện khi tự tạm dừng (sheet gắn ở màn làm bài, không theo câu): ảnh đóng khi câu bị che (Tạm
+     dừng, Rà soát) và không mở lại, như sheet ảnh của macOS; luồng 3 kiểm (phóng to, xuống nền, Tiếp tục).
+  2. Luồng 2 không kiểm trợ năng: thêm ở Rà soát khoá, bảng câu hỏi, Kết quả Trượt. Kiểm mới bắt được: số câu 10–12
+     ở Rà soát xuống dòng ("1/0") ở cỡ chữ lớn (ô rộng theo cỡ chữ, số dài thu nhỏ); hiệu ứng mờ mép dưới của iOS 26
+     làm nhạt chữ sát thanh nút (tắt ở vùng cuộn ngay trên thanh nút nền đặc: câu hỏi, Rà soát, Xem lại bài). Kiểm báo
+     nhầm khi màn đang chuyển (Rà soát khoá hiện ra bằng hoạt cảnh mờ dần, cây trợ năng không đổi): kiểm chờ ít nhất
+     1 giây rồi tới khi cây trợ năng đứng yên; ngoại lệ "Dynamic Type" theo nhãn đổi thành chữ tĩnh của `List`/`Form`
+     (khớp nhãn và khung, chỉ báo "partially unsupported"; nhãn báo nhầm đổi theo lần chạy; chữ của MobileFeature chỉ
+     dùng text style), có ảnh ở Accessibility L làm bằng chứng; bảng câu hỏi kiểm ở cỡ lớn của sheet (ở cỡ vừa, chữ của
+     màn bên dưới thấy mà không đọc được, kiểm báo nhầm; cỡ vừa không được kiểm).
+  Re-review (phiên mới, trên ecd5844): APPROVE. Làm thêm theo gợi ý: thu hẹp ngoại lệ như trên; kiểm Trước khi thi ở
+  Thi sau khi gõ số phút (ô số mới); Thư viện bỏ chọn sau khi cuộn để lần sau cùng đề vẫn cuộn; ngưỡng cỡ lớn của sheet
+  theo chiều cao màn. Chưa có máy kiểm nào giữ "MobileFeature không dùng cỡ chữ cố định"; snapshot cỡ chữ lớn ở I2b phủ
+  một phần. Kiểm mới ở Trước khi thi (Thi) và các lần chạy lặp cho thấy thêm hai chỗ báo nhầm, đã xử lý:
+  - Tương phản chập chờn ở chữ chính của `List` (tiêu đề nhóm của Rà soát khoá), vì lượt kiểm Dynamic Type đổi cỡ chữ
+    và `List` dựng lại dòng có hoạt cảnh. Nay kiểm tương phản chạy riêng, trước các loại khác, trên màn chưa đổi gì:
+    hai lần chạy liên tiếp đạt.
+  - Tương phản của nút trên thanh điều hướng ("Huỷ" của Trước khi thi, khi form đã cuộn tới ô thời gian): nút là kính
+    Liquid Glass lấy màu từ nội dung cuộn bên dưới. Cùng nút đó đạt khi form chưa cuộn; màu chữ #006666 ≈7:1 trên nền
+    trắng. Ngoại lệ tương phản cho phần tử nằm trọn trong thanh điều hướng, như cỡ chữ của thanh.
+  Sửa thêm theo các mục không chặn, để iOS theo macOS: hộp "Bỏ bài?" có dòng phụ (exam-taking.md phương án 16); Rà
+  soát mở được bảng câu hỏi từ thanh điều hướng (chỉ để xem khi khoá, chạm ô ở Rà soát chưa khoá thì quay lại làm bài
+  tại câu đó, như macOS); Trước khi thi có ô số cho Số câu và Thời gian cạnh nút tăng/giảm; Thư viện cuộn tới đề vừa thêm/chọn
+  (`LibraryModel.reveal`); hộp hỏi của Thư viện chờ cả khi sheet Trước khi thi đang mở; luồng 3 kiểm vuốt từ cạnh trái
+  và trên nội dung không rời màn làm bài; `pauseInReview` chạy thêm `background`.
+  Hộp hỏi của Thư viện chờ ở **mọi** màn của phiên (làm bài, Kết quả, Xem lại), không chỉ khi còn bài chưa nộp: trên
+  iPhone màn của phiên che Thư viện, hộp hỏi Dùng file mới / Huỷ thuộc về Thư viện nên hiện khi về Thư viện; đề vẫn
+  được thêm ngay. Không phải luật mới về dữ liệu (macOS hiện hộp trên cửa sổ Thư viện, luôn thấy được); ghi ở đây để
+  Nt0 xem lại ở GI2.
+  Còn lại cho GI2/I3 (không sửa ở I2a): `.inactive` (banner cuộc gọi) không tạm dừng (QI10, thử ở GI2); ảnh trong
+  trình chuyển app có thể chụp câu hỏi; file iCloud chưa tải đọc lúc offline có thể báo "File hỏng" thay vì "Không
+  tìm thấy file" (không dùng `NSFileCoordinator`; chỉ máy thật kiểm được); ảnh của câu giải mã trong `body`, không
+  thu nhỏ (bộ nhớ, đo ở I3, QI15).
 
 ## Validation
 
@@ -221,6 +295,20 @@ I1 (nhánh `feature/ios-i1`):
 - Tự kiểm của `uitest_plan.py` (đối chứng: bỏ `SharedFeatures/Sources` khỏi `CODE_PATTERNS`, bỏ `MobileFeatures/Tests`
   khỏi `NO_UI_PATTERNS` thì tự kiểm thất bại), `verify_scope.py`, `check_boundaries.py`, `check_colors.py`,
   `check_quit_sheets.py`, `check_localization.py`: đạt.
+
+I1, sau review: `local/verify` xanh trên c7aa612 (mức full, UI test đủ bộ: Học viên 6, Admin 4, iOS 1; kho thật không
+đổi; Linux ok), check `android` của CI xanh; PR #9 merge.
+
+I2a (nhánh `feature/ios-i2`):
+
+- `MobileFeatureTests` trên simulator iPhone 17, iOS 26.1: 12 test đạt.
+- `ExamSuiteiOSUITests`: ba lớp đạt (`PhonePracticeFlowUITests`, `PhoneExamFlowUITests`, `PhoneLeaveAppUITests`), kiểm
+  trợ năng không còn vấn đề ngoài ngoại lệ đã ghi.
+- `xcodebuild -exportLocalizations` ba scheme: lần thứ hai không đổi catalog; `check_localization.py --require-en` đạt.
+- Sau review và re-review: `MobileFeatureTests` 12 test đạt; ba lớp `ExamSuiteiOSUITests` đạt, kể cả từ simulator vừa
+  khởi động (lần chạy trước khi thêm chờ màn đứng yên có báo nhầm chập chờn ở Rà soát khoá); ảnh ở Accessibility L của
+  Rà soát khoá và bảng câu hỏi (bằng chứng cho ngoại lệ); `check_localization.py --require-en`, `check_colors.py`,
+  `check_quit_sheets.py`, `uitest_plan.py --self-test` đạt.
 
 ## Result
 

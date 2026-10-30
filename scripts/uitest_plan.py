@@ -114,8 +114,10 @@ ROWS: list[Row] = [
     Row("String Catalog", ["Packages/ExamFeatures/*.xcstrings", "Packages/SharedFeatures/*.xcstrings",
                            "Apps/Student/*.xcstrings", "Apps/Admin/*.xcstrings"],
         classes={STUDENT: ["EnglishInterfaceUITests", "PracticeFlowUITests"]}),
-    # Bản iOS (docs/product/plan-ios-v1.md): màn hình iPhone. Bước I0 chỉ có test mở app; ba luồng thay ở bước I2.
-    Row("MobileFeature", [M + "Sources/MobileFeature/*"], classes={IOS: ["LaunchUITests"]}),
+    # Bản iOS (docs/product/plan-ios-v1.md): màn hình iPhone, ba luồng (luồng 1 Luyện tập tới Xem lại, luồng 2 thêm file
+    # rồi Thi hết giờ, luồng 3 Quay lại hỏi Bỏ bài và xuống nền thì tạm dừng) đều đi qua Thư viện và phiên thi.
+    Row("MobileFeature", [M + "Sources/MobileFeature/*"], classes={
+        IOS: ["PhoneExamFlowUITests", "PhoneLeaveAppUITests", "PhonePracticeFlowUITests"]}),
     # Shell và điểm vào của từng bản: mọi lớp của bản đó.
     Row("StudentShell, Apps/Student", [F + "StudentShell/*", "Apps/Student/*"], shell=STUDENT),
     Row("AdminShell, Apps/Admin", [F + "AdminShell/*", "Apps/Admin/*"], shell=ADMIN),
@@ -236,7 +238,7 @@ EXPECTED = {
     STUDENT: {"EnglishInterfaceUITests", "ExamFlowUITests", "LibraryWindowRestoreUITests", "PracticeFlowUITests",
               "SessionWindowRestoreUITests"},
     ADMIN: {"EditExamFlowUITests", "ImportExamUITests", "NewExamFlowUITests"},
-    IOS: {"LaunchUITests"},
+    IOS: {"PhoneExamFlowUITests", "PhoneLeaveAppUITests", "PhonePracticeFlowUITests"},
 }
 
 
@@ -303,15 +305,15 @@ def self_test(root: Path) -> None:
                                   IOS: []}, strings
     # Bản iOS: màn hình iPhone chỉ chọn lớp iOS; shell, manifest, điểm vào, catalog của app iOS, target UI test iOS
     # chọn mọi lớp iOS; không chạy hai bản macOS (đối chứng âm: kèm file của bản Học viên macOS thì có lớp Học viên).
-    mobile = plan([M + "Sources/MobileFeature/RootView.swift"], classes)
+    mobile = plan([M + "Sources/MobileFeature/MobileRootView.swift"], classes)
     assert mobile["mode"] == "selected", mobile
-    assert mobile["classes"] == {STUDENT: [], ADMIN: [], IOS: ["LaunchUITests"]}, mobile
+    assert mobile["classes"] == {STUDENT: [], ADMIN: [], IOS: full_ios}, mobile
     for ios_file in [M + "Sources/MobileShell/MobileShell.swift", M + "Package.swift",
-                     "Apps/StudentiOS/InfoPlist.xcstrings", "Apps/StudentiOSUITests/LaunchUITests.swift"]:
+                     "Apps/StudentiOS/InfoPlist.xcstrings", "Apps/StudentiOSUITests/PhoneFlowUITests.swift"]:
         ios_only = plan([ios_file], classes)
         assert ios_only["classes"] == {STUDENT: [], ADMIN: [], IOS: full_ios}, (ios_file, ios_only)
-    both = plan([M + "Sources/MobileFeature/RootView.swift", "Apps/Student/StudentApp.swift"], classes)
-    assert both["classes"] == {STUDENT: full_student, ADMIN: [], IOS: ["LaunchUITests"]}, both
+    both = plan([M + "Sources/MobileFeature/MobileRootView.swift", "Apps/Student/StudentApp.swift"], classes)
+    assert both["classes"] == {STUDENT: full_student, ADMIN: [], IOS: full_ios}, both
     # Module dùng chung và hạ tầng chung: đủ bộ gồm cả bản iOS.
     assert is_full(plan(["project.yml"], classes)) and full_ios
     # Tài liệu, unit test, script khác, LargeExamSupport: không lớp nào.

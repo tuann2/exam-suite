@@ -129,7 +129,8 @@ struct ExamFileInspector: Sendable {
     }
 
     /// Phân giải bookmark (không hiện giao diện, không tự gắn ổ mạng/ổ ngoài); không được thì thử
-    /// đường dẫn cũ. File trong Thùng rác coi như đã xoá. `nil`: không tìm thấy file.
+    /// đường dẫn cũ. File trong Thùng rác coi như đã xoá. `nil`: không tìm thấy file. iOS: kiểm file trong lúc mở
+    /// quyền security scope của URL vừa phân giải (`SecurityScopedAccess`).
     static func locate(_ location: StoredLocation) -> Located? {
         var stale = false
         if let url = try? URL(
@@ -137,16 +138,19 @@ struct ExamFileInspector: Sendable {
             options: [.withoutUI, .withoutMounting],
             relativeTo: nil,
             bookmarkDataIsStale: &stale
-        ), !isInTrash(url), FileFacts.of(url) != nil {
-            return Located(url: url, refreshedBookmark: stale ? makeBookmark(url) : nil)
+        ), !isInTrash(url), SecurityScopedAccess.with(url, { FileFacts.of(url) }) != nil {
+            return Located(
+                url: url,
+                refreshedBookmark: stale ? SecurityScopedAccess.with(url, { makeBookmark(url) }) : nil
+            )
         }
         let fallback = location.url
         guard !isInTrash(fallback), FileFacts.of(fallback) != nil else { return nil }
         return Located(url: fallback, refreshedBookmark: makeBookmark(fallback))
     }
 
-    /// Bookmark thường (không security scope: app không sandbox ở v1; nếu bật sandbox phải đổi sang
-    /// `.withSecurityScope` và `startAccessingSecurityScopedResource`).
+    /// Bookmark thường (macOS: không security scope, app không sandbox ở v1; nếu bật sandbox phải đổi sang
+    /// `.withSecurityScope`). iOS: tạo trong lúc mở quyền security scope thì bookmark mang theo quyền đó.
     static func makeBookmark(_ url: URL) -> Data? {
         try? url.bookmarkData(options: [], includingResourceValuesForKeys: nil, relativeTo: nil)
     }
@@ -187,9 +191,12 @@ struct ExamFileInspector: Sendable {
     }
 
     func refresh(_ job: RefreshJob) -> RefreshOutcome {
-        guard let located = Self.locate(job.location), let facts = FileFacts.of(located.url) else {
-            return .missing
-        }
+        guard let located = Self.locate(job.location) else { return .missing }
+        return SecurityScopedAccess.with(located.url) { refresh(job, at: located) }
+    }
+
+    private func refresh(_ job: RefreshJob, at located: Located) -> RefreshOutcome {
+        guard let facts = FileFacts.of(located.url) else { return .missing }
         if job.cachedVerdict != nil, facts == job.knownFacts {
             return .found(url: located.url, refreshedBookmark: located.refreshedBookmark, facts: facts, reading: nil)
         }
@@ -223,6 +230,11 @@ struct ExamFileInspector: Sendable {
     /// chối `.failsStrict`, việc đó do `LibraryStore` quyết theo chế độ của bản app.
     func inspectNewFile(_ url: URL) -> Inspection {
         guard url.isFileURL, url.pathExtension.lowercased() == ExamFileFormat.fileExtension else { return .notExam }
+        // iOS: URL của hộp chọn file mang quyền security scope; mở quyền cho cả lần đọc và lúc tạo bookmark.
+        return SecurityScopedAccess.with(url) { inspectAccessibleFile(url) }
+    }
+
+    private func inspectAccessibleFile(_ url: URL) -> Inspection {
         let file = Self.canonical(url)
         var isDirectory: ObjCBool = false
         guard FileManager.default.fileExists(atPath: file.path, isDirectory: &isDirectory) else {

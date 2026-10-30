@@ -255,14 +255,15 @@ targets:
             UTTypeTagSpecification:
               public.filename-extension:
                 - exam
-  # XCUITest bản iOS trên simulator (docs/product/plan-ios-v1.md Phần 5), build với đuôi `.uitest` như hai bản macOS.
-  # Từ bước I2: chế độ cô lập của AppLaunchStorage, hỗ trợ test riêng, chỉ dùng chung đề mẫu của Apps/UITestSupport.
+  # XCUITest bản iOS trên simulator (docs/product/plan-ios-v1.md Phần 5), build với đuôi `.uitest` như hai bản macOS:
+  # chế độ cô lập của AppLaunchStorage, hỗ trợ test riêng (Support/), chỉ dùng chung đề mẫu của Apps/UITestSupport.
   ExamSuiteiOSUITests:
     type: bundle.ui-testing
     platform: iOS
     deploymentTarget: "18.0"
     sources:
       - Apps/StudentiOSUITests
+      - Apps/UITestSupport/Samples.swift
     dependencies:
       - target: ExamSuiteiOS
     settings:

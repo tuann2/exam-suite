@@ -131,12 +131,14 @@ public final class AttemptModel {
     /// Nội dung câu và lựa chọn được hiện (tạm dừng thì che toàn bộ; bảng câu hỏi chỉ hiện số ô).
     public var isContentVisible: Bool { session.phase != .paused }
 
-    /// Chữ trên lớp phủ tạm dừng; nil khi không tạm dừng.
+    /// Chữ trên lớp phủ tạm dừng theo lý do; nil khi không tạm dừng.
     public var pauseMessage: String? {
         guard session.phase == .paused else { return nil }
-        return session.pauseReason == .systemSleep
-            ? localized("Đã tạm dừng vì máy ngủ")
-            : localized("Đã tạm dừng")
+        switch session.pauseReason {
+        case .systemSleep?: return localized("Đã tạm dừng vì máy ngủ")
+        case .background?: return localized("Đã tạm dừng vì bạn rời app")
+        case .user?, nil: return localized("Đã tạm dừng")
+        }
     }
 
     // MARK: - Bảng câu hỏi, tiến độ
@@ -330,14 +332,15 @@ public final class AttemptModel {
     @discardableResult
     public func resume() -> Bool { run { try $0.resume() } }
 
-    /// Máy sắp ngủ: tự tạm dừng (`systemSleep`). Không ở trạng thái tạm dừng được thì bỏ qua. Thức dậy
-    /// vẫn ở tạm dừng tới khi người dùng tiếp tục.
-    public func systemWillSleep() {
+    /// Tự tạm dừng: máy sắp ngủ (`systemSleep`, bản macOS) hay app xuống nền (`background`, bản iOS; mobile.md, mục
+    /// Bản iOS). Không ở trạng thái tạm dừng được (đã tạm dừng, Rà soát đã khoá, đã nộp) thì bỏ qua. Thức dậy hay mở
+    /// lại app vẫn ở tạm dừng tới khi người dùng tiếp tục.
+    public func autoPause(reason: PauseReason) {
         guard session.phase == .inProgress || session.phase == .reviewing(locked: false) else {
             processClock()
             return
         }
-        run { try $0.pause(reason: .systemSleep) }
+        run { try $0.pause(reason: reason) }
     }
 
     // MARK: - Lệnh: rà soát và nộp
