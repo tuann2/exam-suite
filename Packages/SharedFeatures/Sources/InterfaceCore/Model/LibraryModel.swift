@@ -72,7 +72,8 @@ public final class LibraryModel {
     ///   - startsAutomatically: gọi `start()` ngay (app); test tắt để tự điều khiển.
     ///   - revealFiles: **Hiện trong Finder**: bản macOS truyền `NSWorkspace` (`LibraryModel.persistent` của
     ///     LibraryFeature); iOS không có lệnh này; test thay để ghi lại. Mặc định không làm gì, vì module này dùng
-    ///     chung với iOS, không import AppKit.
+    ///     chung với iOS, không import AppKit: code của bản macOS dựng Thư viện qua `LibraryModel.persistent`, không gọi
+    ///     thẳng init này.
     public init(
         store: LibraryStore,
         startsAutomatically: Bool = true,

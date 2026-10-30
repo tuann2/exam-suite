@@ -4,6 +4,7 @@ import Foundation
 import InterfaceCore
 import LibraryData
 @testable import SessionFeature
+import SessionModel
 import SwiftUI
 import Testing
 
@@ -100,6 +101,22 @@ struct SessionAppControllerTests {
             terminations: terminations,
             workspace: workspace
         )
+    }
+
+    /// Bản app (`init(library:defaults:timeScale:)`) gắn đủ hai thứ Xuất PDF…/In… cần: hộp của macOS và phần xem lại dùng
+    /// lần trước, lưu ở `defaults` của app với khoá như trước bước I1 của plan iOS. Thiếu một trong hai thì hai lệnh bật
+    /// mà không làm gì.
+    @Test func appControllerWiresReportFlow() throws {
+        let workspace = try SessionWorkspace()
+        let library = LibraryModel(
+            store: .inMemory(configuration: workspace.configuration(), defaults: workspace.defaults),
+            startsAutomatically: false
+        )
+        let controller = SessionAppController(library: library, defaults: workspace.defaults)
+        #expect(controller.coordinator.reportServices != nil)
+        let preferences = try #require(controller.coordinator.reportPreferences)
+        preferences.reportReviewLevel = .all
+        #expect(workspace.defaults.string(forKey: UserDefaultsSessionPreferences.reportReviewLevelKey) == "all")
     }
 
     /// Bắt đầu một bài Luyện tập chưa nộp.

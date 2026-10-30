@@ -346,8 +346,8 @@ làm như sau. Quyết định và lý do ở plan giai đoạn 5, Decisions bư
   `XMLProblem`, `ImportSizeLimit`, `VceProblem`; mục báo cáo `ImportReportEntry.detail: ImportIssueDetail`) trả mã và đối
   số; câu tiếng Việt chỉ ở `logMessage`/`logDescription` (nhật ký, test). Các kiểu lỗi đó không theo `LocalizedError`.
   Không target dữ liệu nào có catalog.
-- **Tầng giao diện dựng câu:** `ErrorMessages` (LibraryFeature: kiểm đề, gói đề, Thư viện; SessionFeature và
-  AuthoringFeature dùng chung) và `AuthoringMessages` (AuthoringFeature: sửa đề, import, vị trí trong file gốc). Mỗi tổ
+- **Tầng giao diện dựng câu:** `ErrorMessages` (InterfaceCore từ bước I1 của plan iOS, trước đó LibraryFeature: kiểm
+  đề, gói đề, Thư viện; SessionFeature, AuthoringFeature và bản iOS dùng chung) và `AuthoringMessages` (AuthoringFeature: sửa đề, import, vị trí trong file gốc). Mỗi tổ
   hợp mã × loại vị trí × biến thể là một khoá câu trọn vẹn có chỗ trống; danh sách (đường dẫn JSON, chữ cái lựa chọn,
   cặp mojibake, mục RVF) nối bằng dấu câu từ cụm có khoá riêng. Câu của hệ thống (Cocoa, POSIX, bộ phân tích XML) và chi
   tiết kỹ thuật (tên kiểu, mô tả của bộ giải mã) đặt nguyên vào chỗ trống.

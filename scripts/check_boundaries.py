@@ -35,7 +35,7 @@
    không biên dịch, không link vào target nào của ta).
    Thẩm quyền: docs/decisions/0006-thu-vien-ngoai.md, docs/decisions/0010-snapshot-testing.md
 7. LargeExamSupport (đề chuẩn và đo thời gian, chỉ cho test) chỉ được test target phụ thuộc: không target
-   thường hay product nào khác của hai package chứa nó, không file nào trong Packages/*/Sources (ngoài chính nó)
+   thường hay product nào khác của mọi package trong Packages/, không file nào trong Packages/*/Sources (ngoài chính nó)
    hay Apps import nó, project.yml không nhắc nó. Thẩm quyền: docs/product/large-exams.md (đề chuẩn sinh khi chạy
    test), docs/plans/completed/giai-doan-5-hoan-thien.md (bước 2, Decisions)
 8. ReportFeature (PDF/In dùng chung hai bản app) chỉ phụ thuộc trực tiếp ExamKit, ExamFile, LibraryData,

@@ -58,7 +58,8 @@ Không có cặp song song.
       `SharedFeatures` (LibraryData, InterfaceCore, SessionModel; macOS và iOS), ExamKit thêm `.iOS(.v18)`, ExamFeatures
       và MobileFeatures phụ thuộc nó, `MobileShell` gắn `.interfaceLocale()`, `MobileFeatureTests` (kho trên simulator),
       dời khoá catalog, script kiểm và tài liệu biết package mới, đường dẫn đề mẫu của Android và bộ lọc của CI Android.
-      Còn: review độc lập, `verify_local.sh --uitest` đủ bộ, check `android` của CI, PR (sau khi I0 merge).
+      Review độc lập xong, đã sửa theo review. Còn: `verify_local.sh --uitest` đủ bộ, check `android` của CI, PR (sau
+      khi I0 merge).
 - [ ] I2 Giao diện iPhone, nhận file, tự tạm dừng. Cổng GI2.
 - [ ] I3 Hoàn thiện, bản 0.1.0. Cổng GI3.
 
@@ -174,6 +175,20 @@ Không có cặp song song.
   `ExamFeatures_…`; bundle `SharedFeatures_…` có chữ do `check_localization.py --built-apps` kiểm: `BUILT_APPS`,
   `BUILT_IOS_APPS`, `unlisted_bundles`). `check_test_only_module` duyệt mọi package. `Packages/SharedFeatures/Package.resolved`
   được commit (SwiftPM tạo khi build; chỉ ghim ZIPFoundation 0.9.20 như ExamKit).
+- 2026-10-30, I1, review độc lập (phiên agent mới, trên 88211ad): REQUEST CHANGES, một mục chặn:
+  `scripts/measure_large.sh` chỉ chạy `Timing` của ExamKit và ExamFeatures, nên lần đo Release sau mất các dòng Thư viện
+  (`LibraryTimingTests` đã sang SharedFeatures). Sửa: chạy cả SharedFeatures. Mục không chặn đã sửa: AGENTS.md (ràng buộc
+  của ReportFeature), accessibility-localization.md (`ErrorMessages` ở InterfaceCore), docstring luật 7 của
+  `check_boundaries.py`, plan-ios-v1.md (test của InterfaceCore, SessionModel ở lại ExamFeatures, nên PR chạm
+  SharedFeatures vẫn chạy test của ExamFeatures), chú thích `revealFiles` (code macOS dựng Thư viện qua
+  `LibraryModel.persistent`), test `appControllerWiresReportFlow` (`SessionAppControllerTests`: bản app gắn
+  `reportServices` và `reportPreferences`, khoá defaults như cũ; đối chứng: bỏ dòng gán thì test đỏ). Ghi lại, không
+  sửa:
+  - `.github/workflows/ci.yml`, job `apps-macos` (chỉ chạy tay) chỉ chạy `swift test` của ExamKit và ExamFeatures, nên
+    không còn chạy `LibraryDataTests` (104 test, kể cả test kho v1). AGENTS.md không cho sửa CI khi chưa được yêu cầu:
+    chờ Nt0 quyết (thêm một bước `swift test --package-path Packages/SharedFeatures`, hoặc gọi `scripts/check.sh`).
+  - `PreExamModel.start()`, `rememberStartedChoices()` nay `public`: module khác gọi thẳng được, bỏ qua kiểm Huỷ và "mỗi
+    lúc một phiên" của `SessionCoordinator.startPreExam()`. Màn iOS ở I2 đi qua một điều phối tương đương.
 
 ## Validation
 
@@ -191,10 +206,11 @@ I0:
 - Sau khi sửa theo review: tự kiểm của `check_localization.py --require-en`, `--built-apps` trên app iOS,
   `check_bundle_boundary.sh` (bản `.uitest` macOS và app iOS; đối chứng âm), `AppLaunchStorageTests` (16 test) đạt.
 
-I1 (trên worktree của nhánh `feature/ios-i1`, chưa commit):
+I1 (nhánh `feature/ios-i1`):
 
 - `swift test --package-path Packages/SharedFeatures`: 104 test đạt (`LibraryDataTests`).
-  `swift test --package-path Packages/ExamFeatures`: 684 test đạt. Tổng 788, bằng trước khi tách.
+  `swift test --package-path Packages/ExamFeatures`: 684 test đạt. Tổng 788, bằng trước khi tách; sau khi sửa theo
+  review thêm `appControllerWiresReportFlow` (789).
 - `MobileFeatureTests` trên simulator iPhone 17, iOS 26.1: 1 test đạt; bản build iOS biên dịch LibraryData, InterfaceCore,
   SessionModel không lỗi, không cảnh báo.
 - `xcodebuild -exportLocalizations` ba scheme: không đổi catalog nào.
