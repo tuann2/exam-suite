@@ -26,7 +26,7 @@ Không có lõi thứ hai, không cần oracle parity.
 | Lõi | ExamKit, ExamFile dùng nguyên, chỉ thêm lý do tạm dừng `background`; LibraryData dùng nguyên (dời sang package dùng chung `Packages/SharedFeatures` ở I1), thêm phần truy cập file có security scope của iOS; ExamKit thêm `.iOS(.v18)` ở I1 |
 | Giao diện | Tách model trình bày khỏi AppKit thành module dùng chung trong `Packages/SharedFeatures` (I1); view iPhone viết mới trong package riêng `Packages/MobileFeatures`; `Packages/ExamFeatures` giữ chỉ macOS (ADR 0013) |
 | Repo | Cùng `project.yml`, target `ExamSuiteiOS` (bundle ID `vn.io.nt0.examsuite.ios`, QI3), UI test `ExamSuiteiOSUITests` |
-| Quy mô | **v1: 4 PR, 3 cổng**; 1 PR rủi ro cao (I1 tách module, chạm bản macOS đã phát hành); v1.1: 3 PR |
+| Quy mô | **v1: 4 PR, 3 cổng**; 2 PR rủi ro cao (I0 chạm `project.yml` và script kiểm ranh giới hai bản app; I1 tách module, chạm bản macOS đã phát hành); v1.1: 3 PR |
 | Kiểm thử | Dùng lại mọi lớp hiện có (`check.sh`, snapshot, XCUITest, `check_localization.py`, bảng màu); mới chỉ có ảnh snapshot iPhone, 3 lần mở app XCUITest trên simulator, ~15 test cho phần iOS thêm |
 | Phân phối | v1 **chỉ cài qua Xcode** bằng Personal Team miễn phí (QI4, QI14): bản cài hết hạn sau 7 ngày, cắm máy vào Mac để cài lại; chưa phát cho người khác. Khi cần phát cho học viên: đăng ký Apple Developer (99 USD/năm) và chọn TestFlight hay Ad Hoc, là quyết định mới. App Store công khai: ngoài phạm vi |
 | Ràng buộc | Cổng GI2, GI3 cần **một iPhone thật**; Nt0 có hoặc mượn được (QI5) |
@@ -214,8 +214,9 @@ Dùng lại nguyên bảng lớp kiểm của macOS; sáu quy tắc chống trù
 | Ranh giới | ADR 0003: `check_boundaries.py`, `check_bundle_boundary.sh` thêm app iOS. AppKit/UIKit: trình biên dịch chặn |
 | Hiệu năng | Theo QI15 |
 
-Bằng chứng merge: vẫn một commit status `local/verify` của `verify_local.sh`; mô tả status thêm "iOS ok", và "iOS K
-test" trong phần UI test khi chạy `--uitest`.
+Bằng chứng merge: vẫn một commit status `local/verify` của `verify_local.sh`; mô tả status thêm "iOS K test" trong
+phần UI test khi chạy `--uitest`, và "iOS ok" sau phần UI test (chữ này có thể bị cắt ở 140 ký tự; status success đã
+gồm mọi bước iOS).
 Đề xuất (Nt0 duyệt khi cần, dự kiến ở I2): `verify_scope.py` thêm mức `ios` cho PR chỉ chạm `Packages/MobileFeatures/**`,
 `Apps/StudentiOS*/**`: build và test iOS cùng các script kiểm, không chạy bộ macOS (như mức `none`/`core` đã có cho
 Android). PR chạm module dùng chung vẫn mức `full`, cộng bước iOS. `--uitest` chọn lớp iOS theo bảng map của

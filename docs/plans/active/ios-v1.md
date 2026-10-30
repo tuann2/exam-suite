@@ -120,6 +120,9 @@ Không có cặp song song.
   Việc review nêu cho bước sau ghi vào dòng I1, I2 của plan-ios-v1.md: bảng map `uitest_plan.py`, `unlisted_bundles`,
   `check_test_only_module` biết `Packages/SharedFeatures` (I1); `check_release_strings.sh` thêm bản Release iOS,
   `LaunchUITests` thay bằng test chế độ cô lập (I2).
+- 2026-10-30, I0, re-review (cùng phiên review, trên a0d0bfb): APPROVE. Ba mục chữ không chặn sửa trong cùng PR: tóm
+  tắt của plan-ios-v1.md ghi I0 là rủi ro cao; AGENTS.md trỏ mục "Bản iOS" của mobile.md, plan iOS đang làm, bước UI
+  test có target iOS; "iOS ok" trong mô tả status có thể bị cắt (review-and-merge.md, plan-ios-v1.md Phần 5).
 - 2026-10-30, I0: LaunchServices của macOS ghi nhận các app iOS build cho simulator (`build/DerivedData-iOS*`, cả bản
   `.uitest` có `LSHandlerRank` Alternate) và chúng khai báo nhận `vn.io.nt0.exam`, nhưng mang cờ `launch-disabled`,
   `requires-iphone-simulator` (`lsregister -dump`): macOS không mở `.exam` bằng chúng. `verify_local.sh` không xoá
