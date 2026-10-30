@@ -417,8 +417,11 @@ struct AttemptModelTests {
         #expect(attempt.phase == .inProgress)
     }
 
-    @Test("Tạm dừng được ở Rà soát chưa khoá và quay về đúng Rà soát; Rà soát khoá thì máy ngủ không đổi gì")
-    func pauseInReview() async throws {
+    @Test(
+        "Tạm dừng được ở Rà soát chưa khoá và quay về đúng Rà soát; Rà soát khoá thì máy ngủ hay rời app không đổi gì",
+        arguments: [PauseReason.systemSleep, .background]
+    )
+    func pauseInReview(reason: PauseReason) async throws {
         let harness = Harness()
         let attempt = try await harness.start(exam, mode: .exam) { $0.timeLimitMinutes = 1 }
         attempt.openReview()
@@ -430,7 +433,7 @@ struct AttemptModelTests {
 
         harness.clock.advance(90)
         attempt.tick()
-        attempt.autoPause(reason: .systemSleep)
+        attempt.autoPause(reason: reason)
         #expect(attempt.phase == .reviewing(locked: true))
     }
 

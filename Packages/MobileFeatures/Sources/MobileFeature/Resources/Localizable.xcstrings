@@ -84,6 +84,16 @@
         }
       }
     },
+    "Bỏ bài thì không lưu gì và lần này không có trong Lịch sử thi." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If you discard it, nothing is saved and this attempt won’t appear in History."
+          }
+        }
+      }
+    },
     "Bỏ chọn" : {
       "localizations" : {
         "en" : {
@@ -831,6 +841,16 @@
         }
       }
     },
+    "phút" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "minutes"
+          }
+        }
+      }
+    },
     "Quay lại" : {
       "localizations" : {
         "en" : {
@@ -871,18 +891,12 @@
         }
       }
     },
-    "Số câu: %lld/%lld" : {
+    "Số câu" : {
       "localizations" : {
-        "vi" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Số câu: %1$lld/%2$lld"
-          }
-        },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Questions: %1$lld/%2$lld"
+            "value" : "Questions"
           }
         }
       }
@@ -948,12 +962,22 @@
         }
       }
     },
-    "Thời gian: %lld phút" : {
+    "Thời gian" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Time limit: %lld min"
+            "value" : "Time limit"
+          }
+        }
+      }
+    },
+    "Thời gian (phút)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Time limit (minutes)"
           }
         }
       }

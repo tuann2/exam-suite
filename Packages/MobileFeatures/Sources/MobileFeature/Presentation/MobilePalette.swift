@@ -71,3 +71,17 @@ enum MobilePalette {
         color.opacity(LibraryPalette.tintedBackgroundOpacity)
     }
 }
+
+extension View {
+    /// Vùng cuộn nằm ngay trên thanh nút nền đặc (`MobilePalette.barBackground`): tắt hiệu ứng mờ dần ở mép dưới của
+    /// iOS 26. Thanh đã tách khỏi nội dung bằng nền đặc và đường kẻ; hiệu ứng chỉ làm nhạt chữ sát thanh (kiểm tương
+    /// phản của UI test báo ở tiêu đề nhóm của Rà soát khoá).
+    @ViewBuilder
+    func solidBottomEdge() -> some View {
+        if #available(iOS 26.0, *) {
+            scrollEdgeEffectHidden(true, for: .bottom)
+        } else {
+            self
+        }
+    }
+}

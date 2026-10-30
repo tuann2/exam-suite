@@ -16,6 +16,11 @@ struct AttemptScreen: View {
     @State private var zoomedImage: ZoomedImage?
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
+    /// Nội dung câu đang hiện (không Tạm dừng, không ở Rà soát & nộp).
+    private var isQuestionVisible: Bool {
+        attempt.reviewSummary == nil && attempt.isContentVisible
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             HStack {
@@ -44,6 +49,17 @@ struct AttemptScreen: View {
         }
         .animation(reduceMotion ? nil : .snappy, value: attempt.banner)
         .toolbar {
+            // Rà soát & nộp: toàn bộ bảng câu hỏi để tham khảo (exam-taking.md; ở macOS là bảng câu hỏi luôn hiện).
+            ToolbarItem(placement: .topBarTrailing) {
+                if attempt.reviewSummary != nil {
+                    Button {
+                        isNavigatorPresented = true
+                    } label: {
+                        Label(localized("Bảng câu hỏi"), systemImage: "square.grid.3x3")
+                    }
+                    .accessibilityIdentifier("review.navigator")
+                }
+            }
             ToolbarItem(placement: .primaryAction) {
                 if attempt.isEnabled(.togglePause) {
                     Button {
@@ -57,13 +73,27 @@ struct AttemptScreen: View {
         }
         .sheet(isPresented: $isNavigatorPresented) {
             NavigatorSheet(attempt: attempt) { index in
-                attempt.goTo(index: index)
+                // Như bảng câu hỏi của macOS: đang làm thì tới câu đó; ở Rà soát chưa khoá thì quay lại làm bài tại câu
+                // đó; Rà soát khoá hay Tạm dừng thì chỉ để xem.
+                switch attempt.phase {
+                case .inProgress: attempt.goTo(index: index)
+                case .reviewing(locked: false): attempt.returnToAttempt(at: index)
+                default: return
+                }
                 isNavigatorPresented = false
             }
             .presentationDetents([.medium, .large])
         }
-        .fullScreenCover(item: $zoomedImage) { image in
+        // Ảnh phóng to là nội dung câu: tạm dừng (kể cả tự tạm dừng khi xuống nền) hay sang Rà soát thì đóng theo câu,
+        // không mở lại khi câu hiện lại (exam-taking.md: lớp phủ che toàn bộ nội dung câu; như sheet ảnh của macOS).
+        .fullScreenCover(item: Binding(
+            get: { isQuestionVisible ? zoomedImage : nil },
+            set: { zoomedImage = $0 }
+        )) { image in
             ImageZoomView(image: image.image)
+        }
+        .onChange(of: isQuestionVisible) { _, visible in
+            if !visible { zoomedImage = nil }
         }
         .confirmationDialog(
             Text(attempt.reviewSummary?.submitConfirmationMessage ?? ""),
@@ -155,6 +185,7 @@ struct QuestionView: View {
                                 .frame(maxWidth: .infinity)
                         }
                         .buttonStyle(.plain)
+                        .accessibilityIdentifier("question.image")
                         .accessibilityLabel(localized("Ảnh của câu hỏi"))
                         .accessibilityHint(localized("Chạm để phóng to"))
                     }
@@ -171,6 +202,7 @@ struct QuestionView: View {
                 .padding()
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
+            .solidBottomEdge()
             .onChange(of: attempt.currentIndex) {
                 proxy.scrollTo("top", anchor: .top)
             }
@@ -420,6 +452,13 @@ struct NavigatorSheet: View {
     let attempt: AttemptModel
     let goTo: (Int) -> Void
 
+    @Environment(\.dismiss) private var dismiss
+
+    /// Chạm ô để đi tới câu: khi đang làm và ở Rà soát chưa khoá (như macOS); còn lại chỉ để xem.
+    private var canNavigate: Bool {
+        attempt.phase == .inProgress || attempt.phase == .reviewing(locked: false)
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -428,11 +467,12 @@ struct NavigatorSheet: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Text(section.title)
                                 .font(.headline)
+                                .fixedSize(horizontal: false, vertical: true)
                                 .accessibilityAddTraits(.isHeader)
                             LazyVGrid(columns: [GridItem(.adaptive(minimum: 48), spacing: 8)], spacing: 8) {
                                 ForEach(section.cells) { cell in
                                     NavigatorCellButton(cell: cell) { goTo(cell.index) }
-                                        .disabled(attempt.phase == .paused)
+                                        .disabled(!canNavigate)
                                 }
                             }
                         }
@@ -442,6 +482,12 @@ struct NavigatorSheet: View {
             }
             .navigationTitle(localized("Bảng câu hỏi"))
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(localized("Xong")) { dismiss() }
+                        .accessibilityIdentifier("navigator.done")
+                }
+            }
         }
     }
 }
@@ -481,11 +527,14 @@ struct NavigatorCellButton: View {
 // MARK: - Rà soát & nộp
 
 /// **Rà soát & nộp**: ba số Đã làm / Chưa làm / Đánh dấu, hai danh sách số câu (chạm để quay lại làm bài tại câu đó;
-/// không có khi rà soát khoá vì hết giờ), **Quay lại làm bài** và **Nộp bài**.
+/// không có khi rà soát khoá vì hết giờ), **Quay lại làm bài** và **Nộp bài**. Toàn bộ bảng câu hỏi để tham khảo mở từ
+/// thanh điều hướng (`AttemptScreen`).
 struct ReviewSubmitView: View {
     let session: MobileSession
     let attempt: AttemptModel
     let summary: ReviewSummary
+
+    @ScaledMetric(relativeTo: .body) private var cellWidth: CGFloat = 56
 
     var body: some View {
         VStack(spacing: 0) {
@@ -510,6 +559,7 @@ struct ReviewSubmitView: View {
                 )
             }
             .listStyle(.insetGrouped)
+            .solidBottomEdge()
             VStack(spacing: 8) {
                 if summary.canReturnToAttempt {
                     Button {
@@ -526,6 +576,8 @@ struct ReviewSubmitView: View {
                 } else {
                     Label(localized("Đã hết giờ: không sửa được đáp án."), systemImage: "lock.fill")
                         .foregroundStyle(MobilePalette.secondaryText)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 Button {
                     session.requestSubmit()
@@ -563,10 +615,16 @@ struct ReviewSubmitView: View {
                     .font(.body)
                     .foregroundStyle(MobilePalette.secondaryText)
             } else {
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: 48), spacing: 8)], spacing: 8) {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: cellWidth), spacing: 8)], spacing: 8) {
                     ForEach(indices, id: \.self) { index in
-                        Button(InterfaceLocale.number(index + 1)) {
+                        Button {
                             attempt.returnToAttempt(at: index)
+                        } label: {
+                            // Số câu không xuống dòng ở cỡ chữ lớn ("1/0"): ô rộng theo cỡ chữ, số dài thì thu nhỏ.
+                            Text(InterfaceLocale.number(index + 1))
+                                .monospacedDigit()
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.5)
                         }
                         .buttonStyle(.bordered)
                         .disabled(!summary.canReturnToAttempt)
@@ -602,6 +660,7 @@ struct ImageZoomView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button(localized("Xong")) { dismiss() }
+                        .accessibilityIdentifier("zoom.done")
                 }
             }
         }

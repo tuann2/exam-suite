@@ -53,6 +53,7 @@ struct AnswerReviewScreen: View {
             }
         }
         .listStyle(.insetGrouped)
+        .solidBottomEdge()
         .overlay {
             if review.rows.isEmpty {
                 ContentUnavailableView {

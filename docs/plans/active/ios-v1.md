@@ -223,9 +223,34 @@ Không có cặp song song.
 - 2026-10-31, I2a, màu và trợ năng: màu nhấn teal và màu trạng thái từ bảng màu số (`MobilePalette.swift`, file bảng
   màu của `check_colors.py`); chữ phụ là chữ chính mờ 75% (màu `.secondary` của iOS chỉ khoảng 3,5:1 với chữ nhỏ, kiểm
   trợ năng báo); tiêu đề nhóm là dòng đầu của nhóm (header của `List` bị ép chữ phụ); thanh nút dưới nền đặc. Kiểm trợ
-  năng của iOS (mọi loại) ở mọi màn của ba luồng; ngoại lệ ghi trong `Support/PhoneApp.swift`: nút đang tắt (WCAG
-  1.4.3), nút của thanh điều hướng (cỡ chữ cố định, Large Content Viewer), ba dòng chữ báo nhầm "Dynamic Type partially
-  unsupported" (ảnh chụp ở Accessibility L cho thấy chúng phóng to và xuống dòng).
+  năng của iOS (mọi loại) ở mọi màn mà ba luồng đi qua: Thư viện, Trước khi thi, làm bài, Rà soát & nộp, Kết quả (Đậu,
+  Trượt), Xem lại bài (luồng 1); Rà soát khoá, bảng câu hỏi (luồng 2); Tạm dừng (luồng 3). Ngoại lệ ghi trong
+  `Support/PhoneApp.swift`: nút đang tắt (WCAG
+  1.4.3), nút của mọi thanh điều hướng đang có (cỡ chữ cố định, Large Content Viewer), chữ tĩnh trong `List` báo nhầm
+  "Dynamic Type partially unsupported" (ảnh chụp ở Accessibility L cho thấy chúng phóng to và xuống dòng).
+- 2026-10-31, I2a, review độc lập (phiên mới, trên 8d6ee99): REQUEST CHANGES, hai mục chặn, đã sửa:
+  1. Ảnh phóng to vẫn hiện khi tự tạm dừng (sheet gắn ở màn làm bài, không theo câu): ảnh đóng khi câu bị che (Tạm
+     dừng, Rà soát) và không mở lại, như sheet ảnh của macOS; luồng 3 kiểm (phóng to, xuống nền, Tiếp tục).
+  2. Luồng 2 không kiểm trợ năng: thêm ở Rà soát khoá, bảng câu hỏi, Kết quả Trượt. Kiểm mới bắt được: số câu 10–12
+     ở Rà soát xuống dòng ("1/0") ở cỡ chữ lớn (ô rộng theo cỡ chữ, số dài thu nhỏ); hiệu ứng mờ mép dưới của iOS 26
+     làm nhạt chữ sát thanh nút (tắt ở vùng cuộn ngay trên thanh nút nền đặc: câu hỏi, Rà soát, Xem lại bài). Kiểm báo
+     nhầm khi màn đang chuyển (Rà soát khoá hiện ra bằng hoạt cảnh mờ dần, cây trợ năng không đổi): kiểm chờ ít nhất
+     1 giây rồi tới khi cây trợ năng đứng yên; ngoại lệ "Dynamic Type" theo nhãn đổi thành mọi chữ tĩnh trong `List`
+     (nhãn báo nhầm đổi theo lần chạy; chữ của MobileFeature chỉ dùng text style), có ảnh ở Accessibility L làm bằng
+     chứng; bảng câu hỏi kiểm ở cỡ lớn của sheet (ở cỡ vừa, chữ của màn bên dưới thấy mà không đọc được).
+  Sửa thêm theo các mục không chặn, để iOS theo macOS: hộp "Bỏ bài?" có dòng phụ (exam-taking.md phương án 16); Rà
+  soát mở được bảng câu hỏi từ thanh điều hướng (chỉ để xem khi khoá, chạm ô ở Rà soát chưa khoá thì quay lại làm bài
+  tại câu đó, như macOS); Trước khi thi có ô số cho Số câu và Thời gian cạnh nút tăng/giảm; Thư viện cuộn tới đề vừa thêm/chọn
+  (`LibraryModel.reveal`); hộp hỏi của Thư viện chờ cả khi sheet Trước khi thi đang mở; luồng 3 kiểm vuốt từ cạnh trái
+  và trên nội dung không rời màn làm bài; `pauseInReview` chạy thêm `background`.
+  Hộp hỏi của Thư viện chờ ở **mọi** màn của phiên (làm bài, Kết quả, Xem lại), không chỉ khi còn bài chưa nộp: trên
+  iPhone màn của phiên che Thư viện, hộp hỏi Dùng file mới / Huỷ thuộc về Thư viện nên hiện khi về Thư viện; đề vẫn
+  được thêm ngay. Không phải luật mới về dữ liệu (macOS hiện hộp trên cửa sổ Thư viện, luôn thấy được); ghi ở đây để
+  Nt0 xem lại ở GI2.
+  Còn lại cho GI2/I3 (không sửa ở I2a): `.inactive` (banner cuộc gọi) không tạm dừng (QI10, thử ở GI2); ảnh trong
+  trình chuyển app có thể chụp câu hỏi; file iCloud chưa tải đọc lúc offline có thể báo "File hỏng" thay vì "Không
+  tìm thấy file" (không dùng `NSFileCoordinator`; chỉ máy thật kiểm được); ảnh của câu giải mã trong `body`, không
+  thu nhỏ (bộ nhớ, đo ở I3, QI15).
 
 ## Validation
 

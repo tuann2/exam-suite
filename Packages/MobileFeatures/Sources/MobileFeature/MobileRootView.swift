@@ -99,6 +99,8 @@ struct SessionScreen: View {
             Button(localized("Tiếp tục làm"), role: .cancel) {}
             Button(localized("Bỏ bài"), role: .destructive) { sessions.discardSession() }
                 .accessibilityIdentifier("session.discard")
+        } message: {
+            Text("Bỏ bài thì không lưu gì và lần này không có trong Lịch sử thi.", bundle: .module)
         }
     }
 }

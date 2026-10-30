@@ -19,19 +19,27 @@ struct LibraryScreen: View {
     @Environment(\.undoManager) private var undoManager
 
     var body: some View {
-        List {
-            if welcomeBanner == .visible, library.section != .history {
-                WelcomeBannerRow { welcomeBanner = .dismissed }
+        ScrollViewReader { proxy in
+            List {
+                if welcomeBanner == .visible, library.section != .history {
+                    WelcomeBannerRow { welcomeBanner = .dismissed }
+                }
+                switch library.section {
+                case .all, .recent:
+                    ForEach(entries) { entry in
+                        ExamRow(entry: entry, library: library)
+                    }
+                case .history:
+                    ForEach(library.visibleAttempts()) { attempt in
+                        HistoryRow(attempt: attempt) { library.openAttempt(attempt) }
+                    }
+                }
             }
-            switch library.section {
-            case .all, .recent:
-                ForEach(entries) { entry in
-                    ExamRow(entry: entry, library: library)
-                }
-            case .history:
-                ForEach(library.visibleAttempts()) { attempt in
-                    HistoryRow(attempt: attempt) { library.openAttempt(attempt) }
-                }
+            // Đề vừa thêm, vừa dùng file mới hay vừa Hoàn tác xoá (`LibraryModel.reveal` chọn đề): cuộn tới dòng của
+            // nó (bản macOS chọn thẻ; danh sách iOS không có trạng thái chọn).
+            .onChange(of: library.selection) { _, examID in
+                guard let examID else { return }
+                withAnimation { proxy.scrollTo(examID, anchor: .center) }
             }
         }
         .listStyle(.insetGrouped)
@@ -50,9 +58,12 @@ struct LibraryScreen: View {
             onCompletion: { result in _ = library.completeFileImport(result) },
             onCancellation: { library.cancelFileImport() }
         )
-        // Đang có phiên (màn làm bài che cả app): hộp hỏi của Thư viện (đề nhận từ app khác) chờ tới khi về Thư viện
-        // (QI12b).
-        .modifier(LibraryPromptAlerts(library: library, isActive: !sessions.isSessionPresented))
+        // Đang có phiên (màn của phiên che Thư viện) hay sheet Trước khi thi đang mở (iOS không hiện hộp thứ hai chồng
+        // lên sheet): hộp hỏi của Thư viện (đề nhận từ app khác) chờ tới khi về Thư viện (QI12b).
+        .modifier(LibraryPromptAlerts(
+            library: library,
+            isActive: !sessions.isSessionPresented && sessions.preExam == nil
+        ))
         .safeAreaInset(edge: .bottom) {
             NoticeBar(library: library, sessions: sessions)
         }
