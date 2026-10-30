@@ -1,8 +1,8 @@
 import ExamFile
 import ExamKit
 import Foundation
+@testable import InterfaceCore
 import LibraryData
-@testable import LibraryFeature
 import Testing
 
 /// Câu báo lỗi của lõi (ExamKit, ExamFile) và LibraryData dựng ở tầng giao diện bằng chữ của catalog theo mã (bước 7b,
@@ -292,10 +292,12 @@ struct ErrorMessagesTests {
             == "The exam has 3 errors and can’t be opened. First error: X")
     }
 
+    /// Khoá của catalog InterfaceCore (`ErrorMessages` tách từ LibraryFeature sang đó ở bước I1 của plan iOS).
     static func catalogKeys() throws -> Set<String> {
         let url = URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
-            .appendingPathComponent("Sources/LibraryFeature/Resources/Localizable.xcstrings")
+            .deletingLastPathComponent()
+            .appendingPathComponent("SharedFeatures/Sources/InterfaceCore/Resources/Localizable.xcstrings")
         let object = try JSONSerialization.jsonObject(with: Data(contentsOf: url)) as? [String: Any]
         return Set((object?["strings"] as? [String: Any] ?? [:]).keys)
     }

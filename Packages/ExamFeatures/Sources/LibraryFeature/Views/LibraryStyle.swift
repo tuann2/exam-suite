@@ -1,4 +1,5 @@
 import AppKit
+import InterfaceCore
 import SwiftUI
 
 /// Màu và kích thước dùng chung của Thư viện (docs/product/library.md, mục Cửa sổ).

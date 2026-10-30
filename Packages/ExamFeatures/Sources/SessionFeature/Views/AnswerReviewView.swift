@@ -1,5 +1,7 @@
 import ExamKit
+import InterfaceCore
 import LibraryFeature
+import SessionModel
 import SwiftUI
 
 /// **Xem lại bài** (docs/product/exam-taking.md): `NavigationSplitView` với bộ lọc kèm số lượng và danh sách câu

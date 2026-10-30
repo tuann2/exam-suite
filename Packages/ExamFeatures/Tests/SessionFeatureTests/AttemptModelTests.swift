@@ -3,6 +3,7 @@ import ExamKit
 import Foundation
 import LibraryData
 @testable import SessionFeature
+@testable import SessionModel
 import Testing
 
 /// Cửa sổ làm bài (docs/product/exam-taking.md: Câu hỏi, Bảng câu hỏi, Thanh công cụ, Kiểm tra đáp án,

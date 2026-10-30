@@ -5,6 +5,7 @@ import LibraryData
 import PDFKit
 import ReportFeature
 @testable import SessionFeature
+@testable import SessionModel
 import Testing
 
 /// PDF kết quả (docs/product/export-print.md, mục Nội dung và Quy tắc ẩn/hiện): model dựng từ Kết quả + Xem lại, rồi

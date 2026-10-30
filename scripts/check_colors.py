@@ -9,8 +9,9 @@ của AuthoringFeature, `ReportPaletteTests`) chỉ kiểm được màu có tro
 khỏi mọi test.
 
 Quét mã Swift của các target giao diện (LibraryFeature, SessionFeature, AuthoringFeature, ReportFeature, AdminShell,
-StudentShell) và điểm vào hai app (`Apps/Student`, `Apps/Admin`; không gồm UI test: ảnh tự dựng của test không phải
-màu giao diện), bỏ comment và nội dung chuỗi, giữ mã trong nội suy:
+StudentShell; InterfaceCore, SessionModel của Packages/SharedFeatures) và điểm vào hai app (`Apps/Student`,
+`Apps/Admin`; không gồm UI test: ảnh tự dựng của test không phải màu giao diện), bỏ comment và nội dung chuỗi, giữ mã
+trong nội suy:
 1. Số hex 24 hoặc 32 bit (`0xRRGGBB`, `0xAARRGGBB`, kể cả ngăn từng cặp `0x01_77_77`) chỉ được ở file bảng màu
    (`PALETTE_FILES`); ngăn từng nhóm 4 (`0x0605_4B50`) là hằng nhị phân, không phải màu.
 2. Hàm dựng màu từ thành phần (`Color(red:`, `SwiftUI.Color(red:`, `Color.init(red:`, `Color(white:`, `Color(hue:`,
@@ -40,12 +41,14 @@ from check_localization import code_mask  # noqa: E402  (tách comment/chuỗi S
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCES = Path("Packages/ExamFeatures/Sources")
+# Phần dùng chung macOS và iOS (docs/product/plan-ios-v1.md Phần 3): bảng màu dạng số, model trình bày.
+SHARED_SOURCES = Path("Packages/SharedFeatures/Sources")
 SCAN_DIRS = tuple(SOURCES / target for target in (
     "LibraryFeature", "SessionFeature", "AuthoringFeature", "ReportFeature", "AdminShell", "StudentShell",
-)) + (Path("Apps/Student"), Path("Apps/Admin"))
+)) + (SHARED_SOURCES / "InterfaceCore", SHARED_SOURCES / "SessionModel", Path("Apps/Student"), Path("Apps/Admin"))
 # Bảng màu dạng số (có test tương phản) và nơi dựng màu SwiftUI/AppKit từ giá trị của bảng.
 PALETTE_FILES = frozenset({
-    SOURCES / "LibraryFeature/Presentation/LibraryPalette.swift",
+    SHARED_SOURCES / "InterfaceCore/Presentation/LibraryPalette.swift",
     SOURCES / "LibraryFeature/Views/PaletteColors.swift",
     SOURCES / "AuthoringFeature/Presentation/AuthoringPalette.swift",
     SOURCES / "ReportFeature/ReportTypography.swift",
@@ -151,7 +154,7 @@ def self_test() -> list[str]:
     for name, src in positives.items():
         if problems_in(view, src):
             failures.append(f"đối chứng dương bị báo sai ({name}): {problems_in(view, src)}")
-    palette = SOURCES / "LibraryFeature/Presentation/LibraryPalette.swift"
+    palette = SHARED_SOURCES / "InterfaceCore/Presentation/LibraryPalette.swift"
     if problems_in(palette, negatives["hex"] + negatives["Color(red:"]):
         failures.append("file bảng màu bị báo sai")
     return failures

@@ -3,6 +3,7 @@ import ExamKit
 import Foundation
 import LibraryData
 @testable import SessionFeature
+@testable import SessionModel
 import Testing
 
 /// Kết quả và Xem lại bài của bài vừa nộp (docs/product/exam-taking.md, mục Kết quả, Xem lại bài,

@@ -1,5 +1,5 @@
 import ExamKit
-import LibraryFeature
+import SessionModel
 import SwiftUI
 
 /// Một câu hiển thị như cửa sổ làm bài, chỉ đọc: tên phần và số câu, nội dung (Markdown cơ bản), ảnh, nhắc số

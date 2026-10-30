@@ -3,7 +3,7 @@ import AuthoringData
 import ExamImport
 import ExamKit
 import Foundation
-import LibraryFeature
+import InterfaceCore
 import Testing
 
 /// Câu báo của AuthoringData và ExamImport dựng ở tầng giao diện bằng chữ của catalog theo mã (bước 7b,

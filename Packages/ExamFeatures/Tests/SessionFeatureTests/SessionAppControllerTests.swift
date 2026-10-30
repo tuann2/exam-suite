@@ -1,8 +1,8 @@
 import AppKit
 import ExamKit
 import Foundation
+import InterfaceCore
 import LibraryData
-import LibraryFeature
 @testable import SessionFeature
 import SwiftUI
 import Testing

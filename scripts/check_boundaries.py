@@ -10,7 +10,8 @@
    target ExamSuite trong project.yml chỉ phụ thuộc đúng product StudentShell (danh sách cho phép, không
    target/framework/templates khác); Apps/Student không import chúng. Bản iOS cũng là bản Học viên: MobileShell
    (Packages/MobileFeatures) không phụ thuộc (gián tiếp) chúng hay AdminShell, target ExamSuiteiOS chỉ phụ thuộc đúng
-   product MobileShell, Apps/StudentiOS không import chúng (docs/product/plan-ios-v1.md Phần 3).
+   product MobileShell, Apps/StudentiOS không import chúng (docs/product/plan-ios-v1.md Phần 3). Đồ thị phụ thuộc
+   gồm cả module dùng chung của Packages/SharedFeatures (LibraryData, InterfaceCore, SessionModel).
    Thẩm quyền: docs/decisions/0003-hai-ban-app-mot-codebase.md,
    docs/plans/completed/giai-doan-4-soan-de.md (Decisions 2026-10-16)
 3. AuthoringData (mô hình chỉnh sửa đề, không giao diện) chỉ import Foundation, ExamKit, ExamFile;
@@ -28,7 +29,8 @@
    Thẩm quyền: docs/decisions/0010-snapshot-testing.md
 6. Gói SwiftPM ngoài chỉ có ZIPFoundation và swift-snapshot-testing (`.package(url:)` trong mọi Package.swift);
    gói cục bộ chỉ trong Packages/; mọi target (kể cả test, theo `swift package describe`) chỉ dùng product ExamKit,
-   ExamFile, ZIPFoundation, SnapshotTesting, LargeExamSupport (hai product sau chỉ ở test, luật 5 và 7); gói có `.package(url:)` phải có Package.resolved, và file đó chỉ ghim
+   ExamFile, ZIPFoundation, SnapshotTesting, LargeExamSupport (hai product sau chỉ ở test, luật 5 và 7) và product
+   của gói cục bộ Packages/SharedFeatures (LibraryData, InterfaceCore, SessionModel); gói có `.package(url:)` phải có Package.resolved, và file đó chỉ ghim
    cặp (identity, location) của hai gói đó và các gói mà manifest của swift-snapshot-testing kéo theo (tải về nhưng
    không biên dịch, không link vào target nào của ta).
    Thẩm quyền: docs/decisions/0006-thu-vien-ngoai.md, docs/decisions/0010-snapshot-testing.md
@@ -37,7 +39,8 @@
    hay Apps import nó, project.yml không nhắc nó. Thẩm quyền: docs/product/large-exams.md (đề chuẩn sinh khi chạy
    test), docs/plans/completed/giai-doan-5-hoan-thien.md (bước 2, Decisions)
 8. ReportFeature (PDF/In dùng chung hai bản app) chỉ phụ thuộc trực tiếp ExamKit, ExamFile, LibraryData,
-   LibraryFeature (tra chữ qua InterfaceStrings); không phụ thuộc (gián tiếp) module chỉ của bản Admin; mã nguồn
+   InterfaceCore (tra chữ qua InterfaceStrings; thay LibraryFeature từ bước I1 của plan iOS); không phụ thuộc (gián
+   tiếp) module chỉ của bản Admin; mã nguồn
    không import module Admin, shell hay SessionFeature (SessionFeature dựng báo cáo kết quả và phụ thuộc
    ReportFeature, không ngược lại).
    Thẩm quyền: docs/decisions/0003-hai-ban-app-mot-codebase.md, docs/product/export-print.md (Cách làm),
@@ -327,10 +330,15 @@ def missing_resolved_problems(path: str, manifest: str, has_resolved: bool) -> l
             "commit file (docs/decisions/0006-thu-vien-ngoai.md)."]
 
 
+# Product của gói cục bộ Packages/SharedFeatures (phần dùng chung macOS và iOS, docs/product/plan-ios-v1.md Phần 3).
+SHARED_PRODUCTS = {"LibraryData", "InterfaceCore", "SessionModel"}
 # Product của gói khác mà target của ta được phụ thuộc (theo `swift package describe`): lõi, ZIPFoundation,
-# SnapshotTesting (chỉ test target, luật 5) và LargeExamSupport của ExamKit (chỉ test target, luật 7). Mọi product khác, kể cả InlineSnapshotTesting, SnapshotTestingCustomDump hay
+# SnapshotTesting (chỉ test target, luật 5), LargeExamSupport của ExamKit (chỉ test target, luật 7) và product của
+# SharedFeatures. Mọi product khác, kể cả InlineSnapshotTesting, SnapshotTestingCustomDump hay
 # product của các gói mà swift-snapshot-testing ghim (CustomDump, IssueReporting, SwiftSyntax…), là vi phạm.
-ALLOWED_PRODUCT_DEPENDENCIES = {"ExamKit", "ExamFile", "ZIPFoundation", SNAPSHOT_MODULE, "LargeExamSupport"}
+ALLOWED_PRODUCT_DEPENDENCIES = (
+    {"ExamKit", "ExamFile", "ZIPFoundation", SNAPSHOT_MODULE, "LargeExamSupport"} | SHARED_PRODUCTS
+)
 
 
 def described_snapshot_problems(package: str, data: dict) -> list[str]:
@@ -342,7 +350,8 @@ def described_snapshot_problems(package: str, data: dict) -> list[str]:
         for product in sorted(products - ALLOWED_PRODUCT_DEPENDENCIES):
             problems.append(
                 f"Packages/{package}: target {target['name']} ({target.get('type')}) phụ thuộc product {product} chưa "
-                "được duyệt: chỉ ExamKit, ExamFile, ZIPFoundation và SnapshotTesting (ADR 0006, 0010)."
+                "được duyệt: chỉ ExamKit, ExamFile, ZIPFoundation, SnapshotTesting và product của "
+                "Packages/SharedFeatures (ADR 0006, 0010)."
             )
         if SNAPSHOT_MODULE in products and target.get("type") != "test":
             problems.append(
@@ -680,12 +689,14 @@ def package_description(package_dir: Path) -> dict:
     return _DESCRIBED[package_dir]
 
 
-def package_graph(package_dir: Path) -> dict[str, set[str]]:
-    data = package_description(package_dir)
+def package_graph(*package_dirs: Path) -> dict[str, set[str]]:
+    """Đồ thị target → phụ thuộc trực tiếp (target hay product) của các package, gộp lại: package giao diện gộp với
+    Packages/SharedFeatures để phụ thuộc gián tiếp qua module dùng chung cũng được lần."""
     graph: dict[str, set[str]] = {}
-    for t in data["targets"]:
-        deps = set(t.get("target_dependencies") or []) | set(t.get("product_dependencies") or [])
-        graph[t["name"]] = deps
+    for package_dir in package_dirs:
+        for t in package_description(package_dir)["targets"]:
+            deps = set(t.get("target_dependencies") or []) | set(t.get("product_dependencies") or [])
+            graph[t["name"]] = deps
     return graph
 
 
@@ -764,8 +775,8 @@ def test_only_project_yml_problems(raw: str) -> list[str]:
 def check_test_only_module(use_swift: bool) -> list[str]:
     problems: list[str] = []
     if use_swift:
-        for package in ("ExamKit", "ExamFeatures"):
-            problems += test_only_package_problems(package, package_description(ROOT / "Packages" / package))
+        for manifest in sorted((ROOT / "Packages").glob("*/Package.swift")):
+            problems += test_only_package_problems(manifest.parent.name, package_description(manifest.parent))
     problems += test_only_import_problems()
     problems += test_only_module_import_problems(
         source_files(ROOT / "Packages" / "ExamKit" / "Sources" / TEST_ONLY_MODULE))
@@ -974,10 +985,10 @@ def check_student_shell(graph: dict[str, set[str]] | None, mobile_graph: dict[st
 
 # Mục 8: ReportFeature dùng chung hai bản app.
 REPORT_MODULE = "ReportFeature"
-REPORT_ALLOWED_DEPENDENCIES = {"ExamKit", "ExamFile", "LibraryData", "LibraryFeature"}
+REPORT_ALLOWED_DEPENDENCIES = {"ExamKit", "ExamFile", "LibraryData", "InterfaceCore"}
 REPORT_FORBIDDEN_IMPORTS = ADMIN_ONLY_MODULES + ("AdminShell", "StudentShell", "SessionFeature")
 REPORT_HINT = ("ReportFeature dùng chung cho cả hai bản app (docs/decisions/0003-hai-ban-app-mot-codebase.md, "
-               "docs/product/export-print.md): chỉ được ExamKit, ExamFile, LibraryData, LibraryFeature; "
+               "docs/product/export-print.md): chỉ được ExamKit, ExamFile, LibraryData, InterfaceCore; "
                "SessionFeature/AuthoringFeature phụ thuộc ReportFeature, không ngược lại")
 
 
@@ -1135,22 +1146,24 @@ def self_test() -> list[str]:
 
     # Mục 8: ReportFeature.
     good_report = {k: set(v) for k, v in good_graph.items()}
-    good_report["ReportFeature"] = {"ExamKit", "ExamFile", "LibraryData", "LibraryFeature"}
+    good_report["ReportFeature"] = {"ExamKit", "ExamFile", "LibraryData", "InterfaceCore"}
     good_report["SessionFeature"].add("ReportFeature")
     good_report["LibraryData"] = {"ExamKit", "ExamFile"}
+    good_report["InterfaceCore"] = {"LibraryData", "ExamKit", "ExamFile"}
     expect("ReportFeature đồ thị đúng", report_graph_problems(good_report), None)
     expect("ReportFeature đồ thị không phụ thuộc gì", report_graph_problems({**good_report, "ReportFeature": set()}), None)
     expect("thiếu target ReportFeature", report_graph_problems(good_graph), "ReportFeature")
-    for bad in ("SessionFeature", "StudentShell", "AdminShell") + ADMIN_ONLY_MODULES:
+    # LibraryFeature (giao diện macOS) không còn được: tra chữ qua InterfaceCore (bước I1 của plan iOS).
+    for bad in ("SessionFeature", "StudentShell", "AdminShell", "LibraryFeature") + ADMIN_ONLY_MODULES:
         graph = {k: set(v) for k, v in good_report.items()}
         graph["ReportFeature"].add(bad)
         expect(f"ReportFeature → {bad}", report_graph_problems(graph), bad)
-    for via in ("LibraryData", "LibraryFeature"):
+    for via in ("LibraryData", "InterfaceCore"):
         for bad in ADMIN_ONLY_MODULES:
             graph = {k: set(v) for k, v in good_report.items()}
             graph[via].add(bad)  # gián tiếp: ReportFeature → via → bad
             expect(f"ReportFeature → {via} → {bad}", report_graph_problems(graph), bad)
-    report_ok = "import AppKit\nimport PDFKit\nimport SwiftUI\nimport ExamKit\nimport LibraryFeature\n"
+    report_ok = "import AppKit\nimport PDFKit\nimport SwiftUI\nimport ExamKit\nimport InterfaceCore\n"
     expect("ReportFeature import đúng",
            report_import_problems([("Packages/ExamFeatures/Sources/ReportFeature/X.swift", report_ok)]), None)
     for form in import_forms:
@@ -1172,8 +1185,9 @@ def main(argv: list[str]) -> int:
         for f in failures:
             print(f"  - {f}")
         return 1
-    graph = package_graph(ROOT / "Packages" / "ExamFeatures") if use_swift else None
-    mobile_graph = package_graph(ROOT / "Packages" / "MobileFeatures") if use_swift else None
+    shared = ROOT / "Packages" / "SharedFeatures"
+    graph = package_graph(ROOT / "Packages" / "ExamFeatures", shared) if use_swift else None
+    mobile_graph = package_graph(ROOT / "Packages" / "MobileFeatures", shared) if use_swift else None
     problems = (check_module_imports() + check_zipfoundation_imports() + check_student_shell(graph, mobile_graph)
                 + check_external_packages(use_swift) + check_test_only_module(use_swift)
                 + check_report_feature(graph))

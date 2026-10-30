@@ -1,5 +1,5 @@
 import Foundation
-import LibraryFeature
+import InterfaceCore
 
 /// Màu nhấn burgundy của Soạn đề (`#801638`, docs/product/library.md mục Cửa sổ; authoring.md mục Cửa sổ), ở dạng
 /// số để test kiểm độ tương phản như `LibraryPalette` (phương án 8 của library.md: chữ nhỏ ≥ 4,5:1, biểu tượng

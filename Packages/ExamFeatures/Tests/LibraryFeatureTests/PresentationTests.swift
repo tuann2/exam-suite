@@ -2,8 +2,8 @@ import AppKit
 import ExamFile
 import ExamKit
 import Foundation
+@testable import InterfaceCore
 import LibraryData
-@testable import LibraryFeature
 import Testing
 
 /// Ánh xạ trạng thái → biểu tượng + chữ + bước tiếp theo, chuỗi hiển thị và câu đọc VoiceOver

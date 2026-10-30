@@ -1,5 +1,5 @@
 import Foundation
-import LibraryFeature
+import InterfaceCore
 
 /// Chữ giao diện của ReportFeature (nhãn của PDF/In, tiến độ, tên file gợi ý): tra `Resources/Localizable.xcstrings`
 /// của target này (bundle của module), không tra bundle chính của app. Chữ vẽ vào PDF cũng đi qua đây, nên PDF theo

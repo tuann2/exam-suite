@@ -1,6 +1,6 @@
 import Foundation
 @testable import AuthoringFeature
-@testable import LibraryFeature
+@testable import InterfaceCore
 import Testing
 
 /// Thao tác sửa đề (`EditAction`): tên bước Hoàn tác và tiêu đề hộp báo khi lỗi theo catalog của AuthoringFeature.

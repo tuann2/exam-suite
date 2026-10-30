@@ -1,5 +1,6 @@
 import AppKit
 import Foundation
+@testable import InterfaceCore
 @testable import LibraryFeature
 import SnapshotTesting
 import SwiftUI

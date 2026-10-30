@@ -1,5 +1,6 @@
 import ExamKit
 import Foundation
+import InterfaceCore
 import LibraryData
 import SwiftUI
 

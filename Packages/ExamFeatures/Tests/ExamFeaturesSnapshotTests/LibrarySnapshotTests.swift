@@ -1,5 +1,6 @@
 import ExamKit
 import Foundation
+@testable import InterfaceCore
 import LibraryData
 @testable import LibraryFeature
 import SwiftUI

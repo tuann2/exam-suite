@@ -1,6 +1,7 @@
 import Foundation
 import Observation
 import ReportFeature
+import SessionModel
 
 /// Một lần **Xuất PDF…** / **In…** kết quả trên cửa sổ làm bài (docs/product/export-print.md, mục Bản Học viên):
 ///
@@ -32,7 +33,7 @@ public final class ResultsReportFlow: Identifiable {
     @ObservationIgnored public let results: ResultsModel
     /// Xem lại bài đã mở trên cửa sổ (nếu có): PDF dùng đúng nội dung đang hiện, không đọc lại file đề.
     @ObservationIgnored private let openedReview: AnswerReviewModel?
-    @ObservationIgnored private let preferences: any SessionPreferences
+    @ObservationIgnored private let preferences: any ReportPreferences
     /// Máy trạng thái dùng chung với PDF đề (ReportFeature): hộp lưu, dựng trang, tiến độ, huỷ, hộp In, hộp báo lỗi.
     @ObservationIgnored private let runner: ReportFlowRunner
 
@@ -40,7 +41,7 @@ public final class ResultsReportFlow: Identifiable {
         action: ReportAction,
         results: ResultsModel,
         openedReview: AnswerReviewModel?,
-        preferences: any SessionPreferences,
+        preferences: any ReportPreferences,
         services: ReportServices
     ) {
         self.results = results

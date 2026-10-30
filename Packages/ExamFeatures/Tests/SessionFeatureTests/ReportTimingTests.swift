@@ -7,6 +7,7 @@ import LibraryData
 import PDFKit
 import ReportFeature
 @testable import SessionFeature
+@testable import SessionModel
 import Testing
 
 /// PDF kết quả của đề chuẩn (docs/product/large-exams.md: "PDF kết quả không có phần xem lại" ≤ 1 s, giới hạn chặn Debug

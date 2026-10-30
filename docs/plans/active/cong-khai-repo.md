@@ -29,7 +29,7 @@ chuyển public. Nt0 đẩy tag `v0.1.1`; job `release-dmg` của CI đóng hai 
   kiểm, đóng gói phát hành) và mục 4 (một `verify_local.sh --uitest` mỗi PR trên SHA cuối sau review độc lập; plan đi
   cùng PR code).
 - Đóng gói: `scripts/make_dmg.sh`; hướng dẫn cài đặt `docs/install.md`; `CHANGELOG.md` mục `[0.1.1]`.
-- Fixture kho v1: `Packages/ExamFeatures/Tests/LibraryDataTests/Fixtures/` (README, `LibraryV1FixtureTests.swift`), bất
+- Fixture kho v1: `Packages/SharedFeatures/Tests/LibraryDataTests/Fixtures/` (README, `LibraryV1FixtureTests.swift`), bất
   biến "Kho thư viện v1 của người dùng mở được ở bản mới" (AGENTS.md).
 
 ## Scope

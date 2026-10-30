@@ -37,8 +37,9 @@
 # vn.io.nt0.examsuite, vn.io.nt0.examsuite.admin), khác nhau thì thất bại;
 # và so ~/Library/Autosave Information/ (chỉ tên, mtime, cỡ): có mục mới của Exam Suite (đề chưa lưu do UI test bỏ lại)
 # thì thất bại.
-# Bản iOS (docs/product/plan-ios-v1.md) ở mức full: build cho simulator (build/DerivedData-iOS), kiểm ranh giới bundle
-# (ADR 0003) và chữ Info.plist vi/en của app iOS, export String Catalog của scheme ExamSuiteiOS; --uitest chạy thêm các
+# Bản iOS (docs/product/plan-ios-v1.md) ở mức full: build cho simulator (build/DerivedData-iOS), test phần chỉ của iOS
+# (MobileFeatureTests) trên simulator, kiểm ranh giới bundle (ADR 0003) và chữ Info.plist vi/en của app iOS, export
+# String Catalog của scheme ExamSuiteiOS; --uitest chạy thêm các
 # lớp ExamSuiteiOSUITests đã chọn trên simulator. Máy và runtime simulator: EXAMSUITE_IOS_DESTINATION (mặc định bên
 # dưới, cùng máy với ảnh snapshot của bản iOS). Simulator đã tách dữ liệu khỏi máy Mac nên không so kho thật cho iOS.
 # App Debug/Release mang bundle ID thật mà script build (build/DerivedData/Build/Products, build/DerivedData-Release/Build/
@@ -270,7 +271,8 @@ if [[ $POST_STATUS == 1 ]]; then
 fi
 
 # Bundle tài nguyên cũ của swift test (AGENTS.md, mục Lệnh kiểm chứng; 2026-10-18): `swift test` đọc bản sao bundle tài
-# nguyên trong từng .xctest (Contents/Resources/ExamFeatures_*.bundle), không đọc Products/Debug/*.bundle. Lần chạy
+# nguyên trong từng .xctest (Contents/Resources/ExamFeatures_*.bundle, SharedFeatures_*.bundle của module dùng chung
+# build cùng thư mục), không đọc Products/Debug/*.bundle. Lần chạy
 # incremental trên worktree từng build ở commit cũ (catalog chưa có en) ra chữ tiếng Việt ở mọi phép tra en, cùng SHA
 # chạy --clean thì đạt. Trước check.sh (chỉ khi không --clean): bundle (ở Products hay bản sao trong .xctest) thiếu thư
 # mục <ngôn ngữ>.lproj của một ngôn ngữ có trong catalog (catalog vừa có thêm ngôn ngữ), hoặc bản sao trong .xctest khác
@@ -289,14 +291,16 @@ if not products.is_dir():
 def files(directory):
     return {p.relative_to(directory) for p in directory.rglob("*") if p.is_file()} if directory.is_dir() else set()
 
-for catalog in sorted(root.glob("Sources/*/Resources/Localizable.xcstrings")):
-    target = catalog.parts[-3]
+shared = pathlib.Path("Packages/SharedFeatures")
+for catalog in sorted([*root.glob("Sources/*/Resources/Localizable.xcstrings"),
+                       *shared.glob("Sources/*/Resources/Localizable.xcstrings")]):
+    package, target = catalog.parts[1], catalog.parts[-3]
     data = json.loads(catalog.read_text(encoding="utf-8"))
     source = data.get("sourceLanguage", "vi")
     languages = sorted({
         language for entry in data.get("strings", {}).values() for language in entry.get("localizations", {})
     } - {source})
-    name = f"ExamFeatures_{target}.bundle"
+    name = f"{package}_{target}.bundle"
     product = products / name
     copies = sorted(products.glob(f"*.xctest/Contents/Resources/{name}"))
     for bundle in ([product] if product.is_dir() else []) + copies:
@@ -367,6 +371,18 @@ done
 run "xcodebuild ExamSuiteiOS (simulator)" xcodebuild -project ExamSuite.xcodeproj -scheme ExamSuiteiOS \
   -configuration Debug -destination "$IOS_DESTINATION" -derivedDataPath build/DerivedData-iOS -quiet build
 IOS_PRODUCTS=build/DerivedData-iOS/Build/Products/Debug-iphonesimulator
+# Phần chỉ của iOS (Packages/MobileFeatures) trên simulator: kho thư viện, đề mẫu, bookmark (module dùng chung chạy được
+# trên iOS). Không có test nào chạy là thất bại.
+ios_unit_tests() {
+  local out="build/verify-ios-unit-$SHORT.log"
+  xcodebuild -project ExamSuite.xcodeproj -scheme ExamSuiteiOS -configuration Debug -destination "$IOS_DESTINATION" \
+    -derivedDataPath build/DerivedData-iOS -only-testing:MobileFeatureTests test > "$out" 2>&1 \
+    || { tail -40 "$out"; echo "MobileFeatureTests thất bại (log: $out)."; return 1; }
+  grep -E '^[✔✘] Test run with' "$out" || true
+  grep -qE '^✔ Test run with [1-9][0-9]* tests? ' "$out" \
+    || { echo "MobileFeatureTests: không có test nào chạy (log: $out)."; return 1; }
+}
+run "MobileFeatureTests (simulator)" ios_unit_tests
 run "kiểm bundle (ADR 0003)" scripts/check_bundle_boundary.sh build/DerivedData/Build/Products/Debug "$IOS_PRODUCTS"
 # String Catalog (docs/product/accessibility-localization.md, mục Kiểm): hai app có vi.lproj và en.lproj, chuỗi Info.plist
 # tra được và bằng bản của InfoPlist.xcstrings, mọi bundle catalog của package có cùng ngôn ngữ và có en (--require-en,

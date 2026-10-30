@@ -31,14 +31,17 @@ Ba cơ chế mượn từ ai-workflow-template (ADR 0007), áp dụng cho mọi 
 - **Danh tính git** (Nt0 chốt 2026-10-20, repo public): commit dùng địa chỉ ẩn của GitHub (`<id>+<tài khoản>@users.noreply.github.com`); `verify_local.sh` dừng trước mọi bước build khi một commit bất kỳ từ merge-base với `origin/main` tới HEAD (trên `main`: HEAD) có email tác giả khác địa chỉ đó, hay email người commit khác địa chỉ đó và khác `noreply@github.com` (merge trên web GitHub); đối chứng dương và âm chạy mỗi lần; `--check-identity` chỉ chạy bước này. Cách sửa: commit ở đỉnh chưa push thì `git commit --amend --no-edit --reset-author`, còn lại viết lại các commit của nhánh trước khi merge. Commit có từ trước khi công khai (chỉ ở repo riêng cũ) chỉ được miễn khi người điều phối đặt `EXAMSUITE_IDENTITY_ALLOW=<sha>[,<sha>]` cho đúng lần chạy đó (cảnh báo từng commit; status ghi "miễn danh tính N commit"). Trên GitHub: bật "Keep my email addresses private" và "Block command line pushes that expose my email".
 - **UI test** (`scripts/verify_local.sh --uitest`: XCUITest `ExamSuiteUITests` của bản Học viên, luồng bàn phím
   1–3 của overview.md, rồi `ExamSuiteAdminUITests` của bản Admin): PR chạm code app (`Packages/ExamFeatures/Sources/**`,
-  lõi `Packages/ExamKit/Sources/{ExamKit,ExamFile}/**`, `Apps/**`) chạy **các lớp test bị ảnh hưởng** theo bảng map của
+  `Packages/SharedFeatures/Sources/**`, lõi `Packages/ExamKit/Sources/{ExamKit,ExamFile}/**`, `Apps/**`) chạy **các lớp
+  test bị ảnh hưởng** theo bảng map của
   `scripts/uitest_plan.py` (file đổi so với `git merge-base origin/main HEAD`, không dò đổi tên); **đủ bộ** khi chạm
   hạ tầng chung (`Apps/UITestSupport/**`, `Apps/StudentUITests/**`, `Apps/AdminUITests/**`, `project.yml`,
-  `Package.swift`/`Package.resolved` của ExamFeatures và ExamKit, code chế độ cô lập, `verify_local.sh`,
-  `uitest_plan.py`), khi chạm module dùng chung mọi cửa sổ (LibraryFeature,
-  LibraryData kể cả đề mẫu, SessionFeature, lõi ExamKit/ExamFile: luồng UI lưu/mở lại đề, đọc nghiêm, đồng hồ phiên),
+  `Package.swift`/`Package.resolved` của ExamFeatures, SharedFeatures và ExamKit, code chế độ cô lập, `verify_local.sh`,
+  `uitest_plan.py`), khi chạm module dùng chung mọi cửa sổ (LibraryFeature, SessionFeature, module dùng chung macOS và
+  iOS của `Packages/SharedFeatures`: LibraryData kể cả đề mẫu, InterfaceCore, SessionModel; lõi ExamKit/ExamFile: luồng
+  UI lưu/mở lại đề, đọc nghiêm, đồng hồ phiên),
   khi file code app chưa có trong bảng, ở cổng (`--clean --uitest`) và khi người duyệt yêu cầu (`--uitest-all`).
-  `LargeExamSupport` (chỉ ở test), tài liệu, unit test, script khác: không chạy UI test. Phần chỉ của bản iOS
+  `LargeExamSupport` (chỉ ở test), tài liệu, unit test (kể cả `MobileFeatureTests`), script khác: không chạy UI test.
+  Phần chỉ của bản iOS
   (`Packages/MobileFeatures/**`, `Apps/StudentiOS/**`, `Apps/StudentiOSUITests/**`) chỉ chạy lớp `ExamSuiteiOSUITests`
   theo bảng map, không chạy hai bản macOS. Target
   không có lớp nào thì không build, không chạy; hai target dùng chung `build/DerivedData-UITest` (`build-for-testing`
@@ -72,7 +75,8 @@ Ba cơ chế mượn từ ai-workflow-template (ADR 0007), áp dụng cho mọi 
 | Chấm điểm, chọn câu | `Packages/ExamKit/Sources/ExamKit/**` (Scoring, Composer, Session) |
 | Đọc/ghi gói đề, chuyển phiên bản | `Packages/ExamKit/Sources/ExamFile/**`, `schema/**`, `fixtures/**` |
 | Lưu file soạn đề | `Packages/ExamFeatures/Sources/AuthoringFeature/**` (document, save, recovery) |
-| Ranh giới hai bản app | `project.yml`, `Packages/ExamFeatures/Package.swift`, `Packages/MobileFeatures/Package.swift` (bản iOS là một bản Học viên, ADR 0013), `Apps/**`, `scripts/check_boundaries.py` |
+| Ranh giới hai bản app | `project.yml`, `Packages/ExamFeatures/Package.swift`, `Packages/SharedFeatures/Package.swift`, `Packages/MobileFeatures/Package.swift` (bản iOS là một bản Học viên, ADR 0013), `Apps/**`, `scripts/check_boundaries.py` |
+| Hợp đồng dùng chung macOS và iOS | `Packages/SharedFeatures/Sources/{InterfaceCore,SessionModel}/**` (model trình bày, câu báo lỗi, locale; plan-ios-v1.md Phần 5) |
 | Bản Android: lõi, lưu trữ | `android/core/**`, Room schema và `ExamStore` trong `android/data/**` (plan-android-v1.md Phần 4) |
 
 Với PR rủi ro cao:

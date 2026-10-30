@@ -6,7 +6,8 @@ chữ giao diện có `Localizable.xcstrings`, chữ trong package phải chỉ 
 docs/plans/completed/giai-doan-5-hoan-thien.md bước 4, kết luận spike docs/notes/g5-spike-pdf-l10n.md (quên `bundle:`
 không gây lỗi hay cảnh báo, chỉ quét mã nguồn mới bắt được).
 
-1. Quét mã nguồn (Packages/ExamFeatures/Sources, Apps/Student, Apps/Admin). Chữ giao diện trong package mặc định tra
+1. Quét mã nguồn (Packages/{ExamFeatures,SharedFeatures,MobileFeatures}/Sources, Apps/Student, Apps/Admin,
+   Apps/StudentiOS). Chữ giao diện trong package mặc định tra
    bundle CHÍNH của app, nên phải tra catalog của module:
    - `Text("…")`, `String(localized: "…")`, `LocalizedStringResource("…")`, `AttributedString(localized: "…")` phải có
      `bundle: .module`;
@@ -24,7 +25,7 @@ không gây lỗi hay cảnh báo, chỉ quét mã nguồn mới bắt được)
      LibraryData, AuthoringData, ExamImport), và `.message` của `ValidationIssue`: sau biến tên `issue`/`issues`/
      `…Issue(s)` hoặc biến khai báo kiểu `ValidationIssue`/`[ValidationIssue]` trong cùng file (không tính
      `ErrorMessages.message`/`AuthoringMessages.message`; vấn đề nằm trong biến tên khác có kiểu suy ra thì không thấy).
-     Dùng `ErrorMessages.message(for:)` (LibraryFeature) hoặc `AuthoringMessages.message(for:)`; câu của hệ thống cho lỗi
+     Dùng `ErrorMessages.message(for:)` (InterfaceCore) hoặc `AuthoringMessages.message(for:)`; câu của hệ thống cho lỗi
      ngoài Exam Suite qua `ErrorMessages.systemDescription` (dòng đó có `// l10n-ignore` kèm lý do).
    - luật `region-locale` (mọi target được quét; bước 7a): số, phần trăm, ngày giờ định dạng theo locale của ngôn ngữ
      giao diện, không theo Region của macOS (accessibility-localization.md, mục Ngôn ngữ). Báo `Locale.current`,
@@ -34,7 +35,7 @@ không gây lỗi hay cảnh báo, chỉ quét mã nguồn mới bắt được)
      theo Region), lớp `…Formatter()` cũ và hàm tĩnh của chúng (`DateFormatter.localizedString(from:…)`,
      `ByteCountFormatter.string(fromByteCount:…)`…), `String(format:)` không có `locale:` và
      `String.localizedStringWithFormat`; quét cả mã trong nội suy `\\(…)` của chuỗi. Dùng `InterfaceLocale.current`
-     (LibraryFeature), `InterfaceLocale.number(_:)`, `.locale(InterfaceLocale.current)`, `InterfaceLocale.calendar`;
+     (InterfaceCore), `InterfaceLocale.number(_:)`, `.locale(InterfaceLocale.current)`, `InterfaceLocale.calendar`;
      trong view SwiftUI `Text(n, format: .number)` theo `\\.locale` của môi trường (gốc scene gắn `.interfaceLocale()`),
      không bị báo.
    - luật `scene-locale` (StudentShell, AdminShell và điểm vào của hai app ở Apps/Student, Apps/Admin): mỗi scene ở cấp
@@ -42,7 +43,7 @@ không gây lỗi hay cảnh báo, chỉ quét mã nguồn mới bắt được)
      Scene`, body của nó được kiểm); shell hay app không còn `body` nào của Scene cũng là lỗi (luật không được rỗng).
    - luật `test-hook` (bước 7c): chỗ ép ngôn ngữ chỉ cho test (`InterfaceStrings.languageOverride`,
      `.processLanguageOverride`) không xuất hiện trong Sources/Apps ngoài file khai báo nó (InterfaceStrings.swift).
-2. Catalog (`*.xcstrings` trong Packages/ExamFeatures/Sources và Apps): JSON hợp lệ, `sourceLanguage` là `vi`; mỗi
+2. Catalog (`*.xcstrings` trong Sources của các package và Apps): JSON hợp lệ, `sourceLanguage` là `vi`; mỗi
    khoá có giá trị tiếng Việt (khoá nguồn khác rỗng; `InfoPlist.xcstrings` có `vi` tường minh vì khoá là tên khoá
    Info.plist); không khoá `stale` (không còn trong code: xoá khỏi catalog); không bản dịch nào rỗng (catalog biên
    dịch chữ rỗng thì giao diện hiện chữ rỗng). `--require-en` (bật từ bước 7c của plan giai đoạn 5 ở `check.sh` mọi chế
@@ -63,7 +64,7 @@ hàm kiểm không bắt được đối chứng âm thì script thất bại, �
    `en.lproj` (thiếu một thì cả app kẹt một ngôn ngữ), `CFBundleDevelopmentRegion` là vi, mỗi khoá của
    `InfoPlist.xcstrings` tra được ở cả hai ngôn ngữ và bằng bản của catalog cho ngôn ngữ đó (tên app không dịch: bằng
    giá trị gốc); bundle tài nguyên của mỗi target có catalog nằm trong app với ngôn ngữ nguồn vi, và mọi bundle có chữ đã
-   biên dịch có cùng tập `*.lproj` (review #50 N2: `InterfaceLocale` chọn ngôn ngữ theo bundle LibraryFeature), có `en`
+   biên dịch có cùng tập `*.lproj` (review #50 N2: `InterfaceLocale` chọn ngôn ngữ theo bundle InterfaceCore), có `en`
    khi `--require-en`; bundle có chữ mà không có trong `BUILT_APPS` cũng là lỗi.
 
 Dùng: scripts/check_localization.py                          (quét mã nguồn + catalog; chạy được trên Linux)
@@ -87,12 +88,17 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCES = Path("Packages/ExamFeatures/Sources")
+# Phần dùng chung macOS và iOS (docs/product/plan-ios-v1.md Phần 3): LibraryData, InterfaceCore, SessionModel.
+SHARED_SOURCES = Path("Packages/SharedFeatures/Sources")
 # Giao diện iPhone (docs/product/plan-ios-v1.md): cùng luật chuỗi với ExamFeatures.
 MOBILE_SOURCES = Path("Packages/MobileFeatures/Sources")
+# Thư mục Sources có target được quét và có catalog (theo thứ tự).
+PACKAGE_SOURCES = (SOURCES, SHARED_SOURCES, MOBILE_SOURCES)
+# Gói của target dùng chung: bundle tài nguyên trong app mang tên `<gói>_<target>.bundle` (SwiftPM).
+SHARED_TARGETS = ("LibraryData", "InterfaceCore", "SessionModel")
 APP_DIRS = (Path("Apps/Student"), Path("Apps/Admin"), Path("Apps/StudentiOS"))
-# Luật `scene-locale` chỉ áp cho hai app macOS: `.interfaceLocale()` nằm ở LibraryFeature (chỉ macOS) tới khi bước I1
-# của plan-ios-v1.md tách nó sang module dùng chung; I1 thêm MobileShell và Apps/StudentiOS vào luật này.
-SCENE_LOCALE_APP_DIRS = (Path("Apps/Student"), Path("Apps/Admin"))
+# Điểm vào của app có luật `scene-locale` (cùng scene của các shell, `SHELL_DIRS`).
+SCENE_LOCALE_APP_DIRS = (Path("Apps/Student"), Path("Apps/Admin"), Path("Apps/StudentiOS"))
 # Target dữ liệu (không giao diện): câu tiếng Việt ở đây chỉ cho nhật ký và test (`logMessage`); tầng giao diện dựng câu
 # theo mã (bước 7b, accessibility-localization.md phương án 2). Quy tắc "chữ tiếng Việt phải qua catalog" không áp dụng
 # ở đây; luật `core-text` canh để câu đó không lên giao diện.
@@ -645,13 +651,11 @@ def scan_source(path: str, src: str, check_vietnamese: bool) -> list[Problem]:
 def source_targets(root: Path) -> list[tuple[Path, bool]]:
     """(thư mục, có kiểm chuỗi tiếng Việt trơn không) của mọi target được quét."""
     targets: list[tuple[Path, bool]] = []
-    sources = root / SOURCES
-    if sources.is_dir():
-        for d in sorted(p for p in sources.iterdir() if p.is_dir()):
-            targets.append((d, d.name not in PLAIN_STRING_TARGETS))
-    mobile = root / MOBILE_SOURCES
-    if mobile.is_dir():
-        targets += [(d, True) for d in sorted(p for p in mobile.iterdir() if p.is_dir())]
+    for package in PACKAGE_SOURCES:
+        sources = root / package
+        if sources.is_dir():
+            for d in sorted(p for p in sources.iterdir() if p.is_dir()):
+                targets.append((d, d.name not in PLAIN_STRING_TARGETS))
     for d in APP_DIRS:
         if (root / d).is_dir():
             targets.append((root / d, True))
@@ -671,7 +675,7 @@ def check_sources(root: Path = ROOT) -> list[Problem]:
 
 # Luật test-hook: chỗ ép ngôn ngữ chỉ cho test (`InterfaceStrings.languageOverride`, `.processLanguageOverride`; bước 7c)
 # chỉ được đặt trong file khai báo nó; code của app (Sources, Apps) không được dùng (app luôn theo ngôn ngữ của macOS).
-TEST_HOOK_FILE = "Packages/ExamFeatures/Sources/LibraryFeature/Localization/InterfaceStrings.swift"
+TEST_HOOK_FILE = "Packages/SharedFeatures/Sources/InterfaceCore/Localization/InterfaceStrings.swift"
 TEST_HOOK_RE = re.compile(r"(?<![\w])\$?(languageOverride|processLanguageOverride)\b")
 
 
@@ -681,13 +685,14 @@ def test_hook_problems(path: str, src: str) -> list[Problem]:
     code = code_mask(src)
     return [Problem(path, line_of(src, m.start()), "test-hook",
                     f"`{m.group(1)}` chỉ cho test (ép ngôn ngữ tra chữ): không dùng trong code của app; test dùng qua "
-                    "`@testable import LibraryFeature`.")
+                    "`@testable import InterfaceCore`.")
             for m in TEST_HOOK_RE.finditer(code)]
 
 
-# Luật scene-locale: mọi scene của hai shell gắn `.interfaceLocale()` (môi trường `\\.locale` theo ngôn ngữ giao diện),
-# để số và ngày trong mọi cửa sổ, sheet, hộp thoại không theo Region (accessibility-localization.md, ghi chú bước 7a).
-SHELL_TARGETS = ("StudentShell", "AdminShell")
+# Luật scene-locale: mọi scene của các shell (hai bản macOS, bản iOS) gắn `.interfaceLocale()` (môi trường `\\.locale`
+# theo ngôn ngữ giao diện), để số và ngày trong mọi cửa sổ, sheet, hộp thoại không theo Region (accessibility-localization.md,
+# ghi chú bước 7a).
+SHELL_DIRS = (SOURCES / "StudentShell", SOURCES / "AdminShell", MOBILE_SOURCES / "MobileShell")
 SCENE_BODY_RE = re.compile(r"\bvar\s+body\s*:\s*some\s+(?:SwiftUI\.)?Scene\s*\{")
 SCENE_LOCALE_MODIFIER = ".interfaceLocale("
 
@@ -767,20 +772,20 @@ SCENE_TYPE_RE = re.compile(r"\bstruct\s+(\w+)\s*:[^{]*\bScene\b")
 
 
 def composite_scenes(root: Path = ROOT) -> frozenset[str]:
-    """Tên các scene gộp khai báo trong hai shell (`public struct StudentScenes: Scene`)."""
+    """Tên các scene gộp khai báo trong các shell (`public struct StudentScenes: Scene`)."""
     names: set[str] = set()
-    for target in SHELL_TARGETS:
-        for f in sorted((root / SOURCES / target).rglob("*.swift")):
+    for directory in SHELL_DIRS:
+        for f in sorted((root / directory).rglob("*.swift")):
             names.update(SCENE_TYPE_RE.findall(lex(f.read_text(encoding="utf-8"))[0]))
     return frozenset(names)
 
 
 def check_scene_locale(root: Path = ROOT) -> list[Problem]:
-    """Hai shell, và điểm vào của hai app (Apps/Student, Apps/Admin, review #50 N3): scene của app hoặc là scene gộp của
-    shell (đã kiểm) hoặc gắn `.interfaceLocale()`."""
+    """Các shell, và điểm vào của các app (Apps/Student, Apps/Admin, Apps/StudentiOS; review #50 N3): scene của app hoặc
+    là scene gộp của shell (đã kiểm) hoặc gắn `.interfaceLocale()`."""
     problems: list[Problem] = []
     composite = composite_scenes(root)
-    for directory in [SOURCES / target for target in SHELL_TARGETS] + list(SCENE_LOCALE_APP_DIRS):
+    for directory in list(SHELL_DIRS) + list(SCENE_LOCALE_APP_DIRS):
         bodies = 0
         for f in sorted((root / directory).rglob("*.swift")):
             found, count = scene_locale_problems(str(f.relative_to(root)), f.read_text(encoding="utf-8"), composite)
@@ -942,8 +947,9 @@ def catalog_problems(path: str, raw: str, require_en: bool) -> list[Problem]:
 
 
 def catalog_files(root: Path = ROOT) -> list[Path]:
-    files = sorted((root / SOURCES).rglob("*.xcstrings")) if (root / SOURCES).is_dir() else []
-    files += sorted((root / MOBILE_SOURCES).rglob("*.xcstrings")) if (root / MOBILE_SOURCES).is_dir() else []
+    files: list[Path] = []
+    for package in PACKAGE_SOURCES:
+        files += sorted((root / package).rglob("*.xcstrings")) if (root / package).is_dir() else []
     for d in APP_DIRS:
         files += sorted((root / d).rglob("*.xcstrings")) if (root / d).is_dir() else []
     return files
@@ -1003,9 +1009,11 @@ def check_freshness(build_dir: Path, allow_missing: bool = False, root: Path = R
     if shutil.which("xcrun") is None:
         return [Problem(str(build_dir), 0, "freshness", "cần xcrun xcstringstool (macOS có Xcode).")]
     problems: list[Problem] = []
-    catalogs = sorted((root / SOURCES).rglob("Localizable.xcstrings"))
-    if catalogs and not any(stringsdata_for(build_dir, c.relative_to(root / SOURCES).parts[0],
-                                            root / SOURCES / c.relative_to(root / SOURCES).parts[0]) for c in catalogs):
+    # (catalog, thư mục nguồn của target). Thư mục build của ExamFeatures có cả target của SharedFeatures (phụ thuộc);
+    # MobileFeatures chỉ build cho iOS, chưa có catalog.
+    catalogs = [(c, c.parent.parent) for package in (SOURCES, SHARED_SOURCES)
+                for c in sorted((root / package).rglob("Localizable.xcstrings"))]
+    if catalogs and not any(stringsdata_for(build_dir, sources.name, sources) for _, sources in catalogs):
         # Hệ build cũ của SwiftPM (`--build-system native`) không ghi .stringsdata. Chỉ bỏ qua khi người gọi nói rõ
         # (`--allow-missing-stringsdata`); bằng chứng merge vẫn có `xcodebuild -exportLocalizations` của verify_local.sh.
         if allow_missing:
@@ -1016,10 +1024,10 @@ def check_freshness(build_dir: Path, allow_missing: bool = False, root: Path = R
                         "(SwiftPM `--build-system native`) hoặc sai thư mục. Chạy swift test của Packages/ExamFeatures "
                         "với hệ build mặc định, hoặc truyền --allow-missing-stringsdata nếu biết chắc hệ build không "
                         "ghi (verify_local.sh vẫn kiểm bằng -exportLocalizations).")]
-    for catalog in catalogs:
-        target = catalog.relative_to(root / SOURCES).parts[0]
+    for catalog, sources in catalogs:
+        target = sources.name
         rel = str(catalog.relative_to(root))
-        data = stringsdata_for(build_dir, target, root / SOURCES / target)
+        data = stringsdata_for(build_dir, target, sources)
         if not data:
             problems.append(Problem(rel, 0, "freshness", f"không thấy .stringsdata của {target} trong {build_dir}: "
                                     "chạy swift build/swift test của Packages/ExamFeatures trước."))
@@ -1043,20 +1051,30 @@ def check_freshness(build_dir: Path, allow_missing: bool = False, root: Path = R
 # ---------------------------------------------------------------------------------------------------------------
 # App đã build: bundle chính có vi và en, chuỗi Info.plist tra được, bundle catalog của package đúng ngôn ngữ nguồn.
 
-# App → (InfoPlist.xcstrings nguồn, target có catalog mà app phải mang bundle tài nguyên).
+# App → (InfoPlist.xcstrings nguồn, target có catalog mà app phải mang bundle tài nguyên). Target đầu là bundle mà
+# `InterfaceLocale` chọn ngôn ngữ theo (InterfaceCore).
 BUILT_APPS = {
-    "Exam Suite.app": ("Apps/Student/InfoPlist.xcstrings", ("LibraryFeature", "SessionFeature", "ReportFeature")),
+    "Exam Suite.app": (
+        "Apps/Student/InfoPlist.xcstrings",
+        ("InterfaceCore", "SessionModel", "LibraryFeature", "SessionFeature", "ReportFeature"),
+    ),
     "Exam Suite Admin.app": (
         "Apps/Admin/InfoPlist.xcstrings",
-        ("LibraryFeature", "SessionFeature", "ReportFeature", "AuthoringFeature", "AdminShell"),
+        ("InterfaceCore", "SessionModel", "LibraryFeature", "SessionFeature", "ReportFeature", "AuthoringFeature",
+         "AdminShell"),
     ),
 }
 # Bản iOS (docs/product/plan-ios-v1.md): bundle phẳng (Info.plist, `*.lproj`, bundle tài nguyên ngay ở gốc .app), cùng
 # tên app với bản Học viên macOS nên có bảng riêng; `check_built_apps` chọn bảng theo thư mục Products (`…-iphoneos`,
-# `…-iphonesimulator`). Bước I0 chưa có catalog của package trong app iOS.
+# `…-iphonesimulator`). Từ bước I1 app iOS mang catalog của hai module dùng chung.
 BUILT_IOS_APPS = {
-    "Exam Suite.app": ("Apps/StudentiOS/InfoPlist.xcstrings", ()),
+    "Exam Suite.app": ("Apps/StudentiOS/InfoPlist.xcstrings", ("InterfaceCore", "SessionModel")),
 }
+
+
+def bundle_name(target: str) -> str:
+    """Tên bundle tài nguyên của target trong app (SwiftPM: `<gói>_<target>.bundle`)."""
+    return f"{'SharedFeatures' if target in SHARED_TARGETS else 'ExamFeatures'}_{target}.bundle"
 # Khoá Info.plist được đánh dấu không dịch (`shouldTranslate: false`), theo catalog. Chỉ `CFBundleDisplayName` của bản
 # iOS ("Exam Suite Debug" ở Debug, theo cấu hình build). Khoá khác đánh dấu không dịch là lỗi: `--require-en` bỏ qua
 # khoá không dịch, nên bản dịch của nó mất mà không bước nào báo.
@@ -1112,7 +1130,7 @@ def built_app_problems(app: Path, catalog: dict, targets: tuple[str, ...], requi
 
     Bundle tài nguyên của mỗi target có catalog nằm trong app, ngôn ngữ nguồn vi, và **mọi bundle có chữ đã biên dịch
     có cùng tập `*.lproj`** (review độc lập #50 N2): `InterfaceLocale` chọn ngôn ngữ định dạng theo `*.lproj` của bundle
-    LibraryFeature, nên bundle nào thiếu một ngôn ngữ sẽ ra chữ ngôn ngữ nguồn cạnh số/ngày của ngôn ngữ kia. Đòi en thì
+    InterfaceCore, nên bundle nào thiếu một ngôn ngữ sẽ ra chữ ngôn ngữ nguồn cạnh số/ngày của ngôn ngữ kia. Đòi en thì
     tập đó phải có en.
 
     Khoá trong `untranslated` (`UNTRANSLATED_INFO_KEYS`) đánh dấu không dịch thì không có trong `InfoPlist.strings`
@@ -1168,24 +1186,24 @@ def built_app_problems(app: Path, catalog: dict, targets: tuple[str, ...], requi
                         "sau khi sửa catalog; trước bước 7c bản en phải bằng giá trị gốc).")
     reference: set[str] | None = None
     for target in targets:
-        bundle = resources / f"ExamFeatures_{target}.bundle"
+        bundle = resources / bundle_name(target)
         try:
             region = read_plist(bundle_layout(bundle)[0]).get("CFBundleDevelopmentRegion")
         except (OSError, plistlib.InvalidFileException, ValueError):
-            problem(f"thiếu bundle tài nguyên ExamFeatures_{target}.bundle (catalog của {target}).")
+            problem(f"thiếu bundle tài nguyên {bundle.name} (catalog của {target}).")
             continue
         if region != "vi":
-            problem(f"ExamFeatures_{target}.bundle có CFBundleDevelopmentRegion {region!r}, phải là 'vi' "
+            problem(f"{bundle.name} có CFBundleDevelopmentRegion {region!r}, phải là 'vi' "
                     "(Package.swift defaultLocalization).")
         languages = lproj_languages(bundle)
         if reference is None:
             reference = languages
             if require_en and "en" not in languages:
-                problem(f"ExamFeatures_{target}.bundle không có en.lproj: catalog của {target} chưa có bản en được "
+                problem(f"{bundle.name} không có en.lproj: catalog của {target} chưa có bản en được "
                         "biên dịch (InterfaceLocale chọn ngôn ngữ theo bundle này).")
         elif languages != reference:
-            problem(f"ExamFeatures_{target}.bundle có ngôn ngữ {sorted(languages)}, khác {sorted(reference)} của "
-                    f"ExamFeatures_{targets[0]}.bundle: mọi catalog phải có cùng các ngôn ngữ (review #50 N2), nếu không "
+            problem(f"{bundle.name} có ngôn ngữ {sorted(languages)}, khác {sorted(reference)} của "
+                    f"{bundle_name(targets[0])}: mọi catalog phải có cùng các ngôn ngữ (review #50 N2), nếu không "
                     "giao diện ra chữ ngôn ngữ nguồn cạnh số/ngày của ngôn ngữ kia.")
     return problems
 
@@ -1207,8 +1225,9 @@ def check_built_apps(products: Path, require_en: bool, root: Path = ROOT) -> lis
 def unlisted_bundles(app: Path, targets: tuple[str, ...]) -> list[Problem]:
     """Bundle tài nguyên có chữ đã biên dịch mà không có trong `BUILT_APPS`: phép so `*.lproj` ở trên sẽ bỏ sót nó."""
     out: list[Problem] = []
-    for bundle in sorted(bundle_layout(app)[1].glob("ExamFeatures_*.bundle")):
-        target = bundle.stem.removeprefix("ExamFeatures_")
+    resources = bundle_layout(app)[1]
+    for bundle in sorted([*resources.glob("ExamFeatures_*.bundle"), *resources.glob("SharedFeatures_*.bundle")]):
+        target = bundle.stem.split("_", 1)[1]
         if target not in targets and lproj_languages(bundle):
             out.append(Problem(app.name, 0, "built-app", f"{bundle.name} có chữ đã biên dịch nhưng {target} không có "
                                "trong BUILT_APPS của scripts/check_localization.py: thêm vào danh sách của app."))
@@ -1246,7 +1265,7 @@ def built_app_self_test() -> list[str]:
                 data = b"\xff\xfe" + data.decode("utf-8").replace('encoding="UTF-8"', 'encoding="UTF-16"').encode("utf-16-le")
             (folder / "InfoPlist.strings").write_bytes(data)
         for target, lprojs in (bundles or {}).items():
-            contents = app / f"Contents/Resources/ExamFeatures_{target}.bundle/Contents"
+            contents = app / f"Contents/Resources/{bundle_name(target)}/Contents"
             contents.mkdir(parents=True)
             (contents / "Info.plist").write_bytes(plistlib.dumps({"CFBundleDevelopmentRegion": region}))
             for language in lprojs:
@@ -1319,10 +1338,15 @@ def built_app_self_test() -> list[str]:
         app = build(Path(tmp), ios_info, {"vi": vi, "en": en}, None, flat=True)
         if len(built_app_problems(app, ios_catalog, (), True)) != 2:
             failures.append("đối chứng âm app 'iOS khoá không dịch không có trong danh sách' không bị bắt")
-        # Bundle có chữ mà không có trong BUILT_APPS.
+        # Bundle có chữ mà không có trong BUILT_APPS, cả bundle của gói dùng chung (`SharedFeatures_…`).
         app = build(Path(tmp), info, {"vi": vi, "en": en}, {**english, "NewFeature": ["en"]})
         if len(unlisted_bundles(app, targets)) != 1 or unlisted_bundles(app, (*targets, "NewFeature")):
             failures.append("đối chứng bundle ngoài BUILT_APPS không đúng")
+        app = build(Path(tmp), info, {"vi": vi, "en": en}, {**english, "InterfaceCore": ["en"]})
+        if len(unlisted_bundles(app, targets)) != 1 or unlisted_bundles(app, (*targets, "InterfaceCore")):
+            failures.append("đối chứng bundle SharedFeatures_InterfaceCore ngoài BUILT_APPS không đúng")
+        if not (app / "Contents/Resources/SharedFeatures_InterfaceCore.bundle").is_dir():
+            failures.append("đối chứng: bundle của InterfaceCore phải mang tên SharedFeatures_InterfaceCore.bundle")
     return failures
 
 
@@ -1770,7 +1794,7 @@ def main(argv: list[str]) -> int:
             print(f"  - {p}")
         return 1
     print("ok   chuỗi giao diện tra catalog của module (bundle: .module / localized), số/ngày không theo Region "
-          "(region-locale), mọi scene của hai shell và hai app gắn .interfaceLocale() (scene-locale), câu của lõi/target dữ liệu không lên giao diện (core-text), chỗ ép ngôn ngữ chỉ ở test (test-hook), catalog nguồn vi hợp lệ"
+          "(region-locale), mọi scene của các shell và app gắn .interfaceLocale() (scene-locale), câu của lõi/target dữ liệu không lên giao diện (core-text), chỗ ép ngôn ngữ chỉ ở test (test-hook), catalog nguồn vi hợp lệ"
           + (", catalog đủ khoá" if fresh is not None else "")
           + (", hai app có vi/en và chuỗi Info.plist tra được" if products is not None else "")
           + (", đủ bản en" if require_en else " (không đòi en: thiếu --require-en)")

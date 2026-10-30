@@ -4,7 +4,8 @@ Date: 2026-10-30
 
 ## Status
 
-Active. I0 đang làm trên nhánh `feature/ios-i0`.
+Active. I0 xong code và review trên nhánh `feature/ios-i0`, chờ `local/verify` (UI test macOS cần Nt0 xác thực
+Automation Mode). I1 trên nhánh `feature/ios-i1`, xếp chồng trên I0.
 
 ## Outcome
 
@@ -53,7 +54,11 @@ Không có cặp song song.
       `check_localization.py`, `check_quit_sheets.py`, `uitest_plan.py`, `verify_local.sh` biết bản iOS; spike
       (Decisions). Rủi ro cao (vùng ranh giới hai bản app): review độc lập xong, đã sửa theo review. Còn:
       `verify_local.sh --uitest` trên SHA cuối, PR.
-- [ ] I1 `Packages/SharedFeatures`: dời LibraryData, tách model trình bày (rủi ro cao). Cổng GI1.
+- [ ] I1 `Packages/SharedFeatures`: dời LibraryData, tách model trình bày (rủi ro cao). Cổng GI1. Đã làm: package
+      `SharedFeatures` (LibraryData, InterfaceCore, SessionModel; macOS và iOS), ExamKit thêm `.iOS(.v18)`, ExamFeatures
+      và MobileFeatures phụ thuộc nó, `MobileShell` gắn `.interfaceLocale()`, `MobileFeatureTests` (kho trên simulator),
+      dời khoá catalog, script kiểm và tài liệu biết package mới, đường dẫn đề mẫu của Android và bộ lọc của CI Android.
+      Còn: review độc lập, `verify_local.sh --uitest` đủ bộ, check `android` của CI, PR (sau khi I0 merge).
 - [ ] I2 Giao diện iPhone, nhận file, tự tạm dừng. Cổng GI2.
 - [ ] I3 Hoàn thiện, bản 0.1.0. Cổng GI3.
 
@@ -130,6 +135,46 @@ Không có cặp song song.
 - 2026-10-30, I0, Nt0: VS Code chưa có Full Disk Access, chạy `verify_local.sh --uitest --no-autosave-check` (status
   ghi "kiểm Autosave: bỏ qua", như cổng 265ab44).
 
+- 2026-10-30, I0, `verify_local.sh --uitest --no-autosave-check` trên 72b6dac (Nt0 vắng): bản Học viên và bản Admin
+  "Timed out while enabling automation mode" (macOS cần xác thực để bật Automation Mode), bản iOS đạt; status failure.
+  Theo AGENTS.md: dừng, không chạy lại; chạy lại khi Nt0 có mặt để xác thực.
+- 2026-10-30, I1, `reportReviewLevel` (Phần 3 của plan để I1 chọn): chọn cách đề xuất, protocol riêng. `SessionPreferences`
+  (SessionModel) chỉ còn tên thí sinh và chế độ lần trước; `ReportPreferences` (SessionFeature) có `reportReviewLevel`,
+  `UserDefaultsSessionPreferences` thoả nó bằng extension ở SessionFeature (cùng khoá `report.resultsReviewLevel`, nên
+  `defaults` của lớp này thành `public`). `SessionCoordinator.reportPreferences` truyền xuống cửa sổ như `reportServices`
+  (`SessionAppController` gán); thiếu thì Xuất PDF/In không chạy, như thiếu `reportServices`. Không tách phần Foundation
+  của ReportFeature (việc của J1).
+- 2026-10-30, I1, Hiện trong Finder: `LibraryModel` ở InterfaceCore không import AppKit; `revealFiles` mặc định không làm
+  gì, `LibraryModel.persistent(configuration:defaults:)` dời sang LibraryFeature (`Model/LibraryModel+Finder.swift`) và
+  truyền `NSWorkspace`, nên hai shell gọi như cũ, app macOS không đổi hành vi.
+- 2026-10-30, I1, test: `LibraryDataTests` (tự đủ, có fixture kho v1) dời sang SharedFeatures như plan. Test của phần tách
+  sang InterfaceCore, SessionModel ở lại test target của ExamFeatures (`LibraryFeatureTests`, `SessionFeatureTests`…),
+  chỉ đổi `import` (`@testable import` qua package chạy được: SwiftPM bật testability cho mọi module khi build test). Lý
+  do: support test (`Harness`, `FakeLibrary`, `FeatureWorkspace`) dùng chung với test của phần AppKit và PDF; dời test
+  thì phải chép support thành hai bản. Số test không đổi: 788 = 104 (SharedFeatures) + 684 (ExamFeatures). Đổi nội dung
+  test ngoài `import`, vì khoá hay bundle đổi module: `LocalizationTests` (LibraryFeature, SessionFeature),
+  `CatalogLanguagesTests` (thêm bundle InterfaceCore, SessionModel; InterfaceCore là bundle chọn ngôn ngữ),
+  `InterfaceLocaleTests`, `LocalizationSupport.catalogText`, `ErrorMessagesTests.catalogKeys` (catalog InterfaceCore),
+  `AppLaunchStorageTests.chosenFileHookIsDebugOnly` (quét cả Sources của SharedFeatures, MobileFeatures, để không mất
+  `AppLaunchStorage.swift`); test giả `FakePreferences`, `FixedPreferences` khai báo thêm `ReportPreferences`,
+  `ResultsReportFlowTests`, `ContentSizedWindowTests` gán `reportPreferences`.
+- 2026-10-30, I1, `public` thêm cho đúng năm khai báo SessionFeature dùng qua package: `PlainMarkdown.attributed`,
+  `PreExamModel.start()`, `PreExamModel.rememberStartedChoices()`, `ResultsModel.init(submission:content:environment:)`,
+  `UserDefaultsSessionPreferences.defaults`; mọi khai báo khác đã `public` từ trước.
+- 2026-10-30, I1, iOS: `MobileFeature` phụ thuộc cả ba module dùng chung (I1 chưa dùng) để bản build iOS của
+  `verify_local.sh` biên dịch chúng cho iOS: bằng chứng "không AppKit" do trình biên dịch, không thêm luật script.
+  `MobileFeatureTests` (một test: kho mở, đề mẫu, bookmark khi thư mục đổi chỗ) nằm trong scheme `ExamSuiteiOS` (XcodeGen
+  `package: MobileFeatures/MobileFeatureTests`); `verify_local.sh` mức full chạy `-only-testing:MobileFeatureTests` sau
+  bước build iOS, không có test nào chạy là thất bại.
+- 2026-10-30, I1, catalog (QI6): script một lần, không commit: chép catalog cũ thành catalog mới, `xcstringstool sync` với
+  `.stringsdata` của target, bỏ khoá stale; làm cả với catalog cũ. InterfaceCore 150 khoá, SessionModel 85, LibraryFeature
+  232 → 86, SessionFeature 199 → 134 (khoá dùng ở cả hai nơi có ở cả hai), catalog khác không đổi; không khoá nào thiếu
+  `en`. Sau đó `-exportLocalizations` ba scheme không đổi file nào.
+- 2026-10-30, I1, script: `check_bundle_boundary.sh` không cần đổi (bundle của module chỉ Admin vẫn mang tên
+  `ExamFeatures_…`; bundle `SharedFeatures_…` có chữ do `check_localization.py --built-apps` kiểm: `BUILT_APPS`,
+  `BUILT_IOS_APPS`, `unlisted_bundles`). `check_test_only_module` duyệt mọi package. `Packages/SharedFeatures/Package.resolved`
+  được commit (SwiftPM tạo khi build; chỉ ghim ZIPFoundation 0.9.20 như ExamKit).
+
 ## Validation
 
 Ghi theo từng bước.
@@ -145,6 +190,19 @@ I0:
   này; chạy lại trên SHA sau khi sửa theo review.
 - Sau khi sửa theo review: tự kiểm của `check_localization.py --require-en`, `--built-apps` trên app iOS,
   `check_bundle_boundary.sh` (bản `.uitest` macOS và app iOS; đối chứng âm), `AppLaunchStorageTests` (16 test) đạt.
+
+I1 (trên worktree của nhánh `feature/ios-i1`, chưa commit):
+
+- `swift test --package-path Packages/SharedFeatures`: 104 test đạt (`LibraryDataTests`).
+  `swift test --package-path Packages/ExamFeatures`: 684 test đạt. Tổng 788, bằng trước khi tách.
+- `MobileFeatureTests` trên simulator iPhone 17, iOS 26.1: 1 test đạt; bản build iOS biên dịch LibraryData, InterfaceCore,
+  SessionModel không lỗi, không cảnh báo.
+- `xcodebuild -exportLocalizations` ba scheme: không đổi catalog nào.
+- `check_localization.py --require-en --freshness`: đạt; đối chứng: bỏ một khoá của SessionModel thì bị bắt.
+  `--built-apps` trên app iOS (bundle InterfaceCore, SessionModel có vi, en): đạt.
+- Tự kiểm của `uitest_plan.py` (đối chứng: bỏ `SharedFeatures/Sources` khỏi `CODE_PATTERNS`, bỏ `MobileFeatures/Tests`
+  khỏi `NO_UI_PATTERNS` thì tự kiểm thất bại), `verify_scope.py`, `check_boundaries.py`, `check_colors.py`,
+  `check_quit_sheets.py`, `check_localization.py`: đạt.
 
 ## Result
 

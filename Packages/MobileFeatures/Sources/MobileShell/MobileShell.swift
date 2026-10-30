@@ -1,3 +1,4 @@
+import InterfaceCore
 import MobileFeature
 import SwiftUI
 
@@ -6,6 +7,8 @@ import SwiftUI
 
 /// Scene của bản iOS. Bước I0: chỉ màn gốc. Từ bước I2: nơi lưu theo `AppLaunchStorage` (kho trong container của app;
 /// build Debug với `-ExamSuiteUITest <thư mục>` thì trong thư mục tạm của UI test), thư viện, tự tạm dừng khi xuống nền.
+/// Số, ngày giờ theo ngôn ngữ giao diện, không theo Region (`.interfaceLocale()`, như hai bản macOS; luật
+/// `scene-locale` của scripts/check_localization.py).
 public struct MobileScenes: Scene {
     public init() {}
 
@@ -13,5 +16,6 @@ public struct MobileScenes: Scene {
         WindowGroup {
             RootView()
         }
+        .interfaceLocale()
     }
 }

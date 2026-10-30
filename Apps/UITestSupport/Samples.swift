@@ -1,6 +1,6 @@
 import Foundation
 
-/// Đề mẫu của Thư viện (Packages/ExamFeatures/Sources/LibraryData/Resources/Samples), ghi vào thư mục tạm khi
+/// Đề mẫu của Thư viện (Packages/SharedFeatures/Sources/LibraryData/Resources/Samples), ghi vào thư mục tạm khi
 /// app mở lần đầu ở chế độ cô lập; hai bản app có cùng đề mẫu. Đổi đề mẫu thì sửa ở đây.
 enum Samples {
     struct Exam {

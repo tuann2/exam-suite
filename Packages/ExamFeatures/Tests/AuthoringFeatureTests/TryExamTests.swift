@@ -3,8 +3,8 @@ import AuthoringData
 import ExamFile
 import ExamKit
 import Foundation
+import InterfaceCore
 import LibraryData
-import LibraryFeature
 import Testing
 
 /// Thư mục tạm riêng của một test (tên `g44b-…`), xoá khi xong.

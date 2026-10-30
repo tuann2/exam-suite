@@ -1,5 +1,6 @@
 import AppKit
 import ExamKit
+import InterfaceCore
 import LibraryFeature
 import SwiftUI
 

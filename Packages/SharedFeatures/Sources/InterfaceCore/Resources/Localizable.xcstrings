@@ -1,0 +1,1988 @@
+{
+  "sourceLanguage" : "vi",
+  "strings" : {
+    "\"%@\" không phải file đề .exam." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\"%@\" isn’t an .exam file."
+          }
+        }
+      }
+    },
+    "%@/1000" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@/1000"
+          }
+        }
+      }
+    },
+    "%lld câu" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld question"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld questions"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld giây" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld second"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld seconds"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld giờ" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld hour"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld hours"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld giờ %lld phút" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%#@hours@ %#@minutes@"
+          },
+          "substitutions" : {
+            "hours" : {
+              "argNum" : 1,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg hour"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg hours"
+                    }
+                  }
+                }
+              }
+            },
+            "minutes" : {
+              "argNum" : 2,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg minute"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg minutes"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld giờ %2$lld phút"
+          }
+        }
+      }
+    },
+    "%lld phút" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld minute"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld minutes"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld phút %lld giây" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%#@minutes@ %#@seconds@"
+          },
+          "substitutions" : {
+            "minutes" : {
+              "argNum" : 1,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg minute"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg minutes"
+                    }
+                  }
+                }
+              }
+            },
+            "seconds" : {
+              "argNum" : 2,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg second"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg seconds"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld phút %2$lld giây"
+          }
+        }
+      }
+    },
+    "%lld phần" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld section"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld sections"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld đề đã có trong thư viện." : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld exam is already in the Library."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld exams are already in the Library."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "%lld ảnh" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld image"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld images"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "<gốc>" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "<root>"
+          }
+        }
+      }
+    },
+    "<số entry>" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "<entry count>"
+          }
+        }
+      }
+    },
+    "<tổng giải nén>" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "<total uncompressed size>"
+          }
+        }
+      }
+    },
+    "Báo người soạn đề sửa đề bằng bản Admin rồi gửi lại." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ask the exam author to fix the exam in the Admin app and send it again."
+          }
+        }
+      }
+    },
+    "Bản Học viên sẽ không mở được đề này: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Student app won’t be able to open this exam: %@"
+          }
+        }
+      }
+    },
+    "Bản app này không kèm đề mẫu." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This version of the app doesn’t include sample exams."
+          }
+        }
+      }
+    },
+    "Chưa rõ" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unknown"
+          }
+        }
+      }
+    },
+    "Chưa thi lần nào" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not taken yet"
+          }
+        }
+      }
+    },
+    "Chưa thi lần nào." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not taken yet."
+          }
+        }
+      }
+    },
+    "Chỉ thêm được file đề có đuôi .exam." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Only .exam files can be added."
+          }
+        }
+      }
+    },
+    "Có lỗi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Has Errors"
+          }
+        }
+      }
+    },
+    "Có vấn đề" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "With Problems"
+          }
+        }
+      }
+    },
+    "Cần app mới hơn" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Needs Newer App"
+          }
+        }
+      }
+    },
+    "Cập nhật Exam Suite lên bản mới hơn rồi thêm lại." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update Exam Suite to a newer version, then add the exam again."
+          }
+        }
+      }
+    },
+    "Cập nhật Exam Suite lên bản mới hơn để mở đề này." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update Exam Suite to a newer version to open this exam."
+          }
+        }
+      }
+    },
+    "File \"%@\" đang nằm trong Thùng rác. Hãy chuyển file ra khỏi Thùng rác rồi thêm lại." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\"%@\" is in the Trash. Move it out of the Trash, then add it again."
+          }
+        }
+      }
+    },
+    "File chọn là đề \"%@\", không phải đề \"%@\". Hãy chọn đúng file của đề này." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The selected file is the exam \"%1$@\", not \"%2$@\". Choose the file for this exam."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "File chọn là đề \"%1$@\", không phải đề \"%2$@\". Hãy chọn đúng file của đề này."
+          }
+        }
+      }
+    },
+    "File hỏng" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Damaged File"
+          }
+        }
+      }
+    },
+    "File không còn ở chỗ cũ: đã bị xoá, chuyển sang nơi khác hoặc nằm trên ổ chưa gắn." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The file is no longer where it was: it was deleted, moved, or is on a disk that isn’t connected."
+          }
+        }
+      }
+    },
+    "File không phải gói đề .exam hợp lệ (không đọc được dạng zip)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The file isn’t a valid .exam package (it can’t be read as a zip archive)."
+          }
+        }
+      }
+    },
+    "Gói đề bị hỏng: có nhiều entry cùng tên %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The exam package is damaged: several entries are named %@."
+          }
+        }
+      }
+    },
+    "Gói đề bị hỏng: không giải nén được %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The exam package is damaged: couldn’t decompress %@."
+          }
+        }
+      }
+    },
+    "Gói đề thiếu file exam.json ở gốc." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The exam package has no exam.json file at its root."
+          }
+        }
+      }
+    },
+    "Gói đề thiếu ảnh: %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The exam package is missing images: %@."
+          }
+        }
+      }
+    },
+    "Gói đề vượt giới hạn ở %@ (tối đa %lld)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The exam package exceeds the limit for %1$@ (maximum %2$lld)."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Gói đề vượt giới hạn ở %1$@ (tối đa %2$lld)."
+          }
+        }
+      }
+    },
+    "Gần đây" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recent"
+          }
+        }
+      }
+    },
+    "Hướng dẫn dài %lld ký tự. Rút gọn còn tối đa %lld ký tự." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The instructions are %1$lld characters long. Shorten them to %2$lld characters or fewer."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Hướng dẫn dài %1$lld ký tự. Rút gọn còn tối đa %2$lld ký tự."
+          }
+        }
+      }
+    },
+    "Không chuyển được đề từ định dạng v%@ lên v%@: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t convert the exam from format v%1$@ to v%2$@: %3$@"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Không chuyển được đề từ định dạng v%1$@ lên v%2$@: %3$@"
+          }
+        }
+      }
+    },
+    "Không chuyển được đề từ định dạng v%@ lên v%@: chưa có bộ chuyển đổi v%@ → v%@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t convert the exam from format v%1$@ to v%2$@: there’s no converter from v%3$@ to v%4$@."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Không chuyển được đề từ định dạng v%1$@ lên v%2$@: chưa có bộ chuyển đổi v%3$@ → v%4$@."
+          }
+        }
+      }
+    },
+    "Không chuyển được đề từ định dạng v%@ lên v%@: kết quả chuyển đổi không phải JSON hợp lệ." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t convert the exam from format v%1$@ to v%2$@: the converted result isn’t valid JSON."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Không chuyển được đề từ định dạng v%1$@ lên v%2$@: kết quả chuyển đổi không phải JSON hợp lệ."
+          }
+        }
+      }
+    },
+    "Không chọn được file" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t use the selected file"
+          }
+        }
+      }
+    },
+    "Không có đề mẫu" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Sample Exams"
+          }
+        }
+      }
+    },
+    "Không có đề nào có vấn đề" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Exams with Problems"
+          }
+        }
+      }
+    },
+    "Không có đề nào sẵn sàng" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Ready Exams"
+          }
+        }
+      }
+    },
+    "Không dùng được file mới" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t use the new file"
+          }
+        }
+      }
+    },
+    "Không dùng được file này" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t use this file"
+          }
+        }
+      }
+    },
+    "Không dùng được file này: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t use this file: %@"
+          }
+        }
+      }
+    },
+    "Không ghi được file đề mẫu %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t write the sample exam file %@."
+          }
+        }
+      }
+    },
+    "Không ghi được gói đề: không lấy được dữ liệu zip trong bộ nhớ." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t write the exam package: the zip data in memory isn’t available."
+          }
+        }
+      }
+    },
+    "Không ghi được gói đề: không mã hoá được exam.json (%@)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t write the exam package: couldn’t encode exam.json (%@)."
+          }
+        }
+      }
+    },
+    "Không ghi được gói đề: không thay được file %@ (%@)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t write the exam package: couldn’t replace the file %1$@ (%2$@)."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Không ghi được gói đề: không thay được file %1$@ (%2$@)."
+          }
+        }
+      }
+    },
+    "Không ghi được gói đề: lỗi tạo zip (%@)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t write the exam package: error creating the zip archive (%@)."
+          }
+        }
+      }
+    },
+    "Không hoàn tác được" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t undo"
+          }
+        }
+      }
+    },
+    "Không khôi phục được %lld đề mẫu" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Couldn’t restore %lld sample exam"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Couldn’t restore %lld sample exams"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Không lưu được thư viện vào đĩa (%@). Thay đổi trong lần mở app này sẽ mất khi thoát." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t save the Library to disk (%@). Changes made in this session will be lost when you quit."
+          }
+        }
+      }
+    },
+    "Không lưu được thư viện: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t save the Library: %@"
+          }
+        }
+      }
+    },
+    "Không mở được dữ liệu thư viện cũ nên app đã tạo thư viện mới. Dữ liệu cũ được giữ ở \"%@\" trong %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t open the existing Library data, so the app created a new Library. The old data was kept as \"%1$@\" in %2$@."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Không mở được dữ liệu thư viện cũ nên app đã tạo thư viện mới. Dữ liệu cũ được giữ ở \"%1$@\" trong %2$@."
+          }
+        }
+      }
+    },
+    "Không mở được đề để sửa" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t open the exam for editing"
+          }
+        }
+      }
+    },
+    "Không phải file đề .exam." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not an .exam file."
+          }
+        }
+      }
+    },
+    "Không tìm thấy file" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "File Not Found"
+          }
+        }
+      }
+    },
+    "Không tìm thấy file \"%@\"." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t find the file \"%@\"."
+          }
+        }
+      }
+    },
+    "Không tìm thấy file của đề “%@”." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t find the file for “%@”."
+          }
+        }
+      }
+    },
+    "Không tạo được liên kết tới file \"%@\"." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t create a link to the file \"%@\"."
+          }
+        }
+      }
+    },
+    "Không xoá được đề khỏi thư viện" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t remove the exam from the Library"
+          }
+        }
+      }
+    },
+    "Không đọc được file: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t read the file: %@"
+          }
+        }
+      }
+    },
+    "Không đọc được đề mẫu: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t read the sample exam: %@"
+          }
+        }
+      }
+    },
+    "Kiểm tra lại file hoặc xin người soạn đề gửi lại file khác." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check the file, or ask the exam author to send another copy."
+          }
+        }
+      }
+    },
+    "Loại ảnh \"%@\" không được hỗ trợ (chỉ png, jpg, jpeg, gif, webp, heic)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Image type \"%@\" isn’t supported (only png, jpg, jpeg, gif, webp, heic)."
+          }
+        }
+      }
+    },
+    "Luyện tập" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Practice"
+          }
+        }
+      }
+    },
+    "Lần thi gần nhất: %@, %@, ngày %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last attempt: %1$@, %2$@, on %3$@."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Lần thi gần nhất: %1$@, %2$@, ngày %3$@."
+          }
+        }
+      }
+    },
+    "Lần thi này đã được lưu." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This attempt has already been saved."
+          }
+        }
+      }
+    },
+    "Lịch sử thi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "History"
+          }
+        }
+      }
+    },
+    "Mã đề \"%@\" không hợp lệ. Dùng 1–32 ký tự gồm chữ không dấu, số, dấu chấm, gạch ngang hoặc gạch dưới." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exam code \"%@\" is invalid. Use 1–32 characters: unaccented letters, digits, periods, hyphens, or underscores."
+          }
+        }
+      }
+    },
+    "Ngưỡng đậu %@ nằm ngoài khoảng cho phép. Nhập số nguyên từ 0 đến 100." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passing score %@ is out of range. Enter a whole number from 0 to 100."
+          }
+        }
+      }
+    },
+    "Phần %lld chưa có câu hỏi nào. Thêm ít nhất một câu hoặc xoá phần này." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section %lld has no questions. Add at least one question or delete this section."
+          }
+        }
+      }
+    },
+    "Phần %lld trùng tiêu đề \"%@\" với phần %lld. Đặt tên khác để học viên phân biệt khi xem kết quả." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section %1$lld has the same title \"%2$@\" as section %3$lld. Use a different title so students can tell them apart in their results."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Phần %1$lld trùng tiêu đề \"%2$@\" với phần %3$lld. Đặt tên khác để học viên phân biệt khi xem kết quả."
+          }
+        }
+      }
+    },
+    "Phần %lld, câu %lld chưa có nội dung. Nhập nội dung câu hỏi." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section %1$lld, question %2$lld has no text. Enter the question text."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Phần %1$lld, câu %2$lld chưa có nội dung. Nhập nội dung câu hỏi."
+          }
+        }
+      }
+    },
+    "Phần %lld, câu %lld chưa có đáp án đúng. Đánh dấu ít nhất một lựa chọn là đúng." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section %1$lld, question %2$lld has no correct answer. Mark at least one option as correct."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Phần %1$lld, câu %2$lld chưa có đáp án đúng. Đánh dấu ít nhất một lựa chọn là đúng."
+          }
+        }
+      }
+    },
+    "Phần %lld, câu %lld có %lld lựa chọn. Cần ít nhất %lld lựa chọn." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section %1$lld, question %2$lld has %#@options@. At least %4$lld options are required."
+          },
+          "substitutions" : {
+            "options" : {
+              "argNum" : 3,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg option"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg options"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Phần %1$lld, câu %2$lld có %3$lld lựa chọn. Cần ít nhất %4$lld lựa chọn."
+          }
+        }
+      }
+    },
+    "Phần %lld, câu %lld có %lld lựa chọn. Tối đa %lld lựa chọn (A–Z)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section %1$lld, question %2$lld has %3$lld options. The maximum is %4$lld options (A–Z)."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Phần %1$lld, câu %2$lld có %3$lld lựa chọn. Tối đa %4$lld lựa chọn (A–Z)."
+          }
+        }
+      }
+    },
+    "Phần %lld, câu %lld là câu một đáp án nhưng có %lld đáp án đúng (%@). Giữ một đáp án hoặc đổi sang loại nhiều đáp án." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section %1$lld, question %2$lld is a single-answer question but has %3$lld correct answers (%4$@). Keep one answer or change it to a multiple-answer question."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Phần %1$lld, câu %2$lld là câu một đáp án nhưng có %3$lld đáp án đúng (%4$@). Giữ một đáp án hoặc đổi sang loại nhiều đáp án."
+          }
+        }
+      }
+    },
+    "Phần %lld, câu %lld là câu nhiều đáp án nhưng chỉ có một đáp án đúng. Kiểm tra lại, hoặc đổi sang loại một đáp án." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section %1$lld, question %2$lld is a multiple-answer question but has only one correct answer. Check it, or change it to a single-answer question."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Phần %1$lld, câu %2$lld là câu nhiều đáp án nhưng chỉ có một đáp án đúng. Kiểm tra lại, hoặc đổi sang loại một đáp án."
+          }
+        }
+      }
+    },
+    "Phần %lld, câu %lld, lựa chọn thứ %lld (%@) chưa có nội dung. Nhập nội dung lựa chọn." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section %1$lld, question %2$lld, option %3$lld (%4$@) has no text. Enter the option text."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Phần %1$lld, câu %2$lld, lựa chọn thứ %3$lld (%4$@) chưa có nội dung. Nhập nội dung lựa chọn."
+          }
+        }
+      }
+    },
+    "Phần %lld, câu %lld, lựa chọn thứ %lld (%@) dài %lld ký tự. Rút gọn còn tối đa %lld ký tự." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section %1$lld, question %2$lld, option %3$lld (%4$@) is %5$lld characters long. Shorten it to %6$lld characters or fewer."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Phần %1$lld, câu %2$lld, lựa chọn thứ %3$lld (%4$@) dài %5$lld ký tự. Rút gọn còn tối đa %6$lld ký tự."
+          }
+        }
+      }
+    },
+    "Phần %lld, câu %lld, lựa chọn thứ %lld có mã %@, phải là %@. Mã lựa chọn đi theo thứ tự A, B, C… theo vị trí." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section %1$lld, question %2$lld, option %3$lld has the ID %4$@ but should be %5$@. Option IDs follow the order A, B, C… by position."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Phần %1$lld, câu %2$lld, lựa chọn thứ %3$lld có mã %4$@, phải là %5$@. Mã lựa chọn đi theo thứ tự A, B, C… theo vị trí."
+          }
+        }
+      }
+    },
+    "Phần %lld, câu %lld: giải thích dài %lld ký tự. Rút gọn còn tối đa %lld ký tự." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section %1$lld, question %2$lld: the explanation is %3$lld characters long. Shorten it to %4$lld characters or fewer."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Phần %1$lld, câu %2$lld: giải thích dài %3$lld ký tự. Rút gọn còn tối đa %4$lld ký tự."
+          }
+        }
+      }
+    },
+    "Phần %lld, câu %lld: id %@ trùng với id của %@. Mỗi đề, phần và câu phải có id riêng." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section %1$lld, question %2$lld: ID %3$@ is the same as the ID of %4$@. Each exam, section, and question must have its own ID."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Phần %1$lld, câu %2$lld: id %3$@ trùng với id của %4$@. Mỗi đề, phần và câu phải có id riêng."
+          }
+        }
+      }
+    },
+    "Phần %lld, câu %lld: nội dung dài %lld ký tự. Rút gọn còn tối đa %lld ký tự." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section %1$lld, question %2$lld: the question text is %3$lld characters long. Shorten it to %4$lld characters or fewer."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Phần %1$lld, câu %2$lld: nội dung dài %3$lld ký tự. Rút gọn còn tối đa %4$lld ký tự."
+          }
+        }
+      }
+    },
+    "Phần %lld, câu %lld: đáp án đúng %@ không có trong các lựa chọn của câu. Chọn lại đáp án đúng." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section %1$lld, question %2$lld: the correct answer %3$@ isn’t one of the question’s options. Choose the correct answer again."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Phần %1$lld, câu %2$lld: đáp án đúng %3$@ không có trong các lựa chọn của câu. Chọn lại đáp án đúng."
+          }
+        }
+      }
+    },
+    "Phần %lld, câu %lld: đáp án đúng bị lặp (%@). Mỗi lựa chọn chỉ ghi một lần trong đáp án." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section %1$lld, question %2$lld: the correct answer repeats an option (%3$@). List each option only once in the answer."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Phần %1$lld, câu %2$lld: đáp án đúng bị lặp (%3$@). Mỗi lựa chọn chỉ ghi một lần trong đáp án."
+          }
+        }
+      }
+    },
+    "Phần %lld, câu %lld: đường dẫn ảnh \"%@\" không hợp lệ. Phải có dạng media/<16–64 ký tự hex thường>.<png|jpg|jpeg|gif|webp|heic>; chọn lại ảnh để app đặt tên đúng." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section %1$lld, question %2$lld: the image path \"%3$@\" is invalid. It must have the form media/<16–64 lowercase hex characters>.<png|jpg|jpeg|gif|webp|heic>; choose the image again so the app names it correctly."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Phần %1$lld, câu %2$lld: đường dẫn ảnh \"%3$@\" không hợp lệ. Phải có dạng media/<16–64 ký tự hex thường>.<png|jpg|jpeg|gif|webp|heic>; chọn lại ảnh để app đặt tên đúng."
+          }
+        }
+      }
+    },
+    "Phần %lld, câu %lld: ảnh \"%@\" không có trong gói đề. Chọn lại ảnh hoặc bỏ ảnh khỏi câu." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section %1$lld, question %2$lld: the image \"%3$@\" isn’t in the exam package. Choose the image again or remove it from the question."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Phần %1$lld, câu %2$lld: ảnh \"%3$@\" không có trong gói đề. Chọn lại ảnh hoặc bỏ ảnh khỏi câu."
+          }
+        }
+      }
+    },
+    "Phần %lld: id %@ trùng với id của %@. Mỗi đề, phần và câu phải có id riêng." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section %1$lld: ID %2$@ is the same as the ID of %3$@. Each exam, section, and question must have its own ID."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Phần %1$lld: id %2$@ trùng với id của %3$@. Mỗi đề, phần và câu phải có id riêng."
+          }
+        }
+      }
+    },
+    "Phần %lld: tiêu đề dài %lld ký tự. Rút gọn còn tối đa %lld ký tự." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section %1$lld: the title is %2$lld characters long. Shorten it to %3$lld characters or fewer."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Phần %1$lld: tiêu đề dài %2$lld ký tự. Rút gọn còn tối đa %3$lld ký tự."
+          }
+        }
+      }
+    },
+    "Phần %lld: tiêu đề đang trống. Nhập 1–%lld ký tự." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section %1$lld: the title is empty. Enter 1–%2$lld characters."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Phần %1$lld: tiêu đề đang trống. Nhập 1–%2$lld ký tự."
+          }
+        }
+      }
+    },
+    "Sẵn sàng" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ready"
+          }
+        }
+      }
+    },
+    "Thi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exam"
+          }
+        }
+      }
+    },
+    "Thời gian làm bài %lld phút nằm ngoài khoảng cho phép. Nhập từ 1 đến 600 phút." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The time limit of %lld minutes is out of range. Enter 1 to 600 minutes."
+          }
+        }
+      }
+    },
+    "Trượt" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fail"
+          }
+        }
+      }
+    },
+    "Tên" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Name"
+          }
+        }
+      }
+    },
+    "Tên đề dài %lld ký tự. Rút gọn còn tối đa %lld ký tự." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The exam title is %1$lld characters long. Shorten it to %2$lld characters or fewer."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Tên đề dài %1$lld ký tự. Rút gọn còn tối đa %2$lld ký tự."
+          }
+        }
+      }
+    },
+    "Tên đề đang trống. Nhập 1–%lld ký tự." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The exam title is empty. Enter 1–%lld characters."
+          }
+        }
+      }
+    },
+    "Tất cả" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All"
+          }
+        }
+      }
+    },
+    "Tất cả đề" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All Exams"
+          }
+        }
+      }
+    },
+    "Xoá khỏi thư viện" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove from Library"
+          }
+        }
+      }
+    },
+    "exam.json có giá trị null (không được phép): %@. Bỏ hẳn trường tuỳ chọn thay vì ghi null." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "exam.json has null values (not allowed): %@. Omit optional fields instead of writing null."
+          }
+        }
+      }
+    },
+    "exam.json có khoá bị lặp lại trong cùng một object: %@. Mỗi khoá chỉ được ghi một lần." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "exam.json has duplicate keys in the same object: %@. Each key may appear only once."
+          }
+        }
+      }
+    },
+    "exam.json không hợp lệ: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "exam.json is invalid: %@"
+          }
+        }
+      }
+    },
+    "exam.json không hợp lệ: %@: giá trị không hợp lệ (%@)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "exam.json is invalid: %1$@: invalid value (%2$@)."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "exam.json không hợp lệ: %1$@: giá trị không hợp lệ (%2$@)."
+          }
+        }
+      }
+    },
+    "exam.json không hợp lệ: %@: sai kiểu dữ liệu, cần %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "exam.json is invalid: %1$@: wrong data type, expected %2$@."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "exam.json không hợp lệ: %1$@: sai kiểu dữ liệu, cần %2$@."
+          }
+        }
+      }
+    },
+    "exam.json không hợp lệ: %@: thiếu giá trị (null), cần %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "exam.json is invalid: %1$@: missing value (null), expected %2$@."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "exam.json không hợp lệ: %1$@: thiếu giá trị (null), cần %2$@."
+          }
+        }
+      }
+    },
+    "exam.json không hợp lệ: %@: thiếu khoá bắt buộc \"%@\"." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "exam.json is invalid: %1$@: missing required key \"%2$@\"."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "exam.json không hợp lệ: %1$@: thiếu khoá bắt buộc \"%2$@\"."
+          }
+        }
+      }
+    },
+    "exam.json không hợp lệ: dấu phẩy thừa trước dấu đóng } hoặc ] ở %@. Xoá dấu phẩy sau phần tử cuối." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "exam.json is invalid: extra comma before } or ] at %@. Remove the comma after the last element."
+          }
+        }
+      }
+    },
+    "exam.json không hợp lệ: exam.json phải mã hoá UTF-8." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "exam.json is invalid: exam.json must be UTF-8 encoded."
+          }
+        }
+      }
+    },
+    "exam.json không hợp lệ: formatVersion phải là số nguyên." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "exam.json is invalid: formatVersion must be an integer."
+          }
+        }
+      }
+    },
+    "exam.json không hợp lệ: gốc của exam.json phải là một object." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "exam.json is invalid: the root of exam.json must be an object."
+          }
+        }
+      }
+    },
+    "exam.json không hợp lệ: không phân tích được JSON (%@)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "exam.json is invalid: couldn’t parse the JSON (%@)."
+          }
+        }
+      }
+    },
+    "exam.json không hợp lệ: thiếu khoá bắt buộc \"formatVersion\"." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "exam.json is invalid: missing required key \"formatVersion\"."
+          }
+        }
+      }
+    },
+    "exam.json lồng object/mảng quá sâu (tối đa %lld cấp). File có thể bị hỏng hoặc không phải đề thi." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "exam.json nests objects/arrays too deeply (maximum %lld levels). The file may be damaged or may not be an exam."
+          }
+        }
+      }
+    },
+    "formatVersion không hợp lệ: %@ (phải từ 1 trở lên)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid formatVersion: %@ (must be 1 or higher)."
+          }
+        }
+      }
+    },
+    "mã %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "code %@"
+          }
+        }
+      }
+    },
+    "phần %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "section %lld"
+          }
+        }
+      }
+    },
+    "phần %lld, câu %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "section %1$lld, question %2$lld"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "phần %1$lld, câu %2$lld"
+          }
+        }
+      }
+    },
+    "Đang kiểm tra" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checking"
+          }
+        }
+      }
+    },
+    "Điểm lần trước" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last Score"
+          }
+        }
+      }
+    },
+    "Đã khôi phục %lld đề mẫu." : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Restored %lld sample exam."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Restored %lld sample exams."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Đã thêm %lld đề." : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Added %lld exam."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Added %lld exams."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Đã thêm đề “%@”." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Added “%@”."
+          }
+        }
+      }
+    },
+    "Đã tìm thấy file của đề “%@”." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Found the file for “%@”."
+          }
+        }
+      }
+    },
+    "Đã xoá “%@” khỏi thư viện." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Removed “%@” from the Library."
+          }
+        }
+      }
+    },
+    "Đường dẫn ảnh không hợp lệ: %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid image paths: %@."
+          }
+        }
+      }
+    },
+    "Đậu" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pass"
+          }
+        }
+      }
+    },
+    "Đậu từ %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passing score %@"
+          }
+        }
+      }
+    },
+    "Đề chưa có phần nào. Thêm ít nhất một phần có câu hỏi." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The exam has no sections. Add at least one section with questions."
+          }
+        }
+      }
+    },
+    "Đề có %lld lỗi, không mở được. Lỗi đầu tiên: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The exam has %#@errors@ and can’t be opened. First error: %2$@"
+          },
+          "substitutions" : {
+            "errors" : {
+              "argNum" : 1,
+              "formatSpecifier" : "lld",
+              "variations" : {
+                "plural" : {
+                  "one" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg error"
+                    }
+                  },
+                  "other" : {
+                    "stringUnit" : {
+                      "state" : "translated",
+                      "value" : "%arg errors"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Đề có %1$lld lỗi, không mở được. Lỗi đầu tiên: %2$@"
+          }
+        }
+      }
+    },
+    "Đề có 1 lỗi, không mở được: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The exam has 1 error and can’t be opened: %@"
+          }
+        }
+      }
+    },
+    "Đề có lỗi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid Exam"
+          }
+        }
+      }
+    },
+    "Đề có lỗi (%@)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The exam has an error (%@)."
+          }
+        }
+      }
+    },
+    "Đề có lỗi, không mở được." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The exam has errors and can’t be opened."
+          }
+        }
+      }
+    },
+    "Đề có trường không được hỗ trợ: %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The exam has unsupported fields: %@."
+          }
+        }
+      }
+    },
+    "Đề cần phiên bản app mới hơn (định dạng v%@, app này hiểu tới v%@)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This exam needs a newer version of the app (format v%1$@; this app supports up to v%2$@)."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Đề cần phiên bản app mới hơn (định dạng v%1$@, app này hiểu tới v%2$@)."
+          }
+        }
+      }
+    },
+    "Đề không còn trong thư viện." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The exam is no longer in the Library."
+          }
+        }
+      }
+    },
+    "Đề mẫu đã có đủ trong thư viện." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All sample exams are already in the Library."
+          }
+        }
+      }
+    },
+    "Đề đã có lại trong thư viện nên không hoàn tác được." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The exam is back in the Library, so this can’t be undone."
+          }
+        }
+      }
+    },
+    "Đề đã có trong thư viện: “%@”." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This exam is already in the Library: “%@”."
+          }
+        }
+      }
+    },
+    "Đề “%@” giờ dùng file mới." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "“%@” now uses the new file."
+          }
+        }
+      }
+    },
+    "Đọc file \"%@\" quá lâu." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reading \"%@\" took too long."
+          }
+        }
+      }
+    },
+    "đề" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "the exam"
+          }
+        }
+      }
+    },
+    "đề mẫu" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "sample exam"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
