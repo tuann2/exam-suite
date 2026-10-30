@@ -334,35 +334,6 @@ struct LibraryPromptPresenter: ViewModifier {
     }
 }
 
-extension LibraryPrompt {
-    var isAlert: Bool {
-        if case .importProblems = kind { return false }
-        return true
-    }
-
-    var alertTitle: String {
-        switch kind {
-        case .replace:
-            localized("Đề này đã có trong thư viện từ file khác")
-        case .message(let title, _):
-            title
-        case .importProblems:
-            ""
-        }
-    }
-
-    var alertMessage: String {
-        switch kind {
-        case .replace(let pending):
-            localized("“\(pending.title)” đang dùng file:\n\(pending.existingFileURL.path)\n\nDùng file mới?\n\(pending.newFileURL.path)")
-        case .message(_, let message):
-            message
-        case .importProblems:
-            ""
-        }
-    }
-}
-
 struct ImportProblemsTarget: Identifiable {
     let id: UUID
     let problems: [ImportProblem]

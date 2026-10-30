@@ -200,10 +200,15 @@ public final class LibraryStoreSessionLibrary: SessionLibrary {
     public func readExam(_ examID: UUID) async -> Result<ExamPackage, ExamLoadFailure> {
         guard let entry = store.entry(examID) else { return .failure(.notInLibrary) }
         let url = entry.fileURL
+        let bookmark = store.fileBookmark(examID)
         let reader = reader
         return await withCheckedContinuation { continuation in
             Self.queue.async {
-                continuation.resume(returning: Self.read(url, examID: examID, reader: reader))
+                // iOS: file ngoài container của app chỉ đọc được qua URL phân giải từ bookmark, trong lúc mở quyền
+                // security scope; macOS đọc đúng `url` như trước.
+                let readable = SecurityScopedAccess.readableURL(url, bookmark: bookmark)
+                let result = SecurityScopedAccess.with(readable) { Self.read(readable, examID: examID, reader: reader) }
+                continuation.resume(returning: result)
             }
         }
     }

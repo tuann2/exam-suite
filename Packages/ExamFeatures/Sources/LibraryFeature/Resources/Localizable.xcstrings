@@ -1,28 +1,6 @@
 {
   "sourceLanguage" : "vi",
   "strings" : {
-    "%lld lần thi" : {
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld attempt"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "%lld attempts"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "%lld đề" : {
       "localizations" : {
         "en" : {
@@ -45,52 +23,34 @@
         }
       }
     },
+    "%lld lần thi" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld attempt"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld attempts"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "Chào mừng bạn đến với Exam Suite" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Welcome to Exam Suite"
-          }
-        }
-      }
-    },
-    "Chưa có" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "None"
-          }
-        }
-      }
-    },
-    "Chưa có lần thi nào" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No Attempts Yet"
-          }
-        }
-      }
-    },
-    "Chưa có đề gần đây" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No Recent Exams"
-          }
-        }
-      }
-    },
-    "Chưa có đề nào" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No Exams"
           }
         }
       }
@@ -115,6 +75,76 @@
         }
       }
     },
+    "Chưa có" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "None"
+          }
+        }
+      }
+    },
+    "Chưa có đề gần đây" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Recent Exams"
+          }
+        }
+      }
+    },
+    "Chưa có đề nào" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Exams"
+          }
+        }
+      }
+    },
+    "Chưa có lần thi nào" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Attempts Yet"
+          }
+        }
+      }
+    },
+    "Đã hiểu" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Got It"
+          }
+        }
+      }
+    },
+    "Đang đọc file đề…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reading exam file…"
+          }
+        }
+      }
+    },
+    "Đang kiểm tra file…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checking file…"
+          }
+        }
+      }
+    },
     "Danh sách" : {
       "localizations" : {
         "en" : {
@@ -135,12 +165,92 @@
         }
       }
     },
-    "Dung lượng" : {
+    "Đề có lần thi hoặc được thêm trong 30 ngày qua sẽ hiện ở đây." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Size"
+            "value" : "Exams you’ve taken or added in the last 30 days appear here."
+          }
+        }
+      }
+    },
+    "Đề không còn trong thư viện" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exam No Longer in Library"
+          }
+        }
+      }
+    },
+    "Đề mẫu" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sample"
+          }
+        }
+      }
+    },
+    "Đề này chưa có lần thi nào" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Attempts for This Exam"
+          }
+        }
+      }
+    },
+    "Đề trong thư viện" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exams in the Library"
+          }
+        }
+      }
+    },
+    "Điểm" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Score"
+          }
+        }
+      }
+    },
+    "Đóng" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
+          }
+        }
+      }
+    },
+    "Đóng thông báo" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dismiss notification"
+          }
+        }
+      }
+    },
+    "Dữ liệu thư viện có sự cố" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There’s a problem with the Library data"
           }
         }
       }
@@ -155,12 +265,22 @@
         }
       }
     },
-    "Dữ liệu thư viện có sự cố" : {
+    "Dung lượng" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "There’s a problem with the Library data"
+            "value" : "Size"
+          }
+        }
+      }
+    },
+    "Đường dẫn" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Path"
           }
         }
       }
@@ -215,6 +335,16 @@
         }
       }
     },
+    "Kết quả" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Result"
+          }
+        }
+      }
+    },
     "Khôi phục đề mẫu" : {
       "localizations" : {
         "en" : {
@@ -243,46 +373,6 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "Kết quả" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Result"
-          }
-        }
-      }
-    },
-    "Luyện tập" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Practice"
-          }
-        }
-      }
-    },
-    "Lưới" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Grid"
-          }
-        }
-      }
-    },
-    "Lưới đề" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Exam grid"
           }
         }
       }
@@ -347,6 +437,36 @@
         }
       }
     },
+    "Lưới" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Grid"
+          }
+        }
+      }
+    },
+    "Lưới đề" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exam grid"
+          }
+        }
+      }
+    },
+    "Luyện tập" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Practice"
+          }
+        }
+      }
+    },
     "Mã đề" : {
       "localizations" : {
         "en" : {
@@ -357,22 +477,22 @@
         }
       }
     },
-    "Mỗi lần bạn nộp bài Luyện tập hoặc Thi sẽ được ghi ở đây, mới nhất trước: ngày giờ, đề, thí sinh, điểm và kết quả." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Each time you submit in Practice or Exam mode, the attempt is recorded here, newest first: date and time, exam, candidate, score, and result."
-          }
-        }
-      }
-    },
     "Mỗi lần bạn nộp bài Luyện tập hoặc Thi đề này sẽ được ghi ở đây." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Each time you submit this exam in Practice or Exam mode, the attempt is recorded here."
+          }
+        }
+      }
+    },
+    "Mỗi lần bạn nộp bài Luyện tập hoặc Thi sẽ được ghi ở đây, mới nhất trước: ngày giờ, đề, thí sinh, điểm và kết quả." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Each time you submit in Practice or Exam mode, the attempt is recorded here, newest first: date and time, exam, candidate, score, and result."
           }
         }
       }
@@ -447,6 +567,16 @@
         }
       }
     },
+    "Số ảnh" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Images"
+          }
+        }
+      }
+    },
     "Số câu" : {
       "localizations" : {
         "en" : {
@@ -467,22 +597,32 @@
         }
       }
     },
-    "Số ảnh" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Images"
-          }
-        }
-      }
-    },
     "Sửa" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Edit"
+          }
+        }
+      }
+    },
+    "Tên đề" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exam Title"
+          }
+        }
+      }
+    },
+    "Thả file .exam vào đây để thêm vào thư viện" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drop .exam files here to add them to the Library"
           }
         }
       }
@@ -503,26 +643,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "More Actions"
-          }
-        }
-      }
-    },
-    "Thi" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Exam"
-          }
-        }
-      }
-    },
-    "Thêm file đề .exam bằng nút Thêm đề (⌘O) hoặc kéo file vào cửa sổ này." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Add .exam files with the Add Exams button (⌘O), or drag files into this window."
           }
         }
       }
@@ -557,52 +677,32 @@
         }
       }
     },
+    "Thêm file đề .exam bằng nút Thêm đề (⌘O) hoặc kéo file vào cửa sổ này." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add .exam files with the Add Exams button (⌘O), or drag files into this window."
+          }
+        }
+      }
+    },
+    "Thi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exam"
+          }
+        }
+      }
+    },
     "Thí sinh" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Candidate"
-          }
-        }
-      }
-    },
-    "Thông tin" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Get Info"
-          }
-        }
-      }
-    },
-    "Thư viện" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Library"
-          }
-        }
-      }
-    },
-    "Thư viện có sẵn đề mẫu để bạn làm quen. Thêm đề của bạn bằng nút Thêm đề (⌘O) hoặc kéo file .exam vào cửa sổ này. Xoá đề mẫu thì lấy lại được bằng Trợ giúp > Khôi phục đề mẫu." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The Library includes sample exams to help you get started. Add your own exams with the Add Exams button (⌘O), or drag .exam files into this window. If you delete the sample exams, you can get them back with Help > Restore Sample Exams."
-          }
-        }
-      }
-    },
-    "Thả file .exam vào đây để thêm vào thư viện" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Drop .exam files here to add them to the Library"
           }
         }
       }
@@ -637,22 +737,32 @@
         }
       }
     },
-    "Trạng thái" : {
+    "Thông tin" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Status"
+            "value" : "Get Info"
           }
         }
       }
     },
-    "Tên đề" : {
+    "Thư viện" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Exam Title"
+            "value" : "Library"
+          }
+        }
+      }
+    },
+    "Thư viện có sẵn đề mẫu để bạn làm quen. Thêm đề của bạn bằng nút Thêm đề (⌘O) hoặc kéo file .exam vào cửa sổ này. Xoá đề mẫu thì lấy lại được bằng Trợ giúp > Khôi phục đề mẫu." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Library includes sample exams to help you get started. Add your own exams with the Add Exams button (⌘O), or drag .exam files into this window. If you delete the sample exams, you can get them back with Help > Restore Sample Exams."
           }
         }
       }
@@ -677,6 +787,16 @@
         }
       }
     },
+    "Tìm theo tên đề hoặc thí sinh" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search by exam or candidate"
+          }
+        }
+      }
+    },
     "Tìm theo tên hoặc mã đề" : {
       "localizations" : {
         "en" : {
@@ -687,12 +807,12 @@
         }
       }
     },
-    "Tìm theo tên đề hoặc thí sinh" : {
+    "Trạng thái" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Search by exam or candidate"
+            "value" : "Status"
           }
         }
       }
@@ -753,152 +873,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Remove from Library"
-          }
-        }
-      }
-    },
-    "Đang kiểm tra file…" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Checking file…"
-          }
-        }
-      }
-    },
-    "Đang đọc file đề…" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Reading exam file…"
-          }
-        }
-      }
-    },
-    "Điểm" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Score"
-          }
-        }
-      }
-    },
-    "Đã hiểu" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Got It"
-          }
-        }
-      }
-    },
-    "Đóng" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Close"
-          }
-        }
-      }
-    },
-    "Đóng thông báo" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dismiss notification"
-          }
-        }
-      }
-    },
-    "Đường dẫn" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Path"
-          }
-        }
-      }
-    },
-    "Đề có lần thi hoặc được thêm trong 30 ngày qua sẽ hiện ở đây." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Exams you’ve taken or added in the last 30 days appear here."
-          }
-        }
-      }
-    },
-    "Đề không còn trong thư viện" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Exam No Longer in Library"
-          }
-        }
-      }
-    },
-    "Đề mẫu" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sample"
-          }
-        }
-      }
-    },
-    "Đề này chưa có lần thi nào" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No Attempts for This Exam"
-          }
-        }
-      }
-    },
-    "Đề này đã có trong thư viện từ file khác" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "This exam is already in the Library from another file"
-          }
-        }
-      }
-    },
-    "Đề trong thư viện" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Exams in the Library"
-          }
-        }
-      }
-    },
-    "“%@” đang dùng file:\n%@\n\nDùng file mới?\n%@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "“%1$@” uses the file:\n%2$@\n\nUse the new file?\n%3$@"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "“%1$@” đang dùng file:\n%2$@\n\nDùng file mới?\n%3$@"
           }
         }
       }

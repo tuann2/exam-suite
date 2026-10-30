@@ -1,22 +1,6 @@
 {
   "sourceLanguage" : "vi",
   "strings" : {
-    "%@ (%lld)" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@ (%2$lld)"
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "%1$@ (%2$lld)"
-          }
-        }
-      }
-    },
     "%@ · %@/1000" : {
       "localizations" : {
         "en" : {
@@ -29,6 +13,22 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "%1$@ · %2$@/1000"
+          }
+        }
+      }
+    },
+    "%@ (%lld)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ (%2$lld)"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ (%2$lld)"
           }
         }
       }
@@ -279,6 +279,16 @@
         }
       }
     },
+    "−%@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "−%@"
+          }
+        }
+      }
+    },
     "Bạn chọn" : {
       "localizations" : {
         "en" : {
@@ -289,64 +299,12 @@
         }
       }
     },
-    "Chưa làm" : {
+    "bằng" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Unanswered"
-          }
-        }
-      }
-    },
-    "Chưa đúng" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Incorrect"
-          }
-        }
-      }
-    },
-    "Chế độ" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Mode"
-          }
-        }
-      }
-    },
-    "Chọn %lld đáp án" : {
-      "localizations" : {
-        "en" : {
-          "variations" : {
-            "plural" : {
-              "one" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Choose %lld answer"
-                }
-              },
-              "other" : {
-                "stringUnit" : {
-                  "state" : "translated",
-                  "value" : "Choose %lld answers"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "Chọn ít nhất một phần." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Select at least one section."
+            "value" : "no change"
           }
         }
       }
@@ -403,16 +361,6 @@
         }
       }
     },
-    "Câu ngẫu nhiên" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Random Questions"
-          }
-        }
-      }
-    },
     "Câu này đã bị xoá khỏi đề" : {
       "localizations" : {
         "en" : {
@@ -429,6 +377,78 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "This question was edited after the attempt"
+          }
+        }
+      }
+    },
+    "Câu ngẫu nhiên" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Random Questions"
+          }
+        }
+      }
+    },
+    "Chế độ" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mode"
+          }
+        }
+      }
+    },
+    "Chọn %lld đáp án" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Choose %lld answer"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Choose %lld answers"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Chọn ít nhất một phần." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select at least one section."
+          }
+        }
+      }
+    },
+    "Chưa đúng" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Incorrect"
+          }
+        }
+      }
+    },
+    "Chưa làm" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unanswered"
           }
         }
       }
@@ -487,418 +507,12 @@
         }
       }
     },
-    "File của đề giờ là một đề khác." : {
+    "Đã đánh dấu" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The exam’s file now contains a different exam."
-          }
-        }
-      }
-    },
-    "Không còn câu nào để luyện lại." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "There are no questions left to practice."
-          }
-        }
-      }
-    },
-    "Không có câu" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No questions"
-          }
-        }
-      }
-    },
-    "Không có quyền đọc file đề." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "You don’t have permission to read the exam file."
-          }
-        }
-      }
-    },
-    "Không hiện lựa chọn của bạn vì câu đã sửa sau lần thi" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Your answer isn’t shown because the question was edited after the attempt"
-          }
-        }
-      }
-    },
-    "Không lưu được lần thi vào Lịch sử thi." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn’t save the attempt to History."
-          }
-        }
-      }
-    },
-    "Không lưu được lần thi vào Lịch sử thi: %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn’t save the attempt to History: %@"
-          }
-        }
-      }
-    },
-    "Không lưu được lần thi vào Lịch sử thi: không tạo được dữ liệu chi tiết của bài." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn’t save the attempt to History: couldn’t create the attempt details."
-          }
-        }
-      }
-    },
-    "Không tìm thấy file đề nên không xem lại được." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The exam file can’t be found, so it can’t be reviewed."
-          }
-        }
-      }
-    },
-    "Không tìm thấy file đề." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn’t find the exam file."
-          }
-        }
-      }
-    },
-    "Không tạo được bài thi từ đề này." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn’t create an attempt from this exam."
-          }
-        }
-      }
-    },
-    "Không đọc được chi tiết lần thi này" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn’t read the details of this attempt"
-          }
-        }
-      }
-    },
-    "Không đọc được file đề nên không xem lại được. %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn’t read the exam file, so it can’t be reviewed. %@"
-          }
-        }
-      }
-    },
-    "Không đọc được file đề." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn’t read the exam file."
-          }
-        }
-      }
-    },
-    "Luyện tập" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Practice"
-          }
-        }
-      }
-    },
-    "Lựa chọn này không có câu nào." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "This selection has no questions."
-          }
-        }
-      }
-    },
-    "Mã đề" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Exam code"
-          }
-        }
-      }
-    },
-    "Ngưỡng đậu %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Passing score %@"
-          }
-        }
-      }
-    },
-    "Nhập tên thí sinh để bắt đầu." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Enter the candidate’s name to start."
-          }
-        }
-      }
-    },
-    "Nộp lúc" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Submitted"
-          }
-        }
-      }
-    },
-    "Phần %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Section %@"
-          }
-        }
-      }
-    },
-    "Phần yếu nhất" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Weakest section"
-          }
-        }
-      }
-    },
-    "Sai" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Incorrect"
-          }
-        }
-      }
-    },
-    "So với lần trước: %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Compared with last attempt: %@"
-          }
-        }
-      }
-    },
-    "Số câu ngẫu nhiên phải từ 1 đến %lld." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The number of random questions must be from 1 to %lld."
-          }
-        }
-      }
-    },
-    "Số câu đúng" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Correct answers"
-          }
-        }
-      }
-    },
-    "Theo phần" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "By Section"
-          }
-        }
-      }
-    },
-    "Thi" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Exam"
-          }
-        }
-      }
-    },
-    "Thí sinh" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Candidate"
-          }
-        }
-      }
-    },
-    "Thời gian làm" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Time taken"
-          }
-        }
-      }
-    },
-    "Thời gian phải từ %lld đến %lld phút." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The time limit must be from %1$lld to %2$lld minutes."
-          }
-        },
-        "vi" : {
-          "stringUnit" : {
-            "state" : "new",
-            "value" : "Thời gian phải từ %1$lld đến %2$lld phút."
-          }
-        }
-      }
-    },
-    "Tiếp tục" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Resume"
-          }
-        }
-      }
-    },
-    "Trượt" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Fail"
-          }
-        }
-      }
-    },
-    "Tạm dừng" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Pause"
-          }
-        }
-      }
-    },
-    "Tất cả" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "All"
-          }
-        }
-      }
-    },
-    "Tất cả câu" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "All Questions"
-          }
-        }
-      }
-    },
-    "bằng" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "no change"
-          }
-        }
-      }
-    },
-    "không giới hạn giờ" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "no time limit"
-          }
-        }
-      }
-    },
-    "Đang xem" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Current"
-          }
-        }
-      }
-    },
-    "Đánh dấu" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Flag"
-          }
-        }
-      }
-    },
-    "Đáp án đúng" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Correct answer"
+            "value" : "Flagged"
           }
         }
       }
@@ -975,6 +589,16 @@
         }
       }
     },
+    "Đã tạm dừng vì bạn rời app" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paused because you left the app"
+          }
+        }
+      }
+    },
     "Đã tạm dừng vì máy ngủ" : {
       "localizations" : {
         "en" : {
@@ -985,22 +609,32 @@
         }
       }
     },
-    "Đã đánh dấu" : {
+    "Đang xem" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Flagged"
+            "value" : "Current"
           }
         }
       }
     },
-    "Đúng" : {
+    "Đánh dấu" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Correct"
+            "value" : "Flag"
+          }
+        }
+      }
+    },
+    "Đáp án đúng" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correct answer"
           }
         }
       }
@@ -1011,6 +645,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Pass"
+          }
+        }
+      }
+    },
+    "đậu %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "passing score %@"
+          }
+        }
+      }
+    },
+    "Đề đã thay đổi so với lựa chọn. Hãy đóng rồi mở lại màn Trước khi thi." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The exam has changed since you made your choices. Close and reopen Before You Start."
+          }
+        }
+      }
+    },
+    "Đề không có câu nào." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The exam has no questions."
           }
         }
       }
@@ -1035,16 +699,6 @@
         }
       }
     },
-    "Đề không có câu nào." : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The exam has no questions."
-          }
-        }
-      }
-    },
     "Đề này ẩn đáp án nên không luyện tập được" : {
       "localizations" : {
         "en" : {
@@ -1055,32 +709,388 @@
         }
       }
     },
-    "Đề đã thay đổi so với lựa chọn. Hãy đóng rồi mở lại màn Trước khi thi." : {
+    "Đúng" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The exam has changed since you made your choices. Close and reopen Before You Start."
+            "value" : "Correct"
           }
         }
       }
     },
-    "đậu %@" : {
+    "File của đề giờ là một đề khác." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "passing score %@"
+            "value" : "The exam’s file now contains a different exam."
           }
         }
       }
     },
-    "−%@" : {
+    "Không có câu" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "−%@"
+            "value" : "No questions"
+          }
+        }
+      }
+    },
+    "Không có quyền đọc file đề." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You don’t have permission to read the exam file."
+          }
+        }
+      }
+    },
+    "Không còn câu nào để luyện lại." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There are no questions left to practice."
+          }
+        }
+      }
+    },
+    "Không đọc được chi tiết lần thi này" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t read the details of this attempt"
+          }
+        }
+      }
+    },
+    "Không đọc được file đề nên không xem lại được. %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t read the exam file, so it can’t be reviewed. %@"
+          }
+        }
+      }
+    },
+    "Không đọc được file đề." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t read the exam file."
+          }
+        }
+      }
+    },
+    "không giới hạn giờ" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "no time limit"
+          }
+        }
+      }
+    },
+    "Không hiện lựa chọn của bạn vì câu đã sửa sau lần thi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your answer isn’t shown because the question was edited after the attempt"
+          }
+        }
+      }
+    },
+    "Không lưu được lần thi vào Lịch sử thi: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t save the attempt to History: %@"
+          }
+        }
+      }
+    },
+    "Không lưu được lần thi vào Lịch sử thi: không tạo được dữ liệu chi tiết của bài." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t save the attempt to History: couldn’t create the attempt details."
+          }
+        }
+      }
+    },
+    "Không lưu được lần thi vào Lịch sử thi." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t save the attempt to History."
+          }
+        }
+      }
+    },
+    "Không tạo được bài thi từ đề này." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t create an attempt from this exam."
+          }
+        }
+      }
+    },
+    "Không tìm thấy file đề nên không xem lại được." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The exam file can’t be found, so it can’t be reviewed."
+          }
+        }
+      }
+    },
+    "Không tìm thấy file đề." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t find the exam file."
+          }
+        }
+      }
+    },
+    "Lựa chọn này không có câu nào." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This selection has no questions."
+          }
+        }
+      }
+    },
+    "Luyện tập" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Practice"
+          }
+        }
+      }
+    },
+    "Mã đề" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exam code"
+          }
+        }
+      }
+    },
+    "Ngưỡng đậu %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passing score %@"
+          }
+        }
+      }
+    },
+    "Nhập tên thí sinh để bắt đầu." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter the candidate’s name to start."
+          }
+        }
+      }
+    },
+    "Nộp lúc" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Submitted"
+          }
+        }
+      }
+    },
+    "Phần %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section %@"
+          }
+        }
+      }
+    },
+    "Phần yếu nhất" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weakest section"
+          }
+        }
+      }
+    },
+    "Sai" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Incorrect"
+          }
+        }
+      }
+    },
+    "Số câu đúng" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correct answers"
+          }
+        }
+      }
+    },
+    "Số câu ngẫu nhiên phải từ 1 đến %lld." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The number of random questions must be from 1 to %lld."
+          }
+        }
+      }
+    },
+    "So với lần trước: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Compared with last attempt: %@"
+          }
+        }
+      }
+    },
+    "Tạm dừng" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pause"
+          }
+        }
+      }
+    },
+    "Tất cả" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All"
+          }
+        }
+      }
+    },
+    "Tất cả câu" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All Questions"
+          }
+        }
+      }
+    },
+    "Theo phần" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "By Section"
+          }
+        }
+      }
+    },
+    "Thi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exam"
+          }
+        }
+      }
+    },
+    "Thí sinh" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Candidate"
+          }
+        }
+      }
+    },
+    "Thời gian làm" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Time taken"
+          }
+        }
+      }
+    },
+    "Thời gian phải từ %lld đến %lld phút." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The time limit must be from %1$lld to %2$lld minutes."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Thời gian phải từ %1$lld đến %2$lld phút."
+          }
+        }
+      }
+    },
+    "Tiếp tục" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resume"
+          }
+        }
+      }
+    },
+    "Trượt" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fail"
           }
         }
       }

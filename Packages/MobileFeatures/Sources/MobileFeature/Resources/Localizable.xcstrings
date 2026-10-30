@@ -1,0 +1,1124 @@
+{
+  "sourceLanguage" : "vi",
+  "strings" : {
+    "%lld câu" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld question"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "%lld questions"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Ảnh của câu hỏi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Question image"
+          }
+        }
+      }
+    },
+    "Bài chưa nộp sẽ mất. Bỏ bài?" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your unsubmitted answers will be lost. Discard this attempt?"
+          }
+        }
+      }
+    },
+    "Bạn chọn" : {
+      "comment" : "PDF: đánh dấu lựa chọn của người làm",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your answer"
+          }
+        }
+      }
+    },
+    "Bảng câu hỏi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Question Navigator"
+          }
+        }
+      }
+    },
+    "Bắt đầu" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start"
+          }
+        }
+      }
+    },
+    "Bỏ bài" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Discard"
+          }
+        }
+      }
+    },
+    "Bỏ chọn" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deselect All"
+          }
+        }
+      }
+    },
+    "Bỏ đánh dấu" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unflag"
+          }
+        }
+      }
+    },
+    "Bộ lọc" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filter"
+          }
+        }
+      }
+    },
+    "Bộ lọc này không có câu nào." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No questions match this filter."
+          }
+        }
+      }
+    },
+    "Các lựa chọn, chọn một đáp án" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Options, choose one answer"
+          }
+        }
+      }
+    },
+    "Các lựa chọn, chọn nhiều đáp án" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Options, choose multiple answers"
+          }
+        }
+      }
+    },
+    "Câu %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Question %lld"
+          }
+        }
+      }
+    },
+    "Câu %lld trên %lld, %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Question %1$lld of %2$lld, %3$@"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Câu %1$lld trên %2$lld, %3$@"
+          }
+        }
+      }
+    },
+    "Câu %lld/%lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Question %1$lld of %2$lld"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Câu %1$lld/%2$lld"
+          }
+        }
+      }
+    },
+    "Câu chưa làm" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unanswered Questions"
+          }
+        }
+      }
+    },
+    "Câu đã đánh dấu" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flagged Questions"
+          }
+        }
+      }
+    },
+    "Câu hỏi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questions"
+          }
+        }
+      }
+    },
+    "Câu hỏi được che trong lúc tạm dừng. Đồng hồ đã dừng." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questions are hidden while paused. The timer is stopped."
+          }
+        }
+      }
+    },
+    "Câu sau" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next Question"
+          }
+        }
+      }
+    },
+    "Câu trước" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Previous Question"
+          }
+        }
+      }
+    },
+    "Chạm để phóng to" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap to zoom"
+          }
+        }
+      }
+    },
+    "Chào mừng bạn đến với Exam Suite" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome to Exam Suite"
+          }
+        }
+      }
+    },
+    "Chế độ" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mode"
+          }
+        }
+      }
+    },
+    "Chọn câu" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Question Selection"
+          }
+        }
+      }
+    },
+    "Chọn hết" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select All"
+          }
+        }
+      }
+    },
+    "Chọn một câu để xem lại" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Select a question to review"
+          }
+        }
+      }
+    },
+    "Chưa chọn" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not selected"
+          }
+        }
+      }
+    },
+    "Chưa có đề gần đây" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Recent Exams"
+          }
+        }
+      }
+    },
+    "Chưa có đề nào" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Exams"
+          }
+        }
+      }
+    },
+    "Chưa có lần thi nào" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Attempts Yet"
+          }
+        }
+      }
+    },
+    "Chưa làm" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unanswered"
+          }
+        }
+      }
+    },
+    "Đã chọn" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Selected"
+          }
+        }
+      }
+    },
+    "Đã đánh dấu" : {
+      "comment" : "PDF: câu đã đánh dấu khi làm bài",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flagged"
+          }
+        }
+      }
+    },
+    "Đã hết giờ: không sửa được đáp án." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Time’s up: answers can no longer be changed."
+          }
+        }
+      }
+    },
+    "Đã kiểm tra" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Checked"
+          }
+        }
+      }
+    },
+    "Đã làm" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Answered"
+          }
+        }
+      }
+    },
+    "Đã sửa" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edited"
+          }
+        }
+      }
+    },
+    "Đã xoá" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Deleted"
+          }
+        }
+      }
+    },
+    "Đang có bài chưa nộp" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You have an unsubmitted attempt"
+          }
+        }
+      }
+    },
+    "Đang đọc file đề…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reading exam file…"
+          }
+        }
+      }
+    },
+    "Đang mở một đề, hãy chờ trong giây lát." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An exam is opening. Please wait a moment."
+          }
+        }
+      }
+    },
+    "Đánh dấu" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flag"
+          }
+        }
+      }
+    },
+    "Đáp án đúng" : {
+      "comment" : "PDF: đánh dấu lựa chọn đúng",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Correct answer"
+          }
+        }
+      }
+    },
+    "Đề có lần thi hoặc được thêm trong 30 ngày qua sẽ hiện ở đây." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exams you’ve taken or added in the last 30 days appear here."
+          }
+        }
+      }
+    },
+    "Đề mẫu" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sample"
+          }
+        }
+      }
+    },
+    "Đề này ẩn đáp án: chỉ hiện lựa chọn của bạn và kết quả đúng/sai." : {
+      "comment" : "PDF kết quả: dòng trên câu của đề hideAnswers",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This exam hides answers: only your answers and whether they were correct are shown."
+          }
+        }
+      }
+    },
+    "Đóng" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
+          }
+        }
+      }
+    },
+    "Đóng thông báo" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dismiss notification"
+          }
+        }
+      }
+    },
+    "Dùng file mới" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use New File"
+          }
+        }
+      }
+    },
+    "Giải thích" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Explanation"
+          }
+        }
+      }
+    },
+    "Hoàn tác" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Undo"
+          }
+        }
+      }
+    },
+    "Huỷ" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        }
+      }
+    },
+    "Kết quả" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Result"
+          }
+        }
+      }
+    },
+    "Kết quả: %@, %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Result: %1$@, %2$@"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Kết quả: %1$@, %2$@"
+          }
+        }
+      }
+    },
+    "Không có câu đánh dấu." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No flagged questions."
+          }
+        }
+      }
+    },
+    "Không có câu nào" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Questions"
+          }
+        }
+      }
+    },
+    "Không còn câu chưa làm." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No unanswered questions."
+          }
+        }
+      }
+    },
+    "Không còn câu sai để luyện lại." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "There are no incorrect questions left to practice."
+          }
+        }
+      }
+    },
+    "Không làm lại được lần thi này." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t retake this attempt."
+          }
+        }
+      }
+    },
+    "Không mở được đề: %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Couldn’t open the exam: %@"
+          }
+        }
+      }
+    },
+    "Không thêm được %lld file" : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Couldn’t add %lld file"
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Couldn’t add %lld files"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Kiểm tra đáp án" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check Answer"
+          }
+        }
+      }
+    },
+    "Làm lại" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retake"
+          }
+        }
+      }
+    },
+    "Luyện lại câu sai" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Practice Incorrect"
+          }
+        }
+      }
+    },
+    "Luyện lại câu sai: %lld câu, theo thứ tự lần trước, không xáo." : {
+      "localizations" : {
+        "en" : {
+          "variations" : {
+            "plural" : {
+              "one" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Practice Incorrect: %lld question, in the previous order, not shuffled."
+                }
+              },
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "Practice Incorrect: %lld questions, in the previous order, not shuffled."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Luyện tập" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Practice"
+          }
+        }
+      }
+    },
+    "Mã đề: %@" : {
+      "comment" : "Chân trang PDF đề: mã đề",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exam code: %@"
+          }
+        }
+      }
+    },
+    "Mỗi lần bạn nộp bài Luyện tập hoặc Thi sẽ được ghi ở đây, mới nhất trước." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Each Practice or Exam attempt you submit is recorded here, newest first."
+          }
+        }
+      }
+    },
+    "Mục" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section"
+          }
+        }
+      }
+    },
+    "Mục và sắp xếp" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section and Sort"
+          }
+        }
+      }
+    },
+    "N câu ngẫu nhiên" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "N Random Questions"
+          }
+        }
+      }
+    },
+    "Ngưỡng đậu %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Passing score %@"
+          }
+        }
+      }
+    },
+    "Nộp bài" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Submit"
+          }
+        }
+      }
+    },
+    "OK" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
+    "Phần yếu nhất" : {
+      "comment" : "PDF kết quả: nhãn phần có % thấp nhất",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weakest section"
+          }
+        }
+      }
+    },
+    "Quay lại" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Go Back"
+          }
+        }
+      }
+    },
+    "Quay lại làm bài" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back to Questions"
+          }
+        }
+      }
+    },
+    "Rà soát & nộp" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review & Submit"
+          }
+        }
+      }
+    },
+    "Sắp xếp" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sort"
+          }
+        }
+      }
+    },
+    "Số câu: %lld/%lld" : {
+      "localizations" : {
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Số câu: %1$lld/%2$lld"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Questions: %1$lld/%2$lld"
+          }
+        }
+      }
+    },
+    "Tất cả câu (%lld)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All Questions (%lld)"
+          }
+        }
+      }
+    },
+    "Tên thí sinh" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Candidate name"
+          }
+        }
+      }
+    },
+    "Thêm đề" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add Exams"
+          }
+        }
+      }
+    },
+    "Thêm file đề .exam bằng nút Thêm đề, hoặc mở file .exam từ app khác." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add .exam files with the Add Exam button, or open an .exam file from another app."
+          }
+        }
+      }
+    },
+    "Theo phần" : {
+      "comment" : "PDF kết quả: đề mục bảng theo phần",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "By Section"
+          }
+        }
+      }
+    },
+    "Thi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exam"
+          }
+        }
+      }
+    },
+    "Thời gian: %lld phút" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Time limit: %lld min"
+          }
+        }
+      }
+    },
+    "Thư viện" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Library"
+          }
+        }
+      }
+    },
+    "Thư viện có sẵn đề mẫu để bạn làm quen. Thêm đề của bạn bằng nút Thêm đề, hoặc mở file .exam từ app khác." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The library includes sample exams to help you get started. Add your own exams with the Add Exam button, or open an .exam file from another app."
+          }
+        }
+      }
+    },
+    "Tiếp tục" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resume"
+          }
+        }
+      }
+    },
+    "Tiếp tục làm" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keep Working"
+          }
+        }
+      }
+    },
+    "Tìm file…" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Locate File…"
+          }
+        }
+      }
+    },
+    "Tìm theo tên đề hoặc thí sinh" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search by exam or candidate"
+          }
+        }
+      }
+    },
+    "Tìm theo tên hoặc mã đề" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search by title or exam code"
+          }
+        }
+      }
+    },
+    "Trước khi thi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Before You Start"
+          }
+        }
+      }
+    },
+    "Về thư viện" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back to Library"
+          }
+        }
+      }
+    },
+    "Xáo thứ tự câu" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shuffle questions"
+          }
+        }
+      }
+    },
+    "Xáo thứ tự đáp án" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shuffle options"
+          }
+        }
+      }
+    },
+    "Xem câu sai" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Review Incorrect"
+          }
+        }
+      }
+    },
+    "Xem lại bài" : {
+      "comment" : "PDF kết quả: đề mục phần xem lại",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Answer Review"
+          }
+        }
+      }
+    },
+    "Xem lịch sử thi" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show History"
+          }
+        }
+      }
+    },
+    "Xoá khỏi thư viện" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove from Library"
+          }
+        }
+      }
+    },
+    "Xong" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Done"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
