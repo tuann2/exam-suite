@@ -194,6 +194,17 @@ Thuật ngữ thêm ở giai đoạn 6 (agent dịch theo phương án 4; **Nt0 
 | Nền đọc | Reading Background | Menu con của Xem (View) và nhãn ô chọn của Trước khi thi |
 | Theo hệ thống / Trắng / Giấy ngà / Xám dịu / Tối | Match System / White / Sepia / Soft Gray / Dark | Tên năm nền (mục menu, nút radio) |
 
+Thuật ngữ đề xuất của bản iOS (bước I3, màn Giới thiệu; agent dịch theo phương án 4, **chờ Nt0 duyệt**):
+
+| Tiếng Việt | Tiếng Anh (đề xuất) | Ghi chú |
+| --- | --- | --- |
+| Giới thiệu | About | Tên màn và mục menu (hộp "About" của macOS) |
+| Phiên bản 0.1.0 (1) | Version 0.1.0 (1) | Phiên bản và số build |
+| Giấy phép / Giấy phép Apache 2.0 / Thông báo (NOTICE) | Licenses / Apache License 2.0 / NOTICE | Tiêu đề nhóm và ba dòng mở toàn văn |
+| Thư viện bên thứ ba | Third-Party Libraries | Dòng mở `THIRD_PARTY_NOTICES.md` |
+| Mã nguồn và giấy phép | Source Code and Licenses | Link tới repo, như `Credits.rtf` |
+| Mục, sắp xếp, Giới thiệu | Section, Sort, About | Nhãn trợ năng của menu Thư viện |
+
 ### Cách làm
 
 - Mỗi target có chữ giao diện có `Localizable.xcstrings` riêng: InterfaceCore, SessionModel (`Packages/SharedFeatures`,

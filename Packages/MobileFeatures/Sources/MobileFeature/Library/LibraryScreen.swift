@@ -61,11 +61,11 @@ struct LibraryScreen: View {
             onCompletion: { result in _ = library.completeFileImport(result) },
             onCancellation: { library.cancelFileImport() }
         )
-        // Đang có phiên (màn của phiên che Thư viện) hay sheet Trước khi thi đang mở (iOS không hiện hộp thứ hai chồng
-        // lên sheet): hộp hỏi của Thư viện (đề nhận từ app khác) chờ tới khi về Thư viện (QI12b).
+        // Đang có phiên (màn của phiên che Thư viện) hay sheet Trước khi thi, Giới thiệu đang mở (iOS không hiện hộp thứ
+        // hai chồng lên sheet): hộp hỏi của Thư viện (đề nhận từ app khác) chờ tới khi về Thư viện (QI12b).
         .modifier(LibraryPromptAlerts(
             library: library,
-            isActive: !sessions.isSessionPresented && sessions.preExam == nil
+            isActive: !sessions.isSessionPresented && sessions.preExam == nil && !isAboutPresented
         ))
         .safeAreaInset(edge: .bottom) {
             NoticeBar(library: library, sessions: sessions)

@@ -311,6 +311,17 @@ Không có cặp song song.
   ngân sách Release 500 ms): cùng code với macOS, không sửa ở v1, đo lại trên máy thật nếu GI3 thấy chậm.
 - 2026-10-31, I3, `PaletteContrastTests`: nền hệ thống của iOS (sáng `#FFFFFF`, `#F2F2F7`; tối `#000000`, `#1C1C1E`,
   `#2C2C2E`, `#3A3A3C`) để riêng trong test, không thêm vào `LibraryPalette` (InterfaceCore, hợp đồng dùng chung).
+- 2026-10-31, I3, review độc lập (phiên mới, trên 033907f): REQUEST CHANGES, đã sửa: đường dẫn dữ liệu trong
+  `install-ios.md` (cấu hình `.student`: `Application Support/vn.io.nt0.examsuite/` trong container của app); hộp hỏi
+  của Thư viện chờ cả khi màn Giới thiệu đang mở (như sheet Trước khi thi); `QuestionImage` chỉ báo hỏng khi
+  `UIImage(data:)` không đọc được (`preparingForDisplay()` trả nil thì dùng ảnh chưa giải mã trước). Sửa thêm: luồng 1
+  kiểm có NOTICE; `PaletteContrastTests` kiểm chữ màu của bảng trên hàng lựa chọn đã chọn của iOS (trên `#3A3A3C` chỉ
+  khoảng 4,2–4,5:1: hàng lựa chọn không được đặt lên nền đó); `THIRD_PARTY_NOTICES.md`, `NOTICE` nói tới app iOS;
+  thuật ngữ `en` mới vào bảng đề xuất của accessibility-localization.md (chờ Nt0 duyệt); `install-ios.md`: hai suất
+  app của Personal Team, đổi bundle ID khi người khác cài, "Xóa ứng dụng"; số đo ghi rõ cách lấy và giới hạn. Để GI2
+  xem: bố cục nhảy khi ảnh của câu hiện ra (đang giải mã chỉ có khung trống); ảnh giải mã cỡ gốc, chưa thu nhỏ theo cỡ
+  hiển thị (plan Phần 6); ảnh ở chi tiết Xem lại bài của iOS chưa phóng to được (macOS có; có từ I2a); Giới thiệu nằm
+  trong menu biểu tượng bộ lọc, có thể khó tìm.
 
 ## Validation
 

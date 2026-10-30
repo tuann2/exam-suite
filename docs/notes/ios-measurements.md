@@ -28,13 +28,15 @@ màn của bản iOS, đồng hồ `ContinuousClock` trên main actor:
 
 ## 2026-10-31 · I3, simulator
 
-Máy: simulator iPhone 17, iOS 26.1, trên Mac Apple silicon; Xcode 27.1; bản Debug. Hai lượt mỗi cột (đổi câu ở cột
-Sau: năm lượt), ghi lượt chậm hơn (lệnh lặp lại: trung bình / chậm nhất). "Trước": nhánh I3 trước khi sửa; "Sau": sau
-khi ảnh của câu giải mã ngoài main thread (`QuestionImage`).
+Máy: simulator iPhone 17, iOS 26.1, trên Mac Apple silicon; Xcode 27.1; bản Debug. "Trước": mã của nhánh I3 trên I2b
+(8d191f1) trước khi sửa; "Sau": mã của PR I3 (trên b8ff231) có `QuestionImage`. Hai lượt mỗi cột, ghi lượt chậm hơn
+(lệnh lặp lại: trung bình / chậm nhất). Riêng đổi câu ở cột Sau: năm lượt; ô ghi ba lượt khi máy rảnh, hai lượt khi
+máy bận ghi ở cột Ghi chú. Sau khi sửa, số đổi câu chỉ gồm khung hình đầu (ảnh chưa hiện); khung hình lúc ảnh giải mã
+xong và hiện ra không được đo.
 
 | Mã | Ngân sách (large-exams.md) | Trước | Sau | Ghi chú |
 | --- | --- | --- | --- | --- |
-| `app.ready` | Mở app ≤ 1 s | 81 ms | 86 ms | lần mở đầu: kho trống, hai đề mẫu (chưa phải thư viện 50 đề) |
+| `app.ready` | Mở app ≤ 1 s | 81 ms | 86 ms | **chưa đại diện**: chỉ phần dựng model (không gồm khởi động tiến trình và lần dựng giao diện đầu); lần mở đầu, kho trống, hai đề mẫu (chưa phải thư viện 50 đề) |
 | `library.import` | Thêm đề ≤ 1,5 s | 507 ms | 513 ms | |
 | `library.view` | — | 2.907 ms / 86 ms | 2.960 ms / 81 ms | lần đầu gồm khởi động SwiftUI của tiến trình (test chạy trong `xctest`, không phải app); lần sau 86 ms |
 | `preExam.read` | (trong Bắt đầu ≤ 1,5 s) | 747 ms | 588 ms | |

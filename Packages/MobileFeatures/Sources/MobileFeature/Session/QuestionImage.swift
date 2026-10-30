@@ -42,8 +42,11 @@ struct QuestionImage: View {
         }
         .task(id: data) {
             let source = data
-            let decoded = await Task.detached(priority: .userInitiated) {
-                UIImage(data: source)?.preparingForDisplay()
+            let decoded = await Task.detached(priority: .userInitiated) { () -> UIImage? in
+                // Chỉ báo hỏng khi không đọc được ảnh (như `NSImage(data:)` của macOS): `preparingForDisplay()` trả nil
+                // với vài định dạng điểm ảnh thì dùng ảnh chưa giải mã trước.
+                let image = UIImage(data: source)
+                return image?.preparingForDisplay() ?? image
             }.value
             guard !Task.isCancelled else { return }
             image = decoded

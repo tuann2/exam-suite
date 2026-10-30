@@ -8,7 +8,8 @@ This product includes software developed by third parties:
   ZIPFoundation (https://github.com/weichsel/ZIPFoundation)
   Copyright (c) 2017-2025 Thomas Zoechling (https://www.peakstep.com)
   Licensed under the MIT License; the full license text is in
-  THIRD_PARTY_NOTICES.md (THIRD_PARTY_NOTICES.txt in each DMG).
+  THIRD_PARTY_NOTICES.md (THIRD_PARTY_NOTICES.txt in each DMG; shown in full in the
+  About screen of the iOS app).
 
 The source repository also contains agent-harness files (AI agent guidance and tools)
 from repository-harness (https://github.com/hoangnb24/repository-harness)

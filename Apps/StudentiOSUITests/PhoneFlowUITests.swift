@@ -22,6 +22,7 @@ final class PhonePracticeFlowUITests: XCTestCase {
             "Giới thiệu phải ghi phiên bản và số build: \(version.label)"
         )
         PhoneAccessibilityAudit.audit(phone.app, screen: "Giới thiệu")
+        XCTAssertTrue(phone.element("about.notice").exists, "Giới thiệu phải có NOTICE (file đi kèm app)")
         phone.tap("about.license")
         let apache = phone.app.staticTexts.matching(NSPredicate(format: "label CONTAINS %@", "Apache License")).firstMatch
         XCTAssertTrue(apache.waitForExistence(timeout: 5), "Giới thiệu phải có toàn văn giấy phép Apache-2.0")

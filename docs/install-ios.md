@@ -52,7 +52,11 @@ build.
 
 Bản ký bằng Personal Team hết hạn sau 7 ngày: app không mở được nữa. Nối iPhone với Mac và cài lại như mục Cài (cùng
 bản Release): app được cài đè, Thư viện, lịch sử thi và cài đặt giữ nguyên. Personal Team cài được tối đa 3 app trên
-một iPhone.
+một iPhone; bản Release và bản Debug là hai app.
+
+Bundle ID `vn.io.nt0.examsuite.ios` đã đăng ký cho nhóm ký của Nt0. Người khác cài bằng Personal Team của mình thì đổi
+bundle ID khi build (ví dụ thêm `PRODUCT_BUNDLE_IDENTIFIER=<tên miền của bạn>.examsuite.ios` vào lệnh `xcodebuild`, hoặc
+sửa ở thẻ Signing & Capabilities), không sửa `project.yml`.
 
 ## Mở đề
 
@@ -69,14 +73,15 @@ Cài. Dữ liệu giữ nguyên.
 
 ## Gỡ cài
 
-Nhấn giữ biểu tượng Exam Suite, chọn **Xoá app**, rồi **Xoá app**. Thư viện, lịch sử thi và các file đề nhận từ app
+Nhấn giữ biểu tượng Exam Suite, chọn **Xóa ứng dụng**, rồi xác nhận **Xóa ứng dụng**. Thư viện, lịch sử thi và các file đề nhận từ app
 khác mất theo app; file đề trong app Tệp không bị xoá.
 
 ## Dữ liệu nằm ở đâu
 
-Mọi dữ liệu nằm trong vùng riêng của app trên iPhone (`Application Support/vn.io.nt0.examsuite.ios/`): kho Thư viện, lịch
-sử thi, file đề nhận từ app khác (thư mục `Received/`). Bản sao lưu iCloud hay máy tính của iPhone có dữ liệu này, như
-mọi app. Bản Debug dùng bundle ID `vn.io.nt0.examsuite.ios.debug` nên dữ liệu của nó tách riêng.
+Mọi dữ liệu nằm trong vùng riêng (container) của app trên iPhone, thư mục `Application Support/vn.io.nt0.examsuite/`:
+kho Thư viện, lịch sử thi, file đề nhận từ app khác (thư mục `Received/`). Bản sao lưu iCloud hay máy tính của iPhone có
+dữ liệu này, như mọi app. Bản Debug (bundle ID `vn.io.nt0.examsuite.ios.debug`) là app khác, có container riêng, nên dữ
+liệu của nó tách riêng.
 
 Giấy phép: **Thư viện › menu (biểu tượng bộ lọc) › Giới thiệu** có phiên bản, giấy phép Apache-2.0, NOTICE và giấy phép
 của thư viện đi kèm (ZIPFoundation).

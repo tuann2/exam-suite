@@ -128,6 +128,26 @@ struct PaletteContrastTests {
         }
     }
 
+    /// Nền nội dung mà hàng lựa chọn của bản iOS nằm lên (màn làm bài, chi tiết Xem lại bài: nền màn và ô của
+    /// `secondarySystemBackground`). Nền sheet và ô nâng tối hơn (`#2C2C2E`, `#3A3A3C`) không có hàng lựa chọn; trên
+    /// `#3A3A3C` màu Đúng/Sai/cảnh báo chỉ đạt khoảng 4,2–4,5:1, nên đặt hàng lựa chọn lên đó phải kiểm lại.
+    static let iOSOptionRowBackgrounds: [Bool: [LibraryPalette.RGB]] = [
+        false: [0xFFFFFF, 0xF2F2F7].map(LibraryPalette.RGB.init(hex:)),
+        true: [0x000000, 0x1C1C1E].map(LibraryPalette.RGB.init(hex:)),
+    ]
+
+    @Test("iOS: chữ màu của bảng (Đúng/Sai/cảnh báo, teal) trên hàng lựa chọn đã chọn đạt 4,5:1", arguments: [false, true])
+    func paletteTextOnIOSSelectedOption(dark: Bool) throws {
+        for background in try #require(Self.iOSOptionRowBackgrounds[dark]) {
+            let row = Self.blend(
+                .tint(LibraryPalette.accentForeground, opacity: LibraryPalette.tintedBackgroundOpacity), over: background, dark: dark)
+            for (name, pair) in Self.textColors {
+                let ratio = LibraryPalette.contrast(pair.rgb(dark: dark), row)
+                #expect(ratio >= Self.smallText, "\(name) trên hàng đã chọn \(row) (nền \(background)): \(ratio)")
+            }
+        }
+    }
+
     // MARK: - Nền nhạt của app
 
     @Test("Chữ .primary đạt 4,5:1 và biểu tượng màu của dải đạt 3:1 trên mọi nền nhạt pha màu, trên mọi nền",
