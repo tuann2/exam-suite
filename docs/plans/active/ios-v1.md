@@ -4,8 +4,7 @@ Date: 2026-10-30
 
 ## Status
 
-Active. I0 xong code và review trên nhánh `feature/ios-i0`, chờ `local/verify` (UI test macOS cần Nt0 xác thực
-Automation Mode). I1 trên nhánh `feature/ios-i1`, xếp chồng trên I0.
+Active. I0 đã merge (PR #8). I1 trên nhánh `feature/ios-i1`.
 
 ## Outcome
 
@@ -47,19 +46,18 @@ Không có cặp song song.
 
 ## Progress
 
-- [ ] I0 Chuẩn bị (nhánh `feature/ios-i0`): ADR 0013, ADR 0003 ghi bản iOS; `mobile.md` mục "Bản iOS"; plan-ios-v1.md
+- [x] I0 Chuẩn bị (PR #8, merge 2026-10-30): ADR 0013, ADR 0003 ghi bản iOS; `mobile.md` mục "Bản iOS"; plan-ios-v1.md
       theo ba package; AGENTS.md, review-and-merge.md phần iOS; `AppLaunchStorage` biết hai bundle ID iOS (bản thật);
       package `MobileFeatures` (khung, chưa phụ thuộc); target `ExamSuiteiOS` (Info.plist, `InfoPlist.xcstrings` vi/en),
       `ExamSuiteiOSUITests` (một test mở app); `check_boundaries.py`, `check_bundle_boundary.sh`,
       `check_localization.py`, `check_quit_sheets.py`, `uitest_plan.py`, `verify_local.sh` biết bản iOS; spike
-      (Decisions). Rủi ro cao (vùng ranh giới hai bản app): review độc lập xong, đã sửa theo review. Còn:
-      `verify_local.sh --uitest` trên SHA cuối, PR.
+      (Decisions). Rủi ro cao (vùng ranh giới hai bản app): review độc lập xong, đã sửa theo review. `local/verify`
+      xanh trên 72b6dac.
 - [ ] I1 `Packages/SharedFeatures`: dời LibraryData, tách model trình bày (rủi ro cao). Cổng GI1. Đã làm: package
       `SharedFeatures` (LibraryData, InterfaceCore, SessionModel; macOS và iOS), ExamKit thêm `.iOS(.v18)`, ExamFeatures
       và MobileFeatures phụ thuộc nó, `MobileShell` gắn `.interfaceLocale()`, `MobileFeatureTests` (kho trên simulator),
       dời khoá catalog, script kiểm và tài liệu biết package mới, đường dẫn đề mẫu của Android và bộ lọc của CI Android.
-      Review độc lập xong, đã sửa theo review. Còn: `verify_local.sh --uitest` đủ bộ, check `android` của CI, PR (sau
-      khi I0 merge).
+      Review độc lập xong, đã sửa theo review. Còn: `verify_local.sh --uitest` đủ bộ, check `android` của CI, PR.
 - [ ] I2 Giao diện iPhone, nhận file, tự tạm dừng. Cổng GI2.
 - [ ] I3 Hoàn thiện, bản 0.1.0. Cổng GI3.
 
@@ -205,6 +203,8 @@ I0:
   `defaults` thật không đổi; bản Học viên không chạy được test nào ("Timed out while enabling automation mode": trình
   chạy test không bật được Automation Mode, lỗi hạ tầng, không phải lỗi test). Status `local/verify` failure trên SHA
   này; chạy lại trên SHA sau khi sửa theo review.
+- 72b6dac (SHA cuối, Nt0 có mặt để xác thực Automation Mode): `scripts/verify_local.sh --uitest --no-autosave-check`
+  đạt, mức full, UI test đủ bộ (Học viên 6, Admin 4, iOS 1 test), kho thật không đổi; status `local/verify` success.
 - Sau khi sửa theo review: tự kiểm của `check_localization.py --require-en`, `--built-apps` trên app iOS,
   `check_bundle_boundary.sh` (bản `.uitest` macOS và app iOS; đối chứng âm), `AppLaunchStorageTests` (16 test) đạt.
 
