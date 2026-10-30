@@ -1,6 +1,8 @@
 import AppKit
 import ExamKit
+import InterfaceCore
 import LibraryFeature
+import SessionModel
 import SwiftUI
 
 /// Màu và kích thước của cửa sổ làm bài. Màu dựng từ `LibraryPalette` (độ tương phản có test, phương án 8 của

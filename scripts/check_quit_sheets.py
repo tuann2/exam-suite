@@ -14,7 +14,8 @@ tắt máy) bị trả `userCanceledErr` nên đăng xuất bị huỷ. Mỗi sh
 `.presentationAllowsAppTermination()` (LibraryFeature) trong nội dung của nó, để mọi đường thoát đi qua quy trình chuẩn
 của AppKit (hỏi lưu đề, tự lưu, Versions, hỏi Bỏ bài).
 
-Quét mã nguồn (Packages/ExamFeatures/Sources, Apps; bỏ comment và nội dung chuỗi):
+Quét mã nguồn (Packages/ExamFeatures/Sources, Packages/SharedFeatures/Sources (module dùng chung, có trong hai bản
+macOS), Apps; bỏ comment và nội dung chuỗi):
 1. Lời gọi trình bày dạng sheet/popover của SwiftUI (`.sheet(`, `.fullScreenCover(`, `.popover(`, kể cả gọi không có
    dấu chấm trong extension của View) phải (a) có trong danh sách `KNOWN_PRESENTATIONS` (đường dẫn, tên lời gọi, đối số
    đầu đã gộp khoảng trắng) kèm cách nó đóng khi app thoát, và (b) gắn `.presentationAllowsAppTermination()` **ở cấp
@@ -51,7 +52,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from check_localization import call_arguments, lex, split_label  # noqa: E402  (tách comment/chuỗi Swift, dùng chung)
 
 ROOT = Path(__file__).resolve().parent.parent
-SCAN_DIRS = (Path("Packages/ExamFeatures/Sources"), Path("Apps"))
+SCAN_DIRS = (Path("Packages/ExamFeatures/Sources"), Path("Packages/SharedFeatures/Sources"), Path("Apps"))
 # Bản iOS (Apps/StudentiOS*, Packages/MobileFeatures, docs/product/plan-ios-v1.md): không có ⌘Q, Thoát từ Dock hay đăng
 # xuất, và `.presentationAllowsAppTermination()` dựa trên AppKit; luật này chỉ cho hai bản macOS.
 SKIP_PREFIXES = ("Apps/StudentiOS",)
@@ -300,11 +301,13 @@ def self_test() -> list[str]:
     # Bản iOS bỏ qua (không có ⌘Q); hai bản macOS vẫn quét (đối chứng: thư mục giả).
     import tempfile
     with tempfile.TemporaryDirectory(prefix="check-quit-sheets-") as tmp:
-        for rel in ("Apps/StudentiOS/A.swift", "Apps/Student/B.swift", "Packages/ExamFeatures/Sources/X/C.swift"):
+        for rel in ("Apps/StudentiOS/A.swift", "Apps/Student/B.swift", "Packages/ExamFeatures/Sources/X/C.swift",
+                    "Packages/SharedFeatures/Sources/Y/D.swift"):
             (Path(tmp) / rel).parent.mkdir(parents=True, exist_ok=True)
             (Path(tmp) / rel).write_text(good, encoding="utf-8")
         scanned = sorted(rel for rel, _ in source_files(Path(tmp)))
-        if scanned != ["Apps/Student/B.swift", "Packages/ExamFeatures/Sources/X/C.swift"]:
+        if scanned != ["Apps/Student/B.swift", "Packages/ExamFeatures/Sources/X/C.swift",
+                       "Packages/SharedFeatures/Sources/Y/D.swift"]:
             failures.append(f"quét sai thư mục (bản iOS phải bỏ qua, hai bản macOS phải quét): {scanned}")
     expect("sheet đã biết, xuống dòng và khoảng trắng khác",
            good.replace(".sheet(isPresented: $isShown)", ". sheet (\n                isPresented:   $isShown\n            )"),

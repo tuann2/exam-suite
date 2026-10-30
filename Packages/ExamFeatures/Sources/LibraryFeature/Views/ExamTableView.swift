@@ -1,4 +1,5 @@
 import Foundation
+import InterfaceCore
 import LibraryData
 import SwiftUI
 

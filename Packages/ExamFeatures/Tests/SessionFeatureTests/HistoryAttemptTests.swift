@@ -3,6 +3,7 @@ import ExamKit
 import Foundation
 import LibraryData
 @testable import SessionFeature
+@testable import SessionModel
 import Testing
 
 /// Mở lần thi cũ từ Lịch sử thi (docs/product/exam-taking.md, mục Lịch sử thi và Dữ liệu một lần thi).

@@ -4,8 +4,10 @@ import AuthoringData
 import ExamFile
 import ExamKit
 import Foundation
+@testable import InterfaceCore
 @testable import LibraryFeature
 @testable import SessionFeature
+@testable import SessionModel
 import SwiftUI
 import Testing
 

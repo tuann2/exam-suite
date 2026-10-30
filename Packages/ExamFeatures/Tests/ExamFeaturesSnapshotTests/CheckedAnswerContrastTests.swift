@@ -1,5 +1,6 @@
 import AppKit
 import ExamKit
+@testable import InterfaceCore
 @testable import LibraryFeature
 @testable import SessionFeature
 import SwiftUI

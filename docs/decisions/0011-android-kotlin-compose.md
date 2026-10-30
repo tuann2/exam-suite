@@ -27,7 +27,8 @@ thường. Flutter và Kotlin Multiplatform đều vẫn phải viết lại lõ
   đúng thuật toán `QuestionFingerprint` của macOS để quy tắc "câu đã sửa sau lần thi" giống hệt. Đồng bộ lịch sử giữa máy
   ngoài phạm vi; nếu làm thì cần bộ chuyển đổi và quyết định mới.
 - **Cùng repo, thư mục `android/`**: dự án Gradle độc lập, đọc `schema/`, `fixtures/`, đề mẫu
-  (`Packages/ExamFeatures/Sources/LibraryData/Resources/Samples/`) tại chỗ, không chép.
+  (`Packages/ExamFeatures/Sources/LibraryData/Resources/Samples/`; từ bước I1 của plan iOS:
+  `Packages/SharedFeatures/Sources/LibraryData/Resources/Samples/`, ADR 0013) tại chỗ, không chép.
 - **Bằng chứng merge** (Q8): workflow `.github/workflows/android.yml` chạy theo PR chạm `android/` hoặc oracle; check
   `android` xanh trên SHA cuối thay cho kiểm tại chỗ phần lint + test. PR chạm `android/app/**` và mọi cổng cần thêm
   status `local/verify-android` (test Compose trên emulator, `android/scripts/check_android.sh --ui`). Mọi PR vẫn có

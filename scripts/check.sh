@@ -57,12 +57,13 @@ $PY scripts/uitest_plan.py --self-test
 $PY scripts/verify_scope.py --self-test
 
 if [[ "${1:-}" == "--core" || "$(uname -s)" != "Darwin" ]]; then
-  echo "== 4/5 bỏ qua swift test Packages/ExamFeatures (chỉ macOS)"
+  echo "== 4/5 bỏ qua swift test Packages/SharedFeatures, Packages/ExamFeatures (chỉ macOS)"
   echo "== 5/5 bỏ qua kiểm catalog đủ khoá (cần xcstringstool của Xcode)"
 else
-  # Build giao diện và chạy LibraryDataTests. SwiftData @Model cần macro plugin của Xcode;
+  # Phần dùng chung macOS và iOS (LibraryDataTests), rồi giao diện macOS. SwiftData @Model cần macro plugin của Xcode;
   # chỉ có Command Line Tools thì bước này không biên dịch được (xem AGENTS.md).
-  echo "== 4/5 swift test Packages/ExamFeatures"
+  echo "== 4/5 swift test Packages/SharedFeatures, Packages/ExamFeatures"
+  swift test --package-path Packages/SharedFeatures ${SWIFT_TEST_FLAGS[@]+"${SWIFT_TEST_FLAGS[@]}"}
   swift test --package-path Packages/ExamFeatures ${SWIFT_TEST_FLAGS[@]+"${SWIFT_TEST_FLAGS[@]}"}
   # Khoá chuỗi trong code (.stringsdata của lần build vừa rồi) khớp Localizable.xcstrings đã commit; verify_local.sh
   # còn kiểm bằng xcodebuild -exportLocalizations (gồm InfoPlist.xcstrings).

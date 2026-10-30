@@ -1,8 +1,10 @@
 @testable import AuthoringFeature
 import Foundation
+@testable import InterfaceCore
 @testable import LibraryFeature
 @testable import ReportFeature
 @testable import SessionFeature
+@testable import SessionModel
 import Testing
 
 /// Mọi module có chữ giao diện mang cùng các ngôn ngữ đã biên dịch (review độc lập #50 N2; plan giai đoạn 5 bước 7c):
@@ -22,6 +24,8 @@ struct CatalogLanguagesTests {
 
     private static func moduleBundles() throws -> [(name: String, bundle: Bundle)] {
         [
+            ("InterfaceCore", InterfaceCore.ModuleStrings.bundle),
+            ("SessionModel", SessionModel.ModuleStrings.bundle),
             ("LibraryFeature", LibraryFeature.ModuleStrings.bundle),
             ("SessionFeature", SessionFeature.ModuleStrings.bundle),
             ("ReportFeature", ReportFeature.ModuleStrings.bundle),
@@ -44,7 +48,7 @@ struct CatalogLanguagesTests {
     /// Ưu tiên tiếng Anh (kể cả có vùng) ra `en` cho định dạng, và mọi module ra chữ tiếng Anh với số dạng tiếng Anh.
     @Test("Ưu tiên tiếng Anh: định dạng và chữ của mọi module là tiếng Anh")
     func englishPreferenceGivesEnglishEverywhere() throws {
-        let available = InterfaceLocale.catalogLanguages(of: LibraryFeature.ModuleStrings.bundle)
+        let available = InterfaceLocale.catalogLanguages(of: InterfaceCore.ModuleStrings.bundle)
         let locale = InterfaceLocale.resolve(preferences: ["en-VN", "vi"], available: available, pinned: nil)
         #expect(locale.identifier == "en")
         #expect(InterfaceLocale.number(1234, locale: locale) == "1,234")
@@ -52,7 +56,9 @@ struct CatalogLanguagesTests {
         #expect(InterfaceLocale.resolve(preferences: ["fr"], available: available, pinned: nil).identifier == "vi")
 
         let samples: [(String, Bundle, String.LocalizationValue, String)] = [
-            ("LibraryFeature", LibraryFeature.ModuleStrings.bundle, "Đã thêm \(1234) đề.", "Added 1,234 exams."),
+            ("InterfaceCore", InterfaceCore.ModuleStrings.bundle, "Đã thêm \(1234) đề.", "Added 1,234 exams."),
+            ("SessionModel", SessionModel.ModuleStrings.bundle, "Đã làm \(1234)/\(2000)", "1,234 of 2,000 answered"),
+            ("LibraryFeature", LibraryFeature.ModuleStrings.bundle, "\(1234) lần thi", "1,234 attempts"),
             ("SessionFeature", SessionFeature.ModuleStrings.bundle, "Câu \(1234)/\(2000)", "Question 1,234 of 2,000"),
             ("ReportFeature", ReportFeature.ModuleStrings.bundle, "Trang \(1)/\(1175)", "Page 1 of 1,175"),
             ("AuthoringFeature", AuthoringFeature.ModuleStrings.bundle, "\(1) cảnh báo", "1 warning"),

@@ -196,8 +196,10 @@ Thuật ngữ thêm ở giai đoạn 6 (agent dịch theo phương án 4; **Nt0 
 
 ### Cách làm
 
-- Mỗi target có chữ giao diện trong `Packages/ExamFeatures` có `Localizable.xcstrings` riêng: LibraryFeature,
-  SessionFeature, ReportFeature, AuthoringFeature, AdminShell. StudentShell không có chữ giao diện nên không có catalog;
+- Mỗi target có chữ giao diện có `Localizable.xcstrings` riêng: InterfaceCore, SessionModel (`Packages/SharedFeatures`,
+  dùng chung với bản iOS, tách từ LibraryFeature, SessionFeature ở bước I1 của plan-ios-v1.md; `InterfaceStrings`,
+  `InterfaceLocale`, `ErrorMessages` ở InterfaceCore), LibraryFeature, SessionFeature, ReportFeature, AuthoringFeature,
+  AdminShell (`Packages/ExamFeatures`). StudentShell không có chữ giao diện nên không có catalog;
   target dữ liệu (LibraryData, AuthoringData, ExamImport) không có catalog: lỗi trả mã, tầng giao diện dựng câu (ghi chú
   bước 7b), và chữ app ghi vào nội dung đề đi vào từ tầng giao diện (ghi chú bước 7c). Package khai báo
   `defaultLocalization: "vi"`; app khai báo `CFBundleDevelopmentRegion = vi`, `knownRegions` gồm `vi`, `en`, và
@@ -229,7 +231,8 @@ Thuật ngữ thêm ở giai đoạn 6 (agent dịch theo phương án 4; **Nt0 
   ngữ theo cách này vì tham số `locale` của `String(localized:bundle:locale:)` chỉ định dạng số/ngày, không chọn ngôn
   ngữ, và trong `swift test` chuỗi của package mặc định ra tiếng Anh khi catalog có `en` (spike giai đoạn 5,
   docs/notes/g5-spike-pdf-l10n.md).
-- Mọi catalog có cùng các ngôn ngữ (review #50 N2: `InterfaceLocale` chọn ngôn ngữ theo catalog của LibraryFeature):
+- Mọi catalog có cùng các ngôn ngữ (review #50 N2: `InterfaceLocale` chọn ngôn ngữ theo catalog của InterfaceCore, của
+  LibraryFeature trước bước I1 của plan iOS):
   `check_localization.py --built-apps` (mọi bundle catalog trong hai app đã build có cùng `*.lproj`, có `en`) và
   `CatalogLanguagesTests` (bundle của `swift test`; ưu tiên tiếng Anh ra `en` cho số và chữ ở mọi module).
 - XCUITest: Thư viện, Trước khi thi, màn Làm bài (menu Attempt) và Rà soát & nộp ở tiếng Anh (`-AppleLanguages (en)`, tìm
@@ -343,8 +346,8 @@ làm như sau. Quyết định và lý do ở plan giai đoạn 5, Decisions bư
   `XMLProblem`, `ImportSizeLimit`, `VceProblem`; mục báo cáo `ImportReportEntry.detail: ImportIssueDetail`) trả mã và đối
   số; câu tiếng Việt chỉ ở `logMessage`/`logDescription` (nhật ký, test). Các kiểu lỗi đó không theo `LocalizedError`.
   Không target dữ liệu nào có catalog.
-- **Tầng giao diện dựng câu:** `ErrorMessages` (LibraryFeature: kiểm đề, gói đề, Thư viện; SessionFeature và
-  AuthoringFeature dùng chung) và `AuthoringMessages` (AuthoringFeature: sửa đề, import, vị trí trong file gốc). Mỗi tổ
+- **Tầng giao diện dựng câu:** `ErrorMessages` (InterfaceCore từ bước I1 của plan iOS, trước đó LibraryFeature: kiểm
+  đề, gói đề, Thư viện; SessionFeature, AuthoringFeature và bản iOS dùng chung) và `AuthoringMessages` (AuthoringFeature: sửa đề, import, vị trí trong file gốc). Mỗi tổ
   hợp mã × loại vị trí × biến thể là một khoá câu trọn vẹn có chỗ trống; danh sách (đường dẫn JSON, chữ cái lựa chọn,
   cặp mojibake, mục RVF) nối bằng dấu câu từ cụm có khoá riêng. Câu của hệ thống (Cocoa, POSIX, bộ phân tích XML) và chi
   tiết kỹ thuật (tên kiểu, mô tả của bộ giải mã) đặt nguyên vào chỗ trống.

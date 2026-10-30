@@ -2,7 +2,8 @@
 // Giao diện SwiftUI của Exam Suite. Hai "shell" quyết định bản app nào chứa gì:
 // StudentShell KHÔNG được phụ thuộc AuthoringFeature, AuthoringData (hay ExamImport)
 // (docs/decisions/0003-hai-ban-app-mot-codebase.md, kiểm bằng scripts/check_boundaries.py).
-// LibraryData là phần dữ liệu của Thư viện (không giao diện), dùng chung cho cả hai bản app.
+// Phần không phụ thuộc nền tảng (LibraryData, InterfaceCore, SessionModel) ở Packages/SharedFeatures, dùng chung với
+// bản iOS (docs/product/plan-ios-v1.md Phần 3); package này chỉ khai báo macOS (ADR 0013).
 // Test target có thể dùng product LargeExamSupport của ExamKit (đề chuẩn có seed + đo thời gian cho test `Timing`,
 // docs/product/large-exams.md); không target nào của app được phụ thuộc nó.
 import PackageDescription
@@ -20,6 +21,7 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../ExamKit"),
+        .package(path: "../SharedFeatures"),
         // Cùng thư viện, cùng phiên bản với ExamKit (ADR 0006); ExamImport đọc .docx (zip) theo import.md.
         .package(url: "https://github.com/weichsel/ZIPFoundation.git", from: "0.9.19"),
         // Snapshot test sáng/tối (ADR 0010): CHỈ test target ExamFeaturesSnapshotTests được dùng; không target
@@ -27,23 +29,13 @@ let package = Package(
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.19.6"),
     ],
     targets: [
-        // Thư viện đề: SwiftData, nhập file, trạng thái file, đề mẫu, lần thi
-        // (docs/product/library.md). Không SwiftUI, không AppKit; test bằng `swift test`.
-        .target(
-            name: "LibraryData",
-            dependencies: [
-                .product(name: "ExamKit", package: "ExamKit"),
-                .product(name: "ExamFile", package: "ExamKit"),
-            ],
-            // Nội dung đề mẫu (mỗi đề một thư mục exam.json + media/), ghi ra Application
-            // Support lần đầu mở app.
-            resources: [.copy("Resources/Samples")],
-            swiftSettings: [.swiftLanguageMode(.v6)]
-        ),
+        // Thư viện của bản macOS: view, màu `NSColor`, Hiện trong Finder, sheet không chặn thoát app. Model và phần
+        // trình bày dùng chung ở InterfaceCore (Packages/SharedFeatures).
         .target(
             name: "LibraryFeature",
             dependencies: [
-                "LibraryData",
+                .product(name: "InterfaceCore", package: "SharedFeatures"),
+                .product(name: "LibraryData", package: "SharedFeatures"),
                 .product(name: "ExamKit", package: "ExamKit"),
                 .product(name: "ExamFile", package: "ExamKit"),
             ],
@@ -54,22 +46,25 @@ let package = Package(
         // (`ReportDocument`, `ResultsReport`), bộ dựng trang A4 bằng `ImageRenderer` → `CGContext` PDF, tên file gợi
         // ý, In qua PDFKit. Không biết SessionFeature (SessionFeature dựng `ResultsReport` từ Kết quả/Xem lại và gắn
         // nút xuất), không phụ thuộc module chỉ của bản Admin (ADR 0003): chỉ được ExamKit, ExamFile, LibraryData và
-        // LibraryFeature (chỉ để tra chữ qua `InterfaceStrings`, như mọi target giao diện; kiểm bằng
+        // InterfaceCore (tra chữ qua `InterfaceStrings`, locale của ngôn ngữ giao diện; kiểm bằng
         // scripts/check_boundaries.py). Chữ giao diện qua `localized(_:)` của target (String Catalog của target).
         .target(
             name: "ReportFeature",
-            dependencies: ["LibraryFeature"],
+            dependencies: [.product(name: "InterfaceCore", package: "SharedFeatures")],
             resources: [.process("Resources/Localizable.xcstrings")],
             swiftSettings: [.swiftLanguageMode(.v6)]
         ),
-        // Phiên thi: model trình bày (Trước khi thi, làm bài, Rà soát, Kết quả, Xem lại, điều phối phiên)
-        // và giao diện (docs/product/exam-taking.md). Lần thi lưu qua LibraryData. Dùng LibraryFeature cho
-        // bảng màu chung (LibraryPalette) và để nối Thư viện với phiên thi; LibraryFeature không biết
-        // SessionFeature. Không phụ thuộc AuthoringFeature (ADR 0003): dùng chung cho cả hai bản app.
+        // Phiên thi của bản macOS: điều phối cửa sổ làm bài, giao diện, Xuất PDF/In kết quả
+        // (docs/product/exam-taking.md). Model trình bày (Trước khi thi, làm bài, Kết quả, Xem lại) ở SessionModel
+        // (Packages/SharedFeatures). Lần thi lưu qua LibraryData. Dùng LibraryFeature để nối Thư viện với phiên thi;
+        // LibraryFeature không biết SessionFeature. Không phụ thuộc AuthoringFeature (ADR 0003): dùng chung cho cả hai
+        // bản app.
         .target(
             name: "SessionFeature",
             dependencies: [
-                "LibraryData",
+                .product(name: "SessionModel", package: "SharedFeatures"),
+                .product(name: "InterfaceCore", package: "SharedFeatures"),
+                .product(name: "LibraryData", package: "SharedFeatures"),
                 "LibraryFeature",
                 "ReportFeature",
                 .product(name: "ExamKit", package: "ExamKit"),
@@ -109,9 +104,11 @@ let package = Package(
             dependencies: [
                 "AuthoringData",
                 "ExamImport",
-                "LibraryData",
+                .product(name: "LibraryData", package: "SharedFeatures"),
+                .product(name: "InterfaceCore", package: "SharedFeatures"),
                 "LibraryFeature",
                 "ReportFeature",
+                .product(name: "SessionModel", package: "SharedFeatures"),
                 "SessionFeature",
                 .product(name: "ExamKit", package: "ExamKit"),
                 .product(name: "ExamFile", package: "ExamKit"),
@@ -121,25 +118,24 @@ let package = Package(
         ),
         .target(
             name: "StudentShell",
-            dependencies: ["LibraryData", "LibraryFeature", "SessionFeature"],
+            dependencies: [
+                .product(name: "LibraryData", package: "SharedFeatures"),
+                .product(name: "InterfaceCore", package: "SharedFeatures"),
+                "LibraryFeature",
+                "SessionFeature",
+            ],
             swiftSettings: [.swiftLanguageMode(.v6)]
         ),
         .target(
             name: "AdminShell",
-            dependencies: ["LibraryData", "LibraryFeature", "SessionFeature", "AuthoringFeature"],
-            resources: [.process("Resources/Localizable.xcstrings")],
-            swiftSettings: [.swiftLanguageMode(.v6)]
-        ),
-        .testTarget(
-            name: "LibraryDataTests",
             dependencies: [
-                "LibraryData",
-                .product(name: "ExamKit", package: "ExamKit"),
-                .product(name: "ExamFile", package: "ExamKit"),
-                .product(name: "LargeExamSupport", package: "ExamKit"),
+                .product(name: "LibraryData", package: "SharedFeatures"),
+                .product(name: "InterfaceCore", package: "SharedFeatures"),
+                "LibraryFeature",
+                "SessionFeature",
+                "AuthoringFeature",
             ],
-            // Kho SwiftData v1 thật để test mở kho cũ (Fixtures/README.md).
-            resources: [.copy("Fixtures")],
+            resources: [.process("Resources/Localizable.xcstrings")],
             swiftSettings: [.swiftLanguageMode(.v6)]
         ),
         // Logic giao diện tách được khỏi view của Thư viện: trạng thái → biểu tượng + chữ, câu đọc
@@ -147,8 +143,9 @@ let package = Package(
         .testTarget(
             name: "LibraryFeatureTests",
             dependencies: [
+                .product(name: "InterfaceCore", package: "SharedFeatures"),
                 "LibraryFeature",
-                "LibraryData",
+                .product(name: "LibraryData", package: "SharedFeatures"),
                 .product(name: "ExamKit", package: "ExamKit"),
                 .product(name: "ExamFile", package: "ExamKit"),
             ],
@@ -186,9 +183,11 @@ let package = Package(
                 "AuthoringFeature",
                 "AuthoringData",
                 "ExamImport",
-                "LibraryData",
+                .product(name: "LibraryData", package: "SharedFeatures"),
+                .product(name: "InterfaceCore", package: "SharedFeatures"),
                 "LibraryFeature",
                 "ReportFeature",
+                .product(name: "SessionModel", package: "SharedFeatures"),
                 "SessionFeature",
                 .product(name: "ExamKit", package: "ExamKit"),
                 .product(name: "ExamFile", package: "ExamKit"),
@@ -201,7 +200,7 @@ let package = Package(
         // gợi ý; In ra file; catalog của module. PDF kết quả của đề chuẩn đo ở SessionFeatureTests (`Timing`).
         .testTarget(
             name: "ReportFeatureTests",
-            dependencies: ["ReportFeature", "LibraryFeature"],
+            dependencies: ["ReportFeature", .product(name: "InterfaceCore", package: "SharedFeatures")],
             swiftSettings: [.swiftLanguageMode(.v6)]
         ),
         // Model trình bày của phiên thi với đồng hồ giả, thư viện giả và file đề thật trong thư mục tạm; phần
@@ -209,9 +208,11 @@ let package = Package(
         .testTarget(
             name: "SessionFeatureTests",
             dependencies: [
+                .product(name: "SessionModel", package: "SharedFeatures"),
                 "SessionFeature",
                 "ReportFeature",
-                "LibraryData",
+                .product(name: "LibraryData", package: "SharedFeatures"),
+                .product(name: "InterfaceCore", package: "SharedFeatures"),
                 "LibraryFeature",
                 .product(name: "ExamKit", package: "ExamKit"),
                 .product(name: "ExamFile", package: "ExamKit"),
@@ -226,9 +227,11 @@ let package = Package(
         .testTarget(
             name: "ExamFeaturesSnapshotTests",
             dependencies: [
+                .product(name: "SessionModel", package: "SharedFeatures"),
                 "SessionFeature",
+                .product(name: "InterfaceCore", package: "SharedFeatures"),
                 "LibraryFeature",
-                "LibraryData",
+                .product(name: "LibraryData", package: "SharedFeatures"),
                 "AuthoringFeature",
                 "AuthoringData",
                 // Import trực tiếp: báo cáo import (snapshot soạn đề, test đo cửa sổ xếp lát), PDF trang 1.

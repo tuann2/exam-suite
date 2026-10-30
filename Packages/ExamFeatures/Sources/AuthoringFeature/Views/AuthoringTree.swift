@@ -1,5 +1,6 @@
 import AuthoringData
 import ExamKit
+import InterfaceCore
 import LibraryFeature
 import SwiftUI
 

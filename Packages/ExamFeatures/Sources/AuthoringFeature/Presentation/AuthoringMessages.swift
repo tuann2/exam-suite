@@ -2,7 +2,7 @@ import AuthoringData
 import ExamImport
 import ExamKit
 import Foundation
-import LibraryFeature
+import InterfaceCore
 
 /// Câu báo lỗi và mục báo cáo của AuthoringData và ExamImport, dựng ở tầng giao diện bằng chữ của String Catalog của
 /// AuthoringFeature từ mã + đối số (docs/product/accessibility-localization.md, phương án 2; bước 7b). Hai target dữ liệu
@@ -10,7 +10,7 @@ import LibraryFeature
 ///
 /// Bản tiếng Việt (ngôn ngữ nguồn) trùng từng chữ với `logMessage` cho cùng đầu vào, trừ số: số lượng, độ dài, số dòng có
 /// ngăn nghìn theo ngôn ngữ giao diện; mã định danh (id phần, loại câu, cờ, loại bản ghi RVF) giữ chữ số trơn. Test:
-/// `AuthoringMessagesTests`. Lỗi của lõi và Thư viện: `ErrorMessages` (LibraryFeature).
+/// `AuthoringMessagesTests`. Lỗi của lõi và Thư viện: `ErrorMessages` (InterfaceCore).
 public enum AuthoringMessages {
     // MARK: - Lỗi bất kỳ
 

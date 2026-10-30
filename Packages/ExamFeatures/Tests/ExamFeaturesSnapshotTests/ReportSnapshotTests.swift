@@ -2,7 +2,6 @@
 import ExamFile
 import ExamKit
 import Foundation
-import LibraryFeature
 import ReportFeature
 @testable import SessionFeature
 import Testing

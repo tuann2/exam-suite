@@ -79,8 +79,11 @@ Agent và người đóng góp đọc [AGENTS.md](AGENTS.md) trước, rồi [do
 Apps/            Điểm vào của hai app (chỉ @main + cấu hình), XCUITest của hai bản
 Packages/ExamKit       Lõi thuần Foundation: model, chấm điểm, phiên thi (ExamKit)
                        và đọc/ghi gói .exam (ExamFile). Test chạy được trên Linux.
-Packages/ExamFeatures  Giao diện SwiftUI và dữ liệu: LibraryData, LibraryFeature, SessionFeature,
-                       ReportFeature, AuthoringData, AuthoringFeature, ExamImport; StudentShell, AdminShell
+Packages/SharedFeatures  Dùng chung bản macOS và bản iOS: LibraryData (dữ liệu Thư viện), InterfaceCore,
+                       SessionModel (model trình bày, tra chữ, locale)
+Packages/ExamFeatures  Giao diện SwiftUI của bản macOS: LibraryFeature, SessionFeature, ReportFeature,
+                       AuthoringData, AuthoringFeature, ExamImport; StudentShell, AdminShell
+Packages/MobileFeatures  Giao diện iPhone (bản Học viên trên iOS): MobileFeature, MobileShell
 schema/          JSON Schema của exam.json
 fixtures/        Đề tự soạn (hợp lệ và không hợp lệ) dùng cho test
 scripts/         Kiểm tra: schema, ranh giới module, chuỗi giao diện; đóng gói .exam và DMG

@@ -1,4 +1,5 @@
 import AppKit
+import InterfaceCore
 import SwiftUI
 
 // Màu của bảng màu (`LibraryPalette`, `AuthoringPalette`) thành màu SwiftUI theo giao diện sáng/tối, nền có độ trong của app

@@ -33,7 +33,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SCHEMA_PATH = ROOT / "schema" / "exam-v1.schema.json"
 # Đề mẫu bản app ghi ra lần đầu mở; mỗi thư mục con là một gói đã giải nén (exam.json + media/).
-SAMPLES = ROOT / "Packages" / "ExamFeatures" / "Sources" / "LibraryData" / "Resources" / "Samples"
+SAMPLES = ROOT / "Packages" / "SharedFeatures" / "Sources" / "LibraryData" / "Resources" / "Samples"
 
 try:
     import jsonschema  # noqa: F401

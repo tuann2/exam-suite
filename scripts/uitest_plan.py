@@ -6,8 +6,9 @@ chỉ build và chạy các lớp được chọn (`-only-testing:<target>/<lớ
 chạy. **Đủ bộ** khi:
 - chạm hạ tầng chung (UITestSupport, target UI test, project.yml, Package.swift/resolved, code chế độ cô lập, chính
   script này hay verify_local.sh);
-- chạm module dùng chung mọi cửa sổ (dòng `full=True` của bảng: LibraryFeature, LibraryData kể cả đề mẫu,
-  SessionFeature, lõi ExamKit/ExamFile);
+- chạm module dùng chung mọi cửa sổ (dòng `full=True` của bảng: LibraryFeature, SessionFeature, module dùng chung
+  macOS và iOS của Packages/SharedFeatures (LibraryData kể cả đề mẫu, InterfaceCore, SessionModel), lõi
+  ExamKit/ExamFile);
 - `--all` (verify_local.sh `--clean`, `--uitest-all`);
 - file code app không khớp dòng nào (target mới…), kèm cảnh báo;
 - bảng map chưa khớp lớp thật (xem dưới), kèm cảnh báo.
@@ -61,6 +62,7 @@ class Row:
 
 
 F = "Packages/ExamFeatures/Sources/"
+S = "Packages/SharedFeatures/Sources/"
 M = "Packages/MobileFeatures/"
 # ---- BẢNG MAP (sửa ở đây khi thêm lớp UI test hay target) -----------------------------------------------------------
 # Mẫu fnmatch trên đường dẫn từ gốc repo ("*" khớp cả "/"). Kiểm theo code thật 2026-10-18 (bước 9 giai đoạn 5, sửa
@@ -73,24 +75,27 @@ FULL_PATTERNS = [
     "Apps/UITestSupport/*", "Apps/StudentUITests/*", "Apps/AdminUITests/*",
     "project.yml",
     "Packages/ExamFeatures/Package.swift", "Packages/ExamFeatures/Package.resolved",
+    "Packages/SharedFeatures/Package.swift", "Packages/SharedFeatures/Package.resolved",
     "Packages/ExamKit/Package.swift", "Packages/ExamKit/Package.resolved",
     # Chế độ cô lập: thư mục tạm, kho, defaults (AppLaunchStorage), đồng hồ nhanh (SessionServices), file thay hộp chọn
     # file của bản Admin (AuthoringWindow). Hai file đầu đã nằm trong module đủ bộ; ghi lại để rõ.
-    F + "LibraryData/AppLaunchStorage.swift", F + "SessionFeature/Services/SessionServices.swift",
+    S + "LibraryData/AppLaunchStorage.swift", S + "SessionModel/Services/SessionServices.swift",
     F + "AuthoringFeature/Views/AuthoringWindow.swift",
     "scripts/verify_local.sh", "scripts/uitest_plan.py",
 ]
 
 ROWS: list[Row] = [
     # Cửa sổ làm bài; `SessionAppController` còn gắn trang trí Thư viện, menu (cả Xuất PDF…/In… ⌘P của cửa sổ soạn đề qua
-    # `ReportCommandTarget`) vào mọi cửa sổ của hai bản: đủ bộ.
-    Row("SessionFeature", [F + "SessionFeature/*"], full=True, classes={
+    # `ReportCommandTarget`) vào mọi cửa sổ của hai bản: đủ bộ. SessionModel (Packages/SharedFeatures): model trình bày
+    # của cửa sổ làm bài, dùng chung với bản iOS.
+    Row("SessionFeature, SessionModel", [F + "SessionFeature/*", S + "SessionModel/*"], full=True, classes={
         STUDENT: ["PracticeFlowUITests", "ExamFlowUITests", "SessionWindowRestoreUITests", "EnglishInterfaceUITests"],
         ADMIN: ["NewExamFlowUITests"]}),
-    # Thư viện của hai bản; LibraryFeature còn giữ PresentationTermination (⌘Q khi có sheet), InterfaceStrings,
-    # InterfaceLocale, ErrorMessages, LibraryPalette mà mọi cửa sổ dùng; LibraryData giữ kho, lần thi (Thử đề này) và
-    # đề mẫu mà mọi UI test dùng: đủ bộ.
-    Row("LibraryFeature, LibraryData", [F + "LibraryFeature/*", F + "LibraryData/*"], full=True, classes={
+    # Thư viện của hai bản; LibraryFeature còn giữ PresentationTermination (⌘Q khi có sheet) mà mọi cửa sổ dùng;
+    # InterfaceCore (Packages/SharedFeatures) giữ InterfaceStrings, InterfaceLocale, ErrorMessages, LibraryPalette,
+    # LibraryModel; LibraryData giữ kho, lần thi (Thử đề này) và đề mẫu mà mọi UI test dùng: đủ bộ.
+    Row("LibraryFeature, InterfaceCore, LibraryData",
+        [F + "LibraryFeature/*", S + "InterfaceCore/*", S + "LibraryData/*"], full=True, classes={
         STUDENT: ["LibraryWindowRestoreUITests", "PracticeFlowUITests"],
         ADMIN: ["EditExamFlowUITests"]}),
     # Lõi đọc nghiêm, kiểm, chấm, ghi đề và đồng hồ phiên: luồng UI lưu/mở lại đề, đọc nghiêm, hẹn giờ: đủ bộ.
@@ -106,7 +111,8 @@ ROWS: list[Row] = [
         classes={ADMIN: ["EditExamFlowUITests", "ImportExamUITests", "NewExamFlowUITests"]}),
     # Chữ giao diện của catalog (catalog của module đủ bộ đã chọn đủ bộ ở dòng của nó): giao diện tiếng Anh; luồng 1 có
     # đoạn xuất PDF kết quả với Region en_US (ngày giờ theo ngôn ngữ giao diện).
-    Row("String Catalog", ["Packages/ExamFeatures/*.xcstrings", "Apps/Student/*.xcstrings", "Apps/Admin/*.xcstrings"],
+    Row("String Catalog", ["Packages/ExamFeatures/*.xcstrings", "Packages/SharedFeatures/*.xcstrings",
+                           "Apps/Student/*.xcstrings", "Apps/Admin/*.xcstrings"],
         classes={STUDENT: ["EnglishInterfaceUITests", "PracticeFlowUITests"]}),
     # Bản iOS (docs/product/plan-ios-v1.md): màn hình iPhone. Bước I0 chỉ có test mở app; ba luồng thay ở bước I2.
     Row("MobileFeature", [M + "Sources/MobileFeature/*"], classes={IOS: ["LaunchUITests"]}),
@@ -119,9 +125,9 @@ ROWS: list[Row] = [
 ]
 
 # Đường dẫn code app mà không dòng nào ở trên khớp (target mới…): đủ bộ kèm cảnh báo, để map được bổ sung.
-CODE_PATTERNS = [F + "*", "Packages/ExamKit/Sources/*", M + "*", "Apps/*"]
-# Code chỉ của test: không chạy UI test.
-NO_UI_PATTERNS = ["Packages/ExamKit/Sources/LargeExamSupport/*"]
+CODE_PATTERNS = [F + "*", S + "*", "Packages/ExamKit/Sources/*", M + "*", "Apps/*"]
+# Code chỉ của test: không chạy UI test (unit test của bản iOS nằm trong package MobileFeatures).
+NO_UI_PATTERNS = ["Packages/ExamKit/Sources/LargeExamSupport/*", M + "Tests/*"]
 # ---- HẾT BẢNG MAP ----------------------------------------------------------------------------------------------------
 
 
@@ -268,13 +274,17 @@ def self_test(root: Path) -> None:
         assert all(merged not in cs for r in ROWS for cs in r.classes.values()), merged
 
     # Module dùng chung → đủ bộ (review #55 B1, S2).
-    for shared in [F + "LibraryFeature/Views/HistoryView.swift", F + "LibraryFeature/Localization/InterfaceStrings.swift",
-                   F + "LibraryData/Resources/Samples/lam-quen-exam-suite/exam.json", F + "LibraryData/LibraryStore.swift",
+    for shared in [F + "LibraryFeature/Views/HistoryView.swift",
+                   S + "InterfaceCore/Localization/InterfaceStrings.swift",
+                   S + "InterfaceCore/Model/LibraryModel.swift", S + "SessionModel/Model/AttemptModel.swift",
+                   S + "LibraryData/Resources/Samples/lam-quen-exam-suite/exam.json",
+                   S + "LibraryData/LibraryStore.swift",
                    F + "SessionFeature/Views/SessionWindowView.swift", "Packages/ExamKit/Sources/ExamKit/Scorer.swift",
                    "Packages/ExamKit/Sources/ExamFile/ExamPackageReader.swift"]:
         assert is_full(plan([shared], classes)), shared
     # Hạ tầng và chế độ cô lập → đủ bộ (đối chứng âm: kèm một file chỉ chọn vài lớp).
     for infra in ["Apps/UITestSupport/IsolatedApp.swift", "scripts/verify_local.sh", "Packages/ExamFeatures/Package.swift",
+                  "Packages/SharedFeatures/Package.swift",
                   "Apps/StudentUITests/Support/StudentFlow.swift", F + "AuthoringFeature/Views/AuthoringWindow.swift"]:
         assert is_full(plan([F + "ReportFeature/ReportRenderer.swift", infra], classes)), infra
     # Chỉ ReportFeature: hai lớp có đoạn xuất PDF (luồng 1 + PDF kết quả, luồng 4 + PDF đề).
@@ -306,11 +316,14 @@ def self_test(root: Path) -> None:
     assert is_full(plan(["project.yml"], classes)) and full_ios
     # Tài liệu, unit test, script khác, LargeExamSupport: không lớp nào.
     none = plan(["docs/plans/active/x.md", "Packages/ExamFeatures/Tests/SessionFeatureTests/A.swift", "scripts/check.sh",
+                 "Packages/SharedFeatures/Tests/LibraryDataTests/A.swift", M + "Tests/MobileFeatureTests/A.swift",
                  "Packages/ExamKit/Sources/LargeExamSupport/Timing.swift"], classes)
     assert none["mode"] == "none", none
     # Target code mới chưa map → đủ bộ kèm cảnh báo.
     unknown = plan([F + "NewFeature/A.swift"], classes)
     assert is_full(unknown) and unknown["warnings"], unknown
+    unknown_shared = plan([S + "NewModel/A.swift"], classes)
+    assert is_full(unknown_shared) and unknown_shared["warnings"], unknown_shared
     # --all (--clean, --uitest-all).
     assert is_full(plan([], classes, run_all=True, reason="--clean"))
     # Định dạng verify_local.sh đọc.

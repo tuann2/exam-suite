@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Đo đề lớn ở bản Release (docs/product/large-exams.md, mục Cách đo): build Release và chạy các test `Timing` của
-# hai package với đề chuẩn (2.000 câu, 200 ảnh, sinh trong test bằng LargeExamSupport, cùng đề với
+# ba package (ExamKit, SharedFeatures: Thư viện, ExamFeatures) với đề chuẩn (2.000 câu, 200 ảnh, sinh trong test bằng
+# LargeExamSupport, cùng đề với
 # scripts/gen_large_exam.py), rồi thêm một mục (ngày, máy, commit, bảng số) vào docs/notes/large-exam-measurements.md.
 #
 #   scripts/measure_large.sh                # đo và ghi vào file số đo
@@ -156,7 +157,7 @@ LOG="$LOG_DIR/timing-$(date +%Y%m%d-%H%M%S).log"
 # không nằm trên đường đo (chỉ lúc mở app và đồng hồ của UI test). Bản đo vẫn tối ưu -O; dòng "Timing:" ghi Release
 # theo mức tối ưu (Timing.buildConfiguration). EXAMSUITE_MEASURE_RECORD=1: bật các mục chỉ ghi số mà swift test
 # thường bỏ qua (in thật ra file, PDF đề chỉ đề; Timing.recordsExtraMeasurements).
-for pkg in ExamKit ExamFeatures; do
+for pkg in ExamKit SharedFeatures ExamFeatures; do
   echo "== swift test -c release Packages/$pkg (--filter Timing; build Release lần đầu mất vài phút)"
   if ! EXAMSUITE_MEASURE_RECORD=1 swift test -c release -Xswiftc -enable-testing -Xswiftc -DDEBUG --package-path "Packages/$pkg" --filter Timing >>"$LOG" 2>&1; then
     grep -E '✘|error:' "$LOG" | tail -20 >&2 || true

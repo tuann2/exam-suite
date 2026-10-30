@@ -1,5 +1,6 @@
 import AppKit
 import Foundation
+import InterfaceCore
 import LibraryFeature
 @testable import SessionFeature
 import SwiftUI

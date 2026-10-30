@@ -1,4 +1,5 @@
 import Foundation
+@testable import InterfaceCore
 @testable import LibraryFeature
 import PDFKit
 import SwiftUI
@@ -159,7 +160,7 @@ struct InterfaceLocaleTests {
     /// Ba đường tra chữ: khoá ngôn ngữ (test), theo bundle chính (app) và mặc định (`localized`). Số nội suy theo locale
     /// truyền vào hoặc ngôn ngữ giao diện, không theo `Locale.current`. Chữ tiếng Anh chưa dịch (bước 7c) nên chỉ so số.
     @Test func interpolatedNumbersFollowInterfaceLanguage() {
-        let bundle = LibraryFeature.ModuleStrings.bundle
+        let bundle = InterfaceCore.ModuleStrings.bundle
         #expect(InterfaceStrings.resolve("\(2000) câu", bundle: bundle, locale: Self.vi) == "2.000 câu")
         #expect(InterfaceStrings.resolve("\(2000) câu", bundle: bundle, locale: Self.en).hasPrefix("2,000 "))
         #expect(InterfaceStrings.resolveFollowingMainBundle("\(2000) câu", bundle: bundle, formatLocale: Self.vi)
@@ -167,7 +168,7 @@ struct InterfaceLocaleTests {
         #expect(InterfaceStrings.resolveFollowingMainBundle("\(2000) câu", bundle: bundle, formatLocale: Self.en)
             .hasPrefix("2,000 "))
         #expect(InterfaceStrings.resolve("\(2000) câu", bundle: bundle, locale: nil).hasPrefix("2.000 "))
-        #expect(localized("\(2000) câu") == "2.000 câu")
+        #expect(InterfaceCore.localized("\(2000) câu") == "2.000 câu")
     }
 
     // MARK: - SwiftUI
@@ -176,7 +177,7 @@ struct InterfaceLocaleTests {
     /// `Text(n, format:)` theo `\.locale` của môi trường (đọc lại chữ trên PDF dựng bằng `ImageRenderer`).
     @MainActor
     @Test func swiftUITextFollowsEnvironmentLocale() throws {
-        let bundle = LibraryFeature.ModuleStrings.bundle
+        let bundle = InterfaceCore.ModuleStrings.bundle
         let view = VStack {
             Text("\(2000) câu", bundle: bundle)
             Text(1234, format: .number)

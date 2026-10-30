@@ -39,8 +39,11 @@ settings:
 packages:
   ExamFeatures:
     path: Packages/ExamFeatures
-  # Giao diện iPhone (docs/product/plan-ios-v1.md Phần 3): package riêng, chỉ build cho iOS. Bước I1 thêm package dùng
-  # chung Packages/SharedFeatures (macOS + iOS).
+  # Phần dùng chung macOS và iOS (docs/product/plan-ios-v1.md Phần 3): LibraryData, InterfaceCore, SessionModel. Khai
+  # báo ở đây để `xcodebuild -exportLocalizations` ghi lại catalog của nó như của hai package kia.
+  SharedFeatures:
+    path: Packages/SharedFeatures
+  # Giao diện iPhone (docs/product/plan-ios-v1.md Phần 3): package riêng, chỉ build cho iOS.
   MobileFeatures:
     path: Packages/MobileFeatures
 targets:
@@ -303,3 +306,6 @@ schemes:
       config: Debug
       targets:
         - ExamSuiteiOSUITests
+        # Test của phần chỉ iOS (Packages/MobileFeatures), chạy trên simulator: `verify_local.sh` mức full
+        # (`-only-testing:MobileFeatureTests`).
+        - package: MobileFeatures/MobileFeatureTests

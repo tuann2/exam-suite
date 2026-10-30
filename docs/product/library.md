@@ -5,7 +5,8 @@ của [plan-macos-v1.md](plan-macos-v1.md); DESIGN_BRIEF §5.1, §5.8, §7 của
 (đọc qua link, không chép). Những chỗ đặc tả gốc không nói được ghi ở mục cuối
 "Phương án đã chốt" (Nt0 duyệt 2026-10-15).
 
-Code: `LibraryData` (dữ liệu, không giao diện) và `LibraryFeature` (SwiftUI) trong
+Code: `LibraryData` (dữ liệu, không giao diện) và `LibraryModel` (model trình bày, InterfaceCore) trong
+`Packages/SharedFeatures` (dùng chung với bản iOS), `LibraryFeature` (SwiftUI của bản macOS) trong
 `Packages/ExamFeatures`. Cả hai bản app dùng chung; khác nhau ghi rõ ở từng mục.
 
 ## Cửa sổ
@@ -70,7 +71,7 @@ Hành động trên thẻ:
 - Lần đầu mở app (chưa từng tạo đề mẫu), app ghi **2 đề mẫu tự soạn** vào
   `~/Library/Application Support/<bundle ID>/Samples/` và thêm vào thư viện, kèm dải chào mừng có thể đóng.
 - Xoá đề mẫu khỏi thư viện thì không tự tạo lại. Menu Trợ giúp có **Khôi phục đề mẫu**.
-- Nội dung đề mẫu nằm trong repo ở `Packages/ExamFeatures/Sources/LibraryData/Resources/Samples/<tên>/`
+- Nội dung đề mẫu nằm trong repo ở `Packages/SharedFeatures/Sources/LibraryData/Resources/Samples/<tên>/`
   (`exam.json` + `media/`), được kiểm theo schema như fixture và đọc nghiêm được, không có cả warning:
   `scripts/validate_exam.py --all` và test `LibrarySampleTests` (ExamFileTests). Ảnh vẽ bằng
   `scripts/samples/make_sample_images.swift`.

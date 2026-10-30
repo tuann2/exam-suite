@@ -11,7 +11,7 @@ on:
       - "android/**"
       - "fixtures/**"
       - "schema/**"
-      - "Packages/ExamFeatures/Sources/LibraryData/Resources/Samples/**"
+      - "Packages/SharedFeatures/Sources/LibraryData/Resources/Samples/**"
       - ".github/workflows/android.yml"
   workflow_dispatch:
   push:

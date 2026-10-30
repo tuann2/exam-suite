@@ -1,4 +1,5 @@
 import AppKit
+import InterfaceCore
 import LibraryData
 import LibraryFeature
 import SessionFeature
