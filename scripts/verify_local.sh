@@ -384,6 +384,8 @@ ios_unit_tests() {
     || { echo "MobileFeatureTests hoặc MobileSnapshotTests không có test nào chạy (log: $out)."; return 1; }
   grep -qE '^✔ Suite "Snapshot iPhone" passed' "$out" \
     || { echo "MobileSnapshotTests (Snapshot iPhone) không chạy (log: $out)."; return 1; }
+  grep -qE '^✔ Suite "Kho thư viện trên iOS" passed' "$out" \
+    || { echo "MobileFeatureTests (Kho thư viện trên iOS) không chạy (log: $out)."; return 1; }
 }
 run "MobileFeatureTests, MobileSnapshotTests (simulator)" ios_unit_tests
 run "kiểm bundle (ADR 0003)" scripts/check_bundle_boundary.sh build/DerivedData/Build/Products/Debug "$IOS_PRODUCTS"

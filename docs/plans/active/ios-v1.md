@@ -349,6 +349,9 @@ I2b (nhánh `feature/ios-i2b`):
   `-end` thấy lựa chọn C đang chọn tới J, và đủ tám phần cùng "Phần yếu nhất".
 - `check_boundaries.py` (có `swift package describe`), `check_localization.py --require-en`, `check_colors.py`,
   `uitest_plan.py --self-test`, `verify_scope.py --self-test`: đạt.
+- Re-review (phiên mới, trên 698e80b): APPROVE; sửa nốt các nit (tiêu đề inline, đuôi `-end` trong ADR 0010, bản
+  snapshot-testing mà Xcode tự resolve, `verify_local.sh` kiểm thêm một suite của `MobileFeatureTests`). Còn lại: chưa
+  chạy đối chứng múi giờ (máy ở +07), ảnh `-end` dựa trên bốn vòng cuộn.
 
 ## Result
 

@@ -91,10 +91,10 @@ Thẩm quyền: ADR 0010 (sửa 2026-10-31), ADR 0013, docs/product/plan-ios-v1.
   Rồi chạy lại không biến (phải xanh) và xem từng ảnh như mục trên.
 - Test chạy trong tiến trình `xctest` của simulator, không có `UIApplication`: không dùng được
   `drawHierarchy(in:afterScreenUpdates:)` (ra ảnh trống), nên lớp kính, làm mờ và ô tìm nổi của iOS 26 vẽ xấp xỉ hoặc
-  thiếu: tiêu đề, nút của thanh điều hướng và nút của thanh dưới hệ thống có trong ảnh **tối**, không có trong ảnh
+  thiếu: tiêu đề inline, nút của thanh điều hướng và nút của thanh dưới hệ thống có trong ảnh **tối**, không có trong ảnh
   **sáng** (ổn định giữa các lần chạy). Ảnh sáng vì vậy không bắt được hồi quy của các thanh đó. Kính và độ trong suốt
   thật cần test tay trên máy (cổng GI2).
-- Ba ảnh chụp không có `NavigationStack`, vì trong đó `render(in:)` không vẽ gì của nội dung (thử 2026-10-31): Thư viện
+- Ba màn (năm ảnh) chụp không có `NavigationStack`, vì trong đó `render(in:)` không vẽ gì của nội dung (thử 2026-10-31): Thư viện
   (`.searchable` cùng `.refreshable`; từng modifier riêng thì vẽ được), cuối Kết quả (cuộn xuống thì tiêu đề lớn thu
   vào thanh điều hướng), Xem lại bài ở cỡ chữ lớn (nội dung dưới thanh dưới của hệ thống). Các ảnh đó không có tiêu đề
   và nút của các thanh.
