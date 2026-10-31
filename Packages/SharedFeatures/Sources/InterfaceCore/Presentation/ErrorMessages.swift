@@ -344,7 +344,7 @@ public enum ErrorMessages {
         case .entryNotFound:
             localized("Đề không còn trong thư viện.")
         case let .notAnExamFile(url):
-            localized("\"\(url.lastPathComponent)\" không phải file đề .exam.")
+            localized("\"\(url.lastPathComponent)\" không phải file đề .exam hay .oef.")
         case let .unusableFile(problem):
             localized("Không dùng được file này: \(message(for: problem))")
         case let .differentExam(expectedTitle, foundTitle):

@@ -56,7 +56,7 @@ struct LibraryScreen: View {
                 get: { library.fileImportRequest != nil && !sessions.isSessionPresented },
                 set: { presented in if !presented { library.fileImporterDismissed() } }
             ),
-            allowedContentTypes: [.examPackage],
+            allowedContentTypes: UTType.examSourceTypes,
             allowsMultipleSelection: library.fileImportRequest?.allowsMultipleSelection ?? true,
             onCompletion: { result in _ = library.completeFileImport(result) },
             onCancellation: { library.cancelFileImport() }
@@ -165,7 +165,7 @@ struct LibraryScreen: View {
         }
     }
 
-    /// **Thêm đề**: hộp chọn file `.exam` của iOS. UI test (build Debug, chế độ cô lập) thay hộp chọn file bằng file
+    /// **Thêm đề**: hộp chọn file `.exam`, `.oef` của iOS. UI test (build Debug, chế độ cô lập) thay hộp chọn file bằng file
     /// truyền vào (`-ExamSuiteUITestChosenFile`, như bản Admin macOS), vì XCUITest không lái được hộp chọn file.
     private func addExams() {
         #if DEBUG

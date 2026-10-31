@@ -175,7 +175,7 @@ public final class LibraryStoreSessionLibrary: SessionLibrary {
 
     public init(
         store: LibraryStore,
-        reader: @escaping Reader = { try ExamPackageReader.read(contentsOf: $0, mode: .strict) }
+        reader: @escaping Reader = { try ExamSourceReader.read(contentsOf: $0, mode: .strict) }
     ) {
         self.store = store
         self.reader = reader

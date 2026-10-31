@@ -9,6 +9,10 @@ Theo [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/), phiên bản theo
 - Bản Admin: **Import đề…** nhận file `.oef` của Open Exam Suite (bản 4 trở lên). Tiêu đề, mã, ngưỡng đậu, thời gian,
   hướng dẫn, ẩn đáp án và ảnh lấy từ file; chỗ phải sửa hay bỏ có trong báo cáo import. File `.oef` bản cũ báo cần mở
   bằng Open Exam Suite rồi lưu lại.
+- Bản Học viên mở thẳng file `.oef` như `.exam`: Thêm đề…, kéo thả, nhấp đúp hay Open With trong Finder (máy có Open Exam
+  Suite thì Open Exam Suite vẫn mở mặc định). File được đọc tại chỗ và chuyển mỗi lần đọc: sửa đề trong Open Exam Suite
+  rồi Làm mới là thấy; cùng mã và tiêu đề thì vẫn là cùng đề, lịch sử thi nối tiếp. Thông tin ghi định dạng Open Exam
+  Suite (.oef). Thư viện bản Admin cũng nhận `.oef` nhưng không Sửa được: dùng Import đề… để chuyển sang `.exam`.
 
 ## [0.1.1] – bản public đầu tiên
 

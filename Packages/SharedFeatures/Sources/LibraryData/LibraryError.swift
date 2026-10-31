@@ -8,7 +8,7 @@ import OSLog
 public enum LibraryError: Error, Hashable, Sendable {
     /// Không có mục nào với id đề này trong thư viện.
     case entryNotFound(examID: UUID)
-    /// File chọn không phải file `.exam`.
+    /// File chọn không phải file `.exam` hay `.oef`.
     case notAnExamFile(URL)
     /// File chọn không dùng được (hỏng, cần app mới hơn, hoặc bản Học viên không mở được).
     case unusableFile(LibraryFileProblem)
@@ -29,7 +29,7 @@ extension LibraryError {
         case .entryNotFound:
             "Đề không còn trong thư viện."
         case let .notAnExamFile(url):
-            "\"\(url.lastPathComponent)\" không phải file đề .exam."
+            "\"\(url.lastPathComponent)\" không phải file đề .exam hay .oef."
         case let .unusableFile(problem):
             "Không dùng được file này: \(problem.logMessage)"
         case let .differentExam(expectedTitle, foundTitle):

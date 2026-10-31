@@ -506,13 +506,17 @@ crash_reports() { # chỉ TÊN file (không đọc nội dung) báo cáo crash/t
   [[ -d "$DIAG_DIR" ]] || return 0
   find "$DIAG_DIR" -maxdepth 1 -name 'Exam Suite*' -print 2>/dev/null | sort || true
 }
-doc_rank_problems() { # đường dẫn app .uitest…; in app nào có LSHandlerRank của `.exam` khác None
+doc_rank_problems() { # đường dẫn app .uitest…; in app nào có LSHandlerRank của `.exam`, `.oef` khác None
   # Bản .uitest được LaunchServices đăng ký khi build; vai None (project.yml, EXAMSUITE_DOC_HANDLER_RANK) để Finder
-  # không bao giờ chọn nó mở `.exam`.
-  local app rank
+  # không bao giờ chọn nó mở `.exam` hay `.oef`. Xét mọi document type của app.
+  local app rank index
   for app in "$@"; do
-    rank="$(plutil -extract CFBundleDocumentTypes.0.LSHandlerRank raw "$app/Contents/Info.plist" 2>/dev/null || echo 'không đọc được')"
-    [[ "$rank" == None ]] || echo "$app: LSHandlerRank=$rank"
+    index=0
+    while rank="$(plutil -extract "CFBundleDocumentTypes.$index.LSHandlerRank" raw "$app/Contents/Info.plist" 2>/dev/null)"; do
+      [[ "$rank" == None ]] || echo "$app: CFBundleDocumentTypes.$index LSHandlerRank=$rank"
+      index=$((index + 1))
+    done
+    [[ $index -gt 0 ]] || echo "$app: không đọc được LSHandlerRank"
   done
 }
 UI_ASSERT_ERRORS=""
@@ -646,7 +650,7 @@ elif [[ $UITEST == 1 ]]; then
   RANK_PROBLEMS=""
   [[ ${#UI_BUILT_APPS[@]} == 0 ]] || RANK_PROBLEMS="$(doc_rank_problems "${UI_BUILT_APPS[@]}")"
   if [[ -n "$RANK_PROBLEMS" ]]; then
-    STEP="bản .uitest nhận mở file .exam (LSHandlerRank phải là None, xem log)"
+    STEP="bản .uitest nhận mở file .exam hay .oef (LSHandlerRank phải là None, xem log)"
     { echo "== $STEP"; echo "$RANK_PROBLEMS"; } | tee -a "$LOG"
     exit 1
   fi

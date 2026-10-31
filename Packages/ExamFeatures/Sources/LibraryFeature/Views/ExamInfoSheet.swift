@@ -70,7 +70,11 @@ struct ExamInfoSheet: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 LabeledContent(localized("Dung lượng"), value: LibraryFormat.fileSize(entry.fileSize))
-                LabeledContent(localized("Phiên bản định dạng"), value: String(summary.formatVersion))
+                if entry.isOEF {
+                    LabeledContent(localized("Định dạng"), value: localized("Open Exam Suite (.oef)"))
+                } else {
+                    LabeledContent(localized("Phiên bản định dạng"), value: String(summary.formatVersion))
+                }
                 LabeledContent(localized("Ngày thêm"), value: LibraryFormat.dateTime(entry.addedAt))
                 HStack {
                     Spacer()

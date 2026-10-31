@@ -17,4 +17,14 @@ extension UTType {
                 importedAs: ExamFileFormat.uniformTypeIdentifier,
                 conformingTo: UTType("com.pkware.zip-archive") ?? .zip
             )
+
+    /// Kiểu file `.oef` của Open Exam Suite (`vn.io.nt0.examsuite.oef`, docs/product/exam-format.md mục File `.oef`):
+    /// OES không khai báo UTType, nên cả ba bản app khai báo import trong `project.yml` (bản Học viên macOS và iOS thêm
+    /// document type hạng Alternate, QO11 của plan-oef.md). Tra theo identifier như `examPackage`.
+    public static let openExamFile: UTType =
+        UTType(ExamFileFormat.oefUniformTypeIdentifier)
+            ?? UTType(importedAs: ExamFileFormat.oefUniformTypeIdentifier, conformingTo: .data)
+
+    /// Các kiểu Thư viện nhận (hộp chọn file Thêm đề…, Tìm file…): `.exam` và `.oef`.
+    public static let examSourceTypes: [UTType] = [.examPackage, .openExamFile]
 }

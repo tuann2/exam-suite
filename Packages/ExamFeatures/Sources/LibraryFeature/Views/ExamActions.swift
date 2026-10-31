@@ -11,6 +11,8 @@ struct ExamActions {
     let isAdmin: Bool
     let canReveal: Bool
     let canEdit: Bool
+    /// Bản Admin, đề `.oef`: vì sao Sửa tắt (plan-oef.md QO10).
+    let editHelp: String?
     /// Đề Sẵn sàng: **Luyện tập**, **Thi**, nhấp đúp và Return mở Trước khi thi (exam-taking.md, phương án 5).
     let canStartSession: Bool
     /// Nhấp đúp, Return: Trước khi thi với chế độ lần trước.
@@ -31,6 +33,7 @@ struct ExamActions {
         isAdmin = model.isAdmin
         canReveal = entry.status != .missing
         canEdit = model.canEdit(entry)
+        editHelp = model.isAdmin && entry.isOEF ? Self.oefEditHint : nil
         canStartSession = model.canStartSession(entry)
         open = { model.startSession(examID) }
         startPractice = { model.startSession(examID, mode: .practice) }
@@ -50,6 +53,7 @@ struct ExamActions {
         self.isAdmin = isAdmin
         canReveal = entry.status != .missing
         canEdit = isAdmin
+        editHelp = nil
         canStartSession = entry.status == .ready
         open = {}
         startPractice = {}
@@ -124,6 +128,7 @@ struct ExamMenuItems: View {
             Button(localized("Sửa"), systemImage: "pencil") { actions.edit() }
                 .keyboardShortcut(showsShortcuts ? KeyboardShortcut("e", modifiers: .command) : nil)
                 .disabled(!actions.canEdit)
+                .optionalHelp(actions.editHelp)
         }
         Divider()
         Button(localized("Xoá khỏi thư viện"), systemImage: "trash", role: .destructive) { actions.remove() }
@@ -178,9 +183,25 @@ struct NextStepButtons: View {
             if actions.isAdmin {
                 Button(localized("Sửa")) { actions.edit() }
                     .disabled(!actions.canEdit)
+                    .optionalHelp(actions.editHelp)
             }
         case .updateApp:
             EmptyView()
         }
+    }
+}
+
+extension ExamActions {
+    /// Bản Admin: đề `.oef` chỉ vào cửa sổ soạn đề qua Import đề… (plan-oef.md QO10).
+    static var oefEditHint: String {
+        localized("Đề .oef không sửa trực tiếp được. Dùng Import đề… để chuyển sang .exam rồi sửa.")
+    }
+}
+
+private extension View {
+    /// `.help` khi có chữ; không có thì giữ nguyên view (không gắn chú thích rỗng).
+    @ViewBuilder
+    func optionalHelp(_ text: String?) -> some View {
+        if let text { help(text) } else { self }
     }
 }

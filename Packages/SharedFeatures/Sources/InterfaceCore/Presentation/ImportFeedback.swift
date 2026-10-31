@@ -63,8 +63,8 @@ public struct ImportFeedback: Hashable, Sendable {
                 ImportProblem(
                     position: position,
                     url: item.url,
-                    reason: localized("Không phải file đề .exam."),
-                    nextStep: localized("Chỉ thêm được file đề có đuôi .exam.")
+                    reason: localized("Không phải file đề .exam hay .oef."),
+                    nextStep: localized("Chỉ thêm được file đề có đuôi .exam hoặc .oef.")
                 )
             case .added, .alreadyInLibrary, .needsReplaceConfirmation:
                 nil

@@ -49,17 +49,24 @@ Hành động trên thẻ:
   (hành động tắt như hai nút trên; exam-taking.md, phương án 17, Nt0 chốt 2026-10-15).
 - Menu chuột phải và nút "…": **Luyện tập**, **Thi** (tắt khi đề chưa Sẵn sàng), **Thông tin** (⌘I),
   **Hiện trong Finder**, **Xem lịch sử thi**, **Xoá khỏi thư viện** (⌫); bản Admin thêm **Sửa** (⌘E) mở đề
-  trong cửa sổ soạn đề.
-- **Thông tin**: đường dẫn file, dung lượng, phiên bản định dạng, ngày thêm, số phần/câu/ảnh,
-  thời gian, ngưỡng đậu, trạng thái và lý do.
+  trong cửa sổ soạn đề. Đề là file `.oef` thì **Sửa** tắt, chú thích "Dùng Import đề… để chuyển sang .exam rồi sửa"
+  (plan-oef.md QO10; Nt0 chốt 2026-10-31).
+- **Thông tin**: đường dẫn file, dung lượng, phiên bản định dạng (file `.oef`: dòng "Định dạng: Open Exam Suite
+  (.oef)" thay cho phiên bản định dạng), ngày thêm, số phần/câu/ảnh, thời gian, ngưỡng đậu, trạng thái và lý do.
 
 ## Thêm đề
 
-- **Thêm đề…** (nút, ⌘O, menu File): chọn một hoặc nhiều file `.exam`.
-- **Kéo thả** một hoặc nhiều file `.exam` vào cửa sổ. File không phải `.exam` bị bỏ qua và được báo.
-- **Bản Học viên mở `.exam` từ Finder** (nhấp đúp, Open With, kéo vào biểu tượng Dock): thêm vào thư viện,
-  mở cửa sổ Thư viện nếu đang đóng và chọn đề đó. Bản Admin mở `.exam` từ Finder vào cửa sổ soạn đề
-  như hiện nay (kết luận spike giai đoạn 0).
+- **Thêm đề…** (nút, ⌘O, menu File): chọn một hoặc nhiều file `.exam` hay `.oef`.
+- **Kéo thả** một hoặc nhiều file `.exam`, `.oef` vào cửa sổ. File đuôi khác bị bỏ qua và được báo.
+- **Bản Học viên mở `.exam`, `.oef` từ Finder** (nhấp đúp, Open With, kéo vào biểu tượng Dock): thêm vào thư viện,
+  mở cửa sổ Thư viện nếu đang đóng và chọn đề đó. Với `.oef` app có hạng Alternate: máy có Open Exam Suite thì nhấp
+  đúp vẫn mở bằng Open Exam Suite, Exam Suite ở Open With (plan-oef.md QO11). Bản Admin mở `.exam` từ Finder vào cửa
+  sổ soạn đề như hiện nay (kết luận spike giai đoạn 0); không mở `.oef` từ Finder, chỉ qua Import đề… (QO10).
+- **File `.oef`** của Open Exam Suite (exam-format.md, mục File `.oef`; ADR 0014): tham chiếu tại chỗ như `.exam`,
+  chuyển thành đề **mỗi lần đọc** (thêm, Làm mới, mở Trước khi thi, làm bài, Xem lại, PDF; plan-oef.md QO9), nên sửa
+  file trong Open Exam Suite rồi Làm mới là thấy. Id đề lấy từ mã và tiêu đề: sửa câu giữ đề (lịch sử nối tiếp); đổi
+  mã hay tiêu đề thì file là đề khác, mục cũ thành Không tìm thấy file. Gói `.exam` bản Admin chuyển từ cùng file có
+  cùng id đề (Dùng file mới / Huỷ như hai file cùng đề).
 - Đọc theo chế độ của bản app: Học viên **nghiêm**, Admin **dễ** (exam-format.md).
 - File được **tham chiếu tại chỗ** bằng bookmark, không chép vào app; vẫn tìm được khi file đổi tên
   hoặc di chuyển trên cùng ổ.

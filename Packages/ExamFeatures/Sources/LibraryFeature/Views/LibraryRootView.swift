@@ -59,7 +59,7 @@ public struct LibraryRootView: View {
                 get: { model.fileImportRequest != nil && model.infoExamID == nil },
                 set: { presented in if !presented { model.fileImporterDismissed() } }
             ),
-            allowedContentTypes: [.examPackage],
+            allowedContentTypes: UTType.examSourceTypes,
             allowsMultipleSelection: model.fileImportRequest?.allowsMultipleSelection ?? true,
             onCompletion: { result in _ = model.completeFileImport(result) },
             onCancellation: { model.cancelFileImport() }
