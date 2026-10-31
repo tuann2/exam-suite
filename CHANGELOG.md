@@ -4,6 +4,12 @@ Theo [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/), phiên bản theo
 
 ## [Unreleased]
 
+### Added
+
+- Bản Admin: **Import đề…** nhận file `.oef` của Open Exam Suite (bản 4 trở lên). Tiêu đề, mã, ngưỡng đậu, thời gian,
+  hướng dẫn, ẩn đáp án và ảnh lấy từ file; chỗ phải sửa hay bỏ có trong báo cáo import. File `.oef` bản cũ báo cần mở
+  bằng Open Exam Suite rồi lưu lại.
+
 ## [0.1.1] – bản public đầu tiên
 
 Bản đầu tiên của Exam Suite ở dạng mã nguồn mở, giấy phép Apache-2.0. Cách làm bài, soạn đề và định dạng đề không đổi so

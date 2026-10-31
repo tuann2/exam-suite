@@ -122,6 +122,8 @@ public enum ExamFileError: Error, Equatable, Hashable, Sendable {
     case unsupportedImageType(String)
     /// Không tạo được gói zip khi ghi.
     case writeFailed(WriteProblem)
+    /// File `.oef` của Open Exam Suite không đọc được (docs/product/exam-format.md, mục File `.oef`).
+    case oef(OEFProblem)
 }
 
 extension ExamFileError: LocalizedError {
@@ -167,6 +169,8 @@ extension ExamFileError: LocalizedError {
             return "Loại ảnh \"\(ext)\" không được hỗ trợ (chỉ png, jpg, jpeg, gif, webp, heic)."
         case let .writeFailed(problem):
             return "Không ghi được gói đề: \(problem.logMessage)"
+        case let .oef(problem):
+            return "File .oef không đọc được: \(problem.logMessage)"
         }
     }
 }
