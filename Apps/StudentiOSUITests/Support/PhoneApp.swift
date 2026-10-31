@@ -196,6 +196,12 @@ enum PhoneAccessibilityAudit {
                 return app.collectionViews.staticTexts.matching(NSPredicate(format: "label == %@", element.label))
                     .allElementsBoundByIndex.contains { $0.frame == frame }
             },
+            // (d) Báo nhầm có bằng chứng: "Text clipped" với chữ của link "Mã nguồn và giấy phép" ở Giới thiệu (lần nào
+            // cũng báo, cả khi là `Link` lẫn `Button`); ảnh ở Accessibility XXXL (bước I3, 2026-10-31) cho thấy chữ xuống
+            // hai dòng, không bị cắt.
+            Exception(type: .textClipped, reason: "báo nhầm: link Mã nguồn và giấy phép, ảnh ở Accessibility XXXL") { issue in
+                issue.element?.label == "Mã nguồn và giấy phép"
+            },
         ]
     }
 

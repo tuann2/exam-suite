@@ -195,6 +195,14 @@ targets:
     deploymentTarget: "18.0"
     sources:
       - Apps/StudentiOS
+      # Giấy phép đi kèm app (màn Giới thiệu đọc và hiện toàn văn; QI13): như LICENSE.txt, NOTICE.txt,
+      # THIRD_PARTY_NOTICES.txt trong Contents/Resources của app macOS (scripts/make_dmg.sh).
+      - path: LICENSE
+        buildPhase: resources
+      - path: NOTICE
+        buildPhase: resources
+      - path: THIRD_PARTY_NOTICES.md
+        buildPhase: resources
     dependencies:
       - package: MobileFeatures
         product: MobileShell
@@ -203,6 +211,8 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: vn.io.nt0.examsuite.ios$(EXAMSUITE_IOS_CONFIG_SUFFIX)$(EXAMSUITE_BUNDLE_ID_SUFFIX)
         PRODUCT_NAME: Exam Suite
         EXAMSUITE_DISPLAY_NAME: Exam Suite
+        # Biểu tượng tạm (scripts/make_icons.swift), Nt0 thay sau.
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         # Phiên bản riêng của bản iOS (QI4), tag phát hành `ios-v*`.
         MARKETING_VERSION: "0.1.0"
         CURRENT_PROJECT_VERSION: "1"

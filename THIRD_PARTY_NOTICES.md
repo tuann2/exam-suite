@@ -7,14 +7,14 @@ ZIPFoundation bản vừa build khớp mục dưới.
 Exam Suite uses the open-source components below. Only ZIPFoundation is compiled into the apps; the test-only packages
 are not distributed, and the vendored agent harness files live in the repository only.
 
-## Đi kèm trong cả hai app (Included in both apps)
+## Đi kèm trong các app (Included in the apps)
 
 ### ZIPFoundation 0.9.20
 
 - Nguồn (source): https://github.com/weichsel/ZIPFoundation
 - Giấy phép (license): MIT
-- Dùng trong (used in): module ExamFile (đọc/ghi gói `.exam`) của cả hai bản app; module ExamImport (đọc `.docx`) của
-  bản Admin.
+- Dùng trong (used in): module ExamFile (đọc/ghi gói `.exam`) của hai bản app macOS và bản iOS; module ExamImport (đọc
+  `.docx`) của bản Admin.
 
 ```text
 MIT License
@@ -42,12 +42,12 @@ SOFTWARE.
 
 ## Chỉ dùng khi chạy test, không phân phối (Test-only, not distributed)
 
-Các gói dưới đây chỉ ở test target `ExamFeaturesSnapshotTests` (swift-snapshot-testing, ADR 0006 và 0010) hoặc được
-`Package.resolved` ghim vì manifest của swift-snapshot-testing khai báo. Không gói nào được biên dịch hay link vào app,
-và không có trong DMG (`scripts/check_bundle_boundary.sh` kiểm hai app).
+Các gói dưới đây chỉ ở test target `ExamFeaturesSnapshotTests` và `MobileSnapshotTests` (swift-snapshot-testing, ADR
+0006 và 0010) hoặc được `Package.resolved` ghim vì manifest của swift-snapshot-testing khai báo. Không gói nào được biên
+dịch hay link vào app, và không có trong DMG (`scripts/check_bundle_boundary.sh` kiểm hai app macOS và app iOS).
 
-These packages are used only by the test target `ExamFeaturesSnapshotTests` or are pinned because the
-swift-snapshot-testing manifest declares them. None of them is compiled into or shipped with the apps.
+These packages are used only by the test targets `ExamFeaturesSnapshotTests` and `MobileSnapshotTests` or are pinned
+because the swift-snapshot-testing manifest declares them. None of them is compiled into or shipped with the apps.
 
 - swift-snapshot-testing 1.19.6 (https://github.com/pointfreeco/swift-snapshot-testing): MIT, Copyright (c) 2019
   Point-Free, Inc.

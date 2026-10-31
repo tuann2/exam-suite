@@ -17,6 +17,7 @@ struct LibraryScreen: View {
     @AppStorage(LibraryPreferenceKey.sortOrder) private var sortOrder: LibrarySortOrder = .recent
     @AppStorage(LibraryPreferenceKey.welcomeBanner) private var welcomeBanner: WelcomeBannerState = .notShown
     @Environment(\.undoManager) private var undoManager
+    @State private var isAboutPresented = false
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -60,14 +61,17 @@ struct LibraryScreen: View {
             onCompletion: { result in _ = library.completeFileImport(result) },
             onCancellation: { library.cancelFileImport() }
         )
-        // Đang có phiên (màn của phiên che Thư viện) hay sheet Trước khi thi đang mở (iOS không hiện hộp thứ hai chồng
-        // lên sheet): hộp hỏi của Thư viện (đề nhận từ app khác) chờ tới khi về Thư viện (QI12b).
+        // Đang có phiên (màn của phiên che Thư viện) hay sheet Trước khi thi, Giới thiệu đang mở (iOS không hiện hộp thứ
+        // hai chồng lên sheet): hộp hỏi của Thư viện (đề nhận từ app khác) chờ tới khi về Thư viện (QI12b).
         .modifier(LibraryPromptAlerts(
             library: library,
-            isActive: !sessions.isSessionPresented && sessions.preExam == nil
+            isActive: !sessions.isSessionPresented && sessions.preExam == nil && !isAboutPresented
         ))
         .safeAreaInset(edge: .bottom) {
             NoticeBar(library: library, sessions: sessions)
+        }
+        .sheet(isPresented: $isAboutPresented) {
+            AboutScreen(info: .load(from: .main))
         }
         .onAppear {
             library.undoManager = undoManager
@@ -139,8 +143,15 @@ struct LibraryScreen: View {
                         }
                     }
                 }
+                Divider()
+                Button {
+                    isAboutPresented = true
+                } label: {
+                    Label(localized("Giới thiệu"), systemImage: "info.circle")
+                }
+                .accessibilityIdentifier("library.about")
             } label: {
-                Label(localized("Mục và sắp xếp"), systemImage: "line.3.horizontal.decrease.circle")
+                Label(localized("Mục, sắp xếp, Giới thiệu"), systemImage: "line.3.horizontal.decrease.circle")
             }
             .accessibilityIdentifier("library.sections")
         }

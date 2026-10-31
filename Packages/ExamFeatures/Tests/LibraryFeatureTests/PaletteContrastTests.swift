@@ -92,6 +92,62 @@ struct PaletteContrastTests {
         }
     }
 
+    // MARK: - Nền của iOS
+
+    /// Nền hệ thống của bản iPhone (plan-ios-v1.md bước I3; giá trị màu của UIKit): `systemBackground`, nền nhóm
+    /// (`systemGroupedBackground`, `secondarySystemBackground`); ở giao diện tối thêm nền nâng của sheet và ô
+    /// (`#1C1C1E`, `#2C2C2E`, `#3A3A3C`). MobileFeature dùng cùng bảng màu số (`MobilePalette`).
+    static let iOSBackgrounds: [Bool: [LibraryPalette.RGB]] = [
+        false: [0xFFFFFF, 0xF2F2F7].map(LibraryPalette.RGB.init(hex:)),
+        true: [0x000000, 0x1C1C1E, 0x2C2C2E, 0x3A3A3C].map(LibraryPalette.RGB.init(hex:)),
+    ]
+
+    @Test("iOS: màu của bảng làm chữ nhỏ đạt 4,5:1; chữ chính và chữ phụ (chữ chính 75%) đạt 4,5:1, biểu tượng màu đạt 3:1 trên nền nhạt pha màu, trên nền hệ thống của iOS",
+          arguments: [false, true])
+    func paletteOnIOSBackgrounds(dark: Bool) throws {
+        // `UIColor.label` của iOS: đen/trắng đặc.
+        let label = LibraryPalette.RGB(hex: dark ? 0xFFFFFF : 0x000000)
+        for background in try #require(Self.iOSBackgrounds[dark]) {
+            for (name, pair) in Self.textColors {
+                let ratio = LibraryPalette.contrast(pair.rgb(dark: dark), background)
+                #expect(ratio >= Self.smallText, "\(name) trên \(background): \(ratio)")
+            }
+            let secondary = LibraryPalette.flatten(label, alpha: 0.75, over: background)
+            #expect(LibraryPalette.contrast(secondary, background) >= Self.smallText, "chữ phụ trên \(background)")
+            for tint in Self.tints {
+                let blended = Self.blend(tint.background, over: background, dark: dark)
+                #expect(LibraryPalette.contrast(label, blended) >= Self.smallText, "chữ chính trên \(tint.name)")
+                let ratio = LibraryPalette.contrast(tint.tone.rgb(dark: dark), blended)
+                #expect(ratio >= Self.largeTextOrIcon, "biểu tượng trên \(tint.name) (\(background)): \(ratio)")
+            }
+            // Chữ teal trên nền nhạt teal (lựa chọn đang chọn, nhãn Đề mẫu).
+            let selected = Self.blend(
+                .tint(LibraryPalette.accentForeground, opacity: LibraryPalette.tintedBackgroundOpacity), over: background, dark: dark)
+            let ratio = LibraryPalette.contrast(LibraryPalette.accentForeground.rgb(dark: dark), selected)
+            #expect(ratio >= Self.smallText, "chữ teal trên nền nhạt teal (\(background)): \(ratio)")
+        }
+    }
+
+    /// Nền màn mà hàng lựa chọn đã chọn (nền nhạt teal) của màn làm bài bản iOS nằm lên (`systemBackground`) và nền ô
+    /// `secondarySystemBackground`. Nền sheet và ô nâng tối hơn (`#2C2C2E`, `#3A3A3C`) không có hàng lựa chọn; trên
+    /// `#3A3A3C` màu Đúng/Sai/cảnh báo chỉ đạt khoảng 4,2–4,5:1, nên đặt hàng lựa chọn lên đó phải kiểm lại.
+    static let iOSOptionRowBackgrounds: [Bool: [LibraryPalette.RGB]] = [
+        false: [0xFFFFFF, 0xF2F2F7].map(LibraryPalette.RGB.init(hex:)),
+        true: [0x000000, 0x1C1C1E].map(LibraryPalette.RGB.init(hex:)),
+    ]
+
+    @Test("iOS: chữ màu của bảng (Đúng/Sai/cảnh báo, teal) trên hàng lựa chọn đã chọn đạt 4,5:1", arguments: [false, true])
+    func paletteTextOnIOSSelectedOption(dark: Bool) throws {
+        for background in try #require(Self.iOSOptionRowBackgrounds[dark]) {
+            let row = Self.blend(
+                .tint(LibraryPalette.accentForeground, opacity: LibraryPalette.tintedBackgroundOpacity), over: background, dark: dark)
+            for (name, pair) in Self.textColors {
+                let ratio = LibraryPalette.contrast(pair.rgb(dark: dark), row)
+                #expect(ratio >= Self.smallText, "\(name) trên hàng đã chọn \(row) (nền \(background)): \(ratio)")
+            }
+        }
+    }
+
     // MARK: - Nền nhạt của app
 
     @Test("Chữ .primary đạt 4,5:1 và biểu tượng màu của dải đạt 3:1 trên mọi nền nhạt pha màu, trên mọi nền",

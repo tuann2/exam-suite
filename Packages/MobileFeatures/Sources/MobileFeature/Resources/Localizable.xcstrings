@@ -549,12 +549,72 @@
         }
       }
     },
+    "Dùng ZIPFoundation (giấy phép MIT) · © 2017–2025 Thomas Zoechling" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uses ZIPFoundation (MIT License) · © 2017–2025 Thomas Zoechling"
+          }
+        }
+      }
+    },
+    "Exam Suite là dự án cá nhân của Nt0." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exam Suite is a personal project by Nt0."
+          }
+        }
+      }
+    },
     "Giải thích" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Explanation"
+          }
+        }
+      }
+    },
+    "Giấy phép" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Licenses"
+          }
+        }
+      }
+    },
+    "Giấy phép Apache 2.0" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apache License 2.0"
+          }
+        }
+      }
+    },
+    "Giấy phép Apache 2.0 · © 2026 Nt0" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Licensed under the Apache License 2.0 · © 2026 Nt0"
+          }
+        }
+      }
+    },
+    "Giới thiệu" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "About"
           }
         }
       }
@@ -641,6 +701,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "There are no incorrect questions left to practice."
+          }
+        }
+      }
+    },
+    "Không hiện được ảnh của câu này" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t show this question’s image"
           }
         }
       }
@@ -760,6 +830,16 @@
         }
       }
     },
+    "Mã nguồn và giấy phép" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Source Code and Licenses"
+          }
+        }
+      }
+    },
     "Mỗi lần bạn nộp bài Luyện tập hoặc Thi sẽ được ghi ở đây, mới nhất trước." : {
       "localizations" : {
         "en" : {
@@ -780,12 +860,12 @@
         }
       }
     },
-    "Mục và sắp xếp" : {
+    "Mục, sắp xếp, Giới thiệu" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Section and Sort"
+            "value" : "Section, Sort, About"
           }
         }
       }
@@ -837,6 +917,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Weakest section"
+          }
+        }
+      }
+    },
+    "Phiên bản %@ (%@)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Version %1$@ (%2$@)"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Phiên bản %1$@ (%2$@)"
           }
         }
       }
@@ -982,12 +1078,32 @@
         }
       }
     },
+    "Thông báo (NOTICE)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "NOTICE"
+          }
+        }
+      }
+    },
     "Thư viện" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Library"
+          }
+        }
+      }
+    },
+    "Thư viện bên thứ ba" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Third-Party Libraries"
           }
         }
       }
