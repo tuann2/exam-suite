@@ -949,6 +949,160 @@
         }
       }
     },
+    "File .oef không đọc được: %@ có %lld lựa chọn (tối đa 26)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t read the .oef file: %1$@ has %2$lld options (maximum 26)."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "File .oef không đọc được: %1$@ có %2$lld lựa chọn (tối đa 26)."
+          }
+        }
+      }
+    },
+    "File .oef không đọc được: %@ có hai lựa chọn cùng chữ %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t read the .oef file: %1$@ has two options with the letter %2$@."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "File .oef không đọc được: %1$@ có hai lựa chọn cùng chữ %2$@."
+          }
+        }
+      }
+    },
+    "File .oef không đọc được: ảnh của %@ không thuộc loại được hỗ trợ (png, jpg, gif, webp, heic)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t read the .oef file: the image of %@ isn’t a supported type (png, jpg, gif, webp, heic)."
+          }
+        }
+      }
+    },
+    "File .oef không đọc được: ảnh của %@ vượt giới hạn %lld byte." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t read the .oef file: the image of %1$@ exceeds the limit of %2$lld bytes."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "File .oef không đọc được: ảnh của %1$@ vượt giới hạn %2$lld byte."
+          }
+        }
+      }
+    },
+    "File .oef không đọc được: đáp án %@ của %@ không khớp lựa chọn nào." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t read the .oef file: answer %1$@ of %2$@ doesn’t match any option."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "File .oef không đọc được: đáp án %1$@ của %2$@ không khớp lựa chọn nào."
+          }
+        }
+      }
+    },
+    "File .oef không đọc được: dữ liệu hỏng ở byte %@, hoặc file không phải đề của Open Exam Suite." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t read the .oef file: the data is damaged at byte %@, or the file isn’t an Open Exam Suite exam."
+          }
+        }
+      }
+    },
+    "File .oef không đọc được: file .oef bản cũ (trước Open Exam Suite 4). Mở file bằng Open Exam Suite rồi lưu lại để có bản mới." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t read the .oef file: it’s an old .oef file (before Open Exam Suite 4). Open it in Open Exam Suite and save it again to get the new format."
+          }
+        }
+      }
+    },
+    "File .oef không đọc được: file có quá %lld phần, câu, lựa chọn và đáp án." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t read the .oef file: the file has more than %lld sections, questions, options, and answers."
+          }
+        }
+      }
+    },
+    "File .oef không đọc được: file có trường không được hỗ trợ: %@." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t read the .oef file: the file has unsupported fields: %@."
+          }
+        }
+      }
+    },
+    "File .oef không đọc được: file không có câu hỏi nào." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t read the .oef file: the file has no questions."
+          }
+        }
+      }
+    },
+    "File .oef không đọc được: file vượt giới hạn %lld byte." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t read the .oef file: the file exceeds the limit of %lld bytes."
+          }
+        }
+      }
+    },
+    "File .oef không đọc được: ngưỡng đậu không nằm trong thang 0–1000." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t read the .oef file: the passing score isn’t on the 0–1000 scale."
+          }
+        }
+      }
+    },
+    "File .oef không đọc được: phần chữ của file vượt giới hạn %lld byte." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can’t read the .oef file: the text in the file exceeds the limit of %lld bytes."
+          }
+        }
+      }
+    },
     "File \"%@\" đang nằm trong Thùng rác. Hãy chuyển file ra khỏi Thùng rác rồi thêm lại." : {
       "localizations" : {
         "en" : {

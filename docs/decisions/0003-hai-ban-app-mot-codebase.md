@@ -43,3 +43,6 @@ Tradeoffs:
 ## Follow-Up
 
 - Kiểm bằng `scripts/check_boundaries.py` (đồ thị phụ thuộc + `project.yml` + import trong `Apps/Student`) và job `apps-macos` (nm binary).
+- 2026-10-31 (ADR 0014): bộ đọc `.oef` nằm ở `ExamFile` (lõi dùng chung) vì bản Học viên mở thẳng `.oef`; Import đề…
+  của bản Admin gọi đúng bộ đọc đó qua `ExamImport`. Ranh giới không đổi: bản Học viên vẫn không chứa AuthoringFeature,
+  AuthoringData, ExamImport.

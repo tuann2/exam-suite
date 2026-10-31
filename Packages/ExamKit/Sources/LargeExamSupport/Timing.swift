@@ -32,6 +32,10 @@ public extension TimingBudget {
     static let examFileRead = TimingBudget(
         id: "examfile.read", label: "Đọc nghiêm gói đề chuẩn (thành phần của Thêm đề, Bắt đầu)",
         budget: .milliseconds(1_500), limit: .seconds(6))
+    /// Như `examFileRead`: đọc file `.oef` là thành phần của cùng thao tác Thêm đề, Bắt đầu (docs/product/plan-oef.md).
+    static let oefRead = TimingBudget(
+        id: "oef.read", label: "Đọc nghiêm đề chuẩn dạng .oef (thành phần của Thêm đề, Bắt đầu)",
+        budget: .milliseconds(1_500), limit: .seconds(6))
     static let examFileWrite = TimingBudget(
         id: "examfile.write", label: "Ghi gói đề chuẩn có ảnh (thành phần của Lưu đề)",
         budget: .seconds(3), limit: .seconds(10))

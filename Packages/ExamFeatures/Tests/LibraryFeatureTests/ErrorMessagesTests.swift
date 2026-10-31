@@ -187,6 +187,14 @@ struct ErrorMessagesTests {
             .unsupportedImageType("bmp"),
             .writeFailed(.encodingFailed("E")), .writeFailed(.archiveUnavailable), .writeFailed(.archiveFailed("Z")),
             .writeFailed(.replaceFailed(fileName: "de.exam", systemReason: "Permission denied")),
+            .oef(.legacyFormat), .oef(.malformed(offset: 0)), .oef(.malformed(offset: 4_096)), .oef(.noQuestions),
+            .oef(.tooLarge(.file, limit: 100)), .oef(.tooLarge(.text, limit: 40)), .oef(.tooLarge(.elements, limit: 9)),
+            .oef(.imageTooLarge(OEFPlace(section: 0, question: 1), limit: 10)),
+            .oef(.unknownFields(["properties.#8", "sections[0].questions[0].#9", "#3"])),
+            .oef(.passmarkOutOfRange), .oef(.unsupportedImage(OEFPlace(section: 1, question: 0))),
+            .oef(.tooManyOptions(OEFPlace(section: 0, question: 0), count: 28)),
+            .oef(.duplicateOptionLetter(OEFPlace(section: 0, question: 1), letter: "A")),
+            .oef(.answerNotInOptions(OEFPlace(section: 2, question: 4), letters: ["D", "U+0000"])),
         ]
     }()
 

@@ -53,6 +53,10 @@ fun num(value: Int): String = Fmt.number(value, interfaceLocale())
 
 @Composable
 @ReadOnlyComposable
+fun num(value: Long): String = Fmt.number(value, interfaceLocale())
+
+@Composable
+@ReadOnlyComposable
 fun percentText(value: Int): String = Fmt.percent(value, interfaceLocale())
 
 @Composable

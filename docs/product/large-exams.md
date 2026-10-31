@@ -53,6 +53,10 @@ LibraryDataTests. Ngân sách tính cho **build Release** trên Mac Apple silico
 | Bộ nhớ khi làm bài đề chuẩn (ảnh giải mã khi cần) | ≤ 400 MB | — | — (đo tay, Activity Monitor) |
 | Bộ nhớ đỉnh khi xuất PDF 2.000 câu | ≤ 1 GB | — | — (đo tay) |
 
+Đề dạng `.oef` (ADR 0014): đọc nghiêm đề chuẩn mã hoá thành `.oef` (`oef.read`, thành phần của Thêm đề và Bắt đầu, gồm
+băm SHA-256 để đặt tên 200 ảnh) mang ngân sách của hai thao tác đó: ≤ 1,5 s Release, giới hạn chặn ≤ 6 s Debug
+(`ExamFileTimingTests`).
+
 **Bước 9 (2026-10-18): mọi mục đo được đạt ngân sách Release** (số ở
 [large-exam-measurements.md](../notes/large-exam-measurements.md), commit 328b956). Mục từng vượt: lần gõ đầu vào ô tìm
 của Soạn đề dựng chỉ mục tìm của cả đề trên main actor (~43 ms Release, ~44–48 ms Debug); nay bộ soạn đề dựng chỉ mục

@@ -15,4 +15,8 @@ public enum ExamFileFormat {
     public static let mediaDirectory = "media"
     /// UTType identifier khai báo trong Info.plist của hai app.
     public static let uniformTypeIdentifier = "vn.io.nt0.exam"
+    /// Đuôi file `.oef` của Open Exam Suite, chỉ đọc (docs/product/exam-format.md, mục File `.oef`).
+    public static let oefFileExtension = "oef"
+    /// UTType nhập cho `.oef` (Open Exam Suite chỉ đăng ký đuôi, không khai báo UTType).
+    public static let oefUniformTypeIdentifier = "vn.io.nt0.examsuite.oef"
 }

@@ -1,4 +1,5 @@
 import AuthoringData
+import ExamFile
 import ExamImport
 import ExamKit
 import Foundation
@@ -66,7 +67,7 @@ public enum AuthoringMessages {
     public static func message(for error: ImportError) -> String {
         switch error {
         case let .unsupportedFileType(ext):
-            return localized("Không import được file \".\(ext)\". Chỉ hỗ trợ .txt, .docx và .vce.")
+            return localized("Không import được file \".\(ext)\". Chỉ hỗ trợ .txt, .docx, .vce và .oef.")
         case let .unreadableFile(.system(description)):
             return localized("Không đọc được file: \(description)")
         case let .unreadableFile(.cannotOpen(fileName)):
@@ -89,6 +90,8 @@ public enum AuthoringMessages {
             return localized("File vượt giới hạn ở file .txt (tối đa \(limit) byte).")
         case let .tooLarge(.vceFile, limit):
             return localized("File vượt giới hạn ở file .vce (tối đa \(limit) byte).")
+        case let .tooLarge(.oefFile, limit):
+            return localized("File vượt giới hạn ở file .oef (tối đa \(limit) byte).")
         case let .tooLarge(.docxEntryCount, limit):
             return localized("File vượt giới hạn ở số entry trong file .docx (tối đa \(limit) entry).")
         case let .tooLarge(.docxTotalSize, limit):
@@ -104,6 +107,9 @@ public enum AuthoringMessages {
             return localized("Không tìm thấy câu hỏi nào. Mỗi câu phải bắt đầu bằng dòng \"Q1:\" hoặc \"QUESTION 1\".")
         case let .unreadableVCE(problem):
             return localized("File .vce không đọc được: \(phrase(problem)). Nếu có bản .docx xuất từ VCE thì import file đó.")
+        case let .unreadableOEF(problem):
+            // Cùng câu với bản Học viên khi mở thẳng file (InterfaceCore).
+            return ErrorMessages.message(for: ExamFileError.oef(problem))
         }
     }
 
@@ -235,6 +241,24 @@ public enum AuthoringMessages {
             return localized("Phần id \(String(id)) trong bảng phần không có tên; câu được xếp vào phần \"\(fallback)\".")
         case let .unknownSectionID(id, fallback):
             return localized("Câu trỏ tới phần id \(String(id)) không có trong bảng phần; xếp vào phần \"\(fallback)\".")
+        case let .oefUnknownField(path):
+            return localized("Trường \(path) của file .oef không được hỗ trợ nên bị bỏ qua.")
+        case let .invalidOefCode(code):
+            return localized("Mã đề \"\(code)\" không hợp lệ (1–32 ký tự chữ không dấu, số, . _ -) nên bị bỏ.")
+        case .oefPassmarkOutOfRange:
+            return localized("Ngưỡng đậu trong file không nằm trong thang 0–1000 nên để trống; hãy nhập khi import.")
+        case let .invalidOefTimeLimit(value):
+            return localized("Thời gian trong file (\(value)) không hợp lệ nên để trống; hãy nhập khi import.")
+        case let .oefEmptySection(section):
+            return localized("Phần thứ \(section) không có câu nào nên bị bỏ.")
+        case let .oefUntitledSection(section, fallback):
+            return localized("Phần thứ \(section) không có tên; đặt tên \"\(fallback)\".")
+        case let .oefDuplicateOptionLetter(letter):
+            return localized("Hai lựa chọn cùng chữ \(letter); đáp án theo lựa chọn đầu tiên mang chữ đó.")
+        case let .oefAnswerNotInOptions(letters):
+            return localized("Đáp án \(letters.joined(separator: ", ")) không khớp lựa chọn nào nên bị bỏ.")
+        case .oefImageTooLarge:
+            return localized("Ảnh của câu vượt giới hạn kích thước nên bị bỏ.")
         case let .summary(code, count, limit):
             return localized("… và \(count) mục tương tự (\(code.rawValue)) không liệt kê chi tiết: báo cáo chỉ ghi \(limit) mục đầu của mỗi loại.")
         }

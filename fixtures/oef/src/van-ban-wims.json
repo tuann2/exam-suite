@@ -1,0 +1,4 @@
+{
+ "description": "File chữ của WIMS cũng mang đuôi .oef: byte đầu '\\\\' là khoá kiểu dây 4 (nhóm): dây hỏng ở byte 0.",
+ "prefix": "5c7469746c657b42c3a0692074e1baad707d0a5c6c616e67756167657b76697d0a"
+}

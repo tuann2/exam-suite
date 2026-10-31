@@ -117,6 +117,14 @@ struct ExamFileInspector: Sendable {
              .validationFailed:
             // invalidJSON: dấu phẩy thừa chỉ bị từ chối ở chế độ nghiêm.
             return true
+        case let .oef(problem):
+            switch problem {
+            case .legacyFormat, .malformed, .noQuestions, .tooLarge:
+                return false
+            case .unknownFields, .passmarkOutOfRange, .unsupportedImage, .imageTooLarge, .tooManyOptions,
+                 .duplicateOptionLetter, .answerNotInOptions:
+                return true
+            }
         }
     }
 

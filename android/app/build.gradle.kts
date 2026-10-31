@@ -75,10 +75,12 @@ android {
 }
 
 // Gói .exam nhị phân dùng chung với lõi Swift (fixtures/packages) làm assets của test trên máy: luồng mở `.exam` từ app
-// khác và đọc gói trên ART (ZipPathValidator của Android 14+).
+// khác và đọc gói trên ART (ZipPathValidator của Android 14+). File .oef (fixtures/oef) làm Java resource thay vì assets:
+// hai thư mục cùng có expected.json, gộp assets từ cả hai báo trùng tên.
 androidComponents {
     onVariants { variant ->
         variant.androidTest?.sources?.assets?.addStaticSourceDirectory(rootProject.file("../fixtures/packages").absolutePath)
+        variant.androidTest?.sources?.resources?.addStaticSourceDirectory(rootProject.file("../fixtures/oef").absolutePath)
     }
 }
 

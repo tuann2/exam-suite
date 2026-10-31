@@ -1,0 +1,4 @@
+{
+ "description": "Trường lạ #3 fixed32 chỉ còn 2 byte → dây hỏng ở byte 1 (đầu giá trị).",
+ "prefix": "1d0000"
+}

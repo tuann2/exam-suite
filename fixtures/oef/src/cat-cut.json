@@ -1,0 +1,22 @@
+{
+ "description": "Gốc khai độ dài Properties 27 byte nhưng file bị cắt còn 20 byte: dây hỏng ở byte 1 (đầu varint độ dài).",
+ "message": [
+  [
+   1,
+   "message",
+   [
+    [
+     1,
+     "string",
+     "Đề bị cắt"
+    ],
+    [
+     4,
+     "double",
+     500
+    ]
+   ]
+  ]
+ ],
+ "truncate": 20
+}
