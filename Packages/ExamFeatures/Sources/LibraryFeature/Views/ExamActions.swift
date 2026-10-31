@@ -147,12 +147,14 @@ struct ExamAccessibilityActions: View {
     }
 }
 
-/// Nút cho các bước tiếp theo của trạng thái (Tìm file…, Xoá khỏi thư viện, Sửa) và lời nhắc cập nhật app.
+/// Nút cho các bước tiếp theo của trạng thái (Tìm file…, Xoá khỏi thư viện, Sửa) và lời nhắc cập nhật app. Bản Admin,
+/// đề `.oef`: bước Sửa thành dòng chữ chỉ sang Import đề… (chú thích của nút tắt không phải lúc nào cũng hiện).
 struct NextStepButtons: View {
     let actions: ExamActions
 
     var body: some View {
         let steps = actions.presentation.nextSteps
+        let editHint = steps.contains(.edit) ? actions.editHelp : nil
         if !steps.isEmpty {
             VStack(alignment: .leading, spacing: 6) {
                 if steps.contains(.updateApp) {
@@ -161,8 +163,14 @@ struct NextStepButtons: View {
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
+                if let editHint {
+                    Text(editHint)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
                 HStack(spacing: 8) {
-                    ForEach(steps.filter { $0 != .updateApp }, id: \.self) { step in
+                    ForEach(steps.filter { $0 != .updateApp && !($0 == .edit && editHint != nil) }, id: \.self) { step in
                         button(for: step)
                     }
                 }

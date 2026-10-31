@@ -99,7 +99,7 @@ struct LibraryScreen: View {
             ContentUnavailableView {
                 Label(localized("Chưa có đề nào"), systemImage: "books.vertical")
             } description: {
-                Text("Thêm file đề .exam bằng nút Thêm đề, hoặc mở file .exam từ app khác.", bundle: .module)
+                Text("Thêm file đề .exam hay .oef bằng nút Thêm đề, hoặc mở file từ app khác.", bundle: .module)
             }
         case .recent where library.recentEntries().isEmpty:
             ContentUnavailableView {
@@ -315,7 +315,7 @@ struct WelcomeBannerRow: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Chào mừng bạn đến với Exam Suite", bundle: .module)
                     .font(.headline)
-                Text("Thư viện có sẵn đề mẫu để bạn làm quen. Thêm đề của bạn bằng nút Thêm đề, hoặc mở file .exam từ app khác.", bundle: .module)
+                Text("Thư viện có sẵn đề mẫu để bạn làm quen. Thêm đề của bạn bằng nút Thêm đề, hoặc mở file .exam hay .oef từ app khác.", bundle: .module)
                     .font(.subheadline)
                     .foregroundStyle(MobilePalette.secondaryText)
             }

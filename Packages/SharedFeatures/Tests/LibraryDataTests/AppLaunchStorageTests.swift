@@ -334,11 +334,16 @@ struct AppLaunchStorageTests {
         let declarations = trimmedLines.filter { $0.hasPrefix("- UTTypeIdentifier:") }
         let pair = ["- UTTypeIdentifier: " + identifier, "- UTTypeIdentifier: " + oef]
         #expect(declarations == pair + pair + pair, "\(declarations)")
-        // Document type `.oef`: hai bản Học viên có, bản Admin không.
-        for (target, hasDocumentType) in [("ExamSuite", true), ("ExamSuiteAdmin", false), ("ExamSuiteiOS", true)] {
+        // Document type `.oef`: hai bản Học viên có, hạng như `.exam` (Alternate; bản `.uitest` của macOS None qua biến
+        // hạng), bản Admin không.
+        for (target, rank) in [("ExamSuite", "$(EXAMSUITE_DOC_HANDLER_RANK)"), ("ExamSuiteAdmin", nil),
+                               ("ExamSuiteiOS", "Alternate")] {
             let block = try #require(Self.targetBlock(target, in: lines), "project.yml thiếu target \(target)")
-            let contentTypes = block.map { $0.trimmingCharacters(in: .whitespaces) }.filter { $0 == "- " + oef }
-            #expect(contentTypes.count == (hasDocumentType ? 1 : 0), "\(target): LSItemContentTypes của .oef")
+            let trimmed = block.map { $0.trimmingCharacters(in: .whitespaces) }
+            #expect(trimmed.filter { $0 == "- " + oef }.count == (rank == nil ? 0 : 1), "\(target): LSItemContentTypes của .oef")
+            guard let rank else { continue }
+            let name = try #require(trimmed.firstIndex(of: "- CFBundleTypeName: Open Exam Suite Exam"), "\(target): document type .oef")
+            #expect(trimmed[name + 2] == "LSHandlerRank: " + rank, "\(target): hạng của .oef")
         }
     }
 

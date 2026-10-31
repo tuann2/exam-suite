@@ -8,7 +8,8 @@ là của bản macOS). Bản macOS ghi ở `CHANGELOG.md`, bản Android ở `a
 ### Added
 
 - Mở file `.oef` của Open Exam Suite (bản 4 trở lên) như `.exam`: Thêm đề, "Mở bằng"/chia sẻ từ app khác, app Tệp. File
-  được đọc và chuyển mỗi lần mở, cùng đề và cùng lịch sử thi với bản macOS.
+  được đọc và chuyển mỗi lần mở; như bản macOS, sửa câu trong Open Exam Suite (giữ mã và tiêu đề) vẫn là cùng đề, lịch
+  sử thi nối tiếp.
 
 ## [0.1.0] – chưa phát hành (chờ cổng GI3)
 

@@ -12,7 +12,7 @@ Code: `LibraryData` (dữ liệu, không giao diện) và `LibraryModel` (model 
 ## Cửa sổ
 
 - Một cửa sổ Thư viện duy nhất cho mỗi bản app, tối thiểu 960×640, co giãn được; giữ bố cục ở 200%.
-- Bản Học viên: đóng cửa sổ Thư viện thì app thoát; mở `.exam` từ Finder khi đó khởi động lại app vào Thư viện.
+- Bản Học viên: đóng cửa sổ Thư viện thì app thoát; mở `.exam`, `.oef` từ Finder khi đó khởi động lại app vào Thư viện.
   Bản Admin: luôn mở Thư viện khi khởi động, kể cả khi khởi động bằng một file `.exam` (mở kèm cửa sổ soạn đề).
 - `NavigationSplitView`: sidebar có **Tất cả đề**, **Gần đây**, **Lịch sử thi**; vùng nội dung bên phải.
 - Thanh công cụ: **Thêm đề** (⌘O), tìm kiếm (⌘F), sắp xếp, lọc, chuyển **lưới / danh sách**.

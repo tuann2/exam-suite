@@ -321,7 +321,7 @@ public final class LibraryModel {
         lhs.standardizedFileURL.resolvingSymlinksInPath().path == rhs.standardizedFileURL.resolvingSymlinksInPath().path
     }
 
-    /// Bản Học viên: file `.exam` mở từ Finder (nhấp đúp, Open With, kéo vào biểu tượng Dock). Đi qua
+    /// Bản Học viên: file `.exam`, `.oef` mở từ Finder (nhấp đúp, Open With, kéo vào biểu tượng Dock). Đi qua
     /// đúng luồng Thêm đề; mở cửa sổ Thư viện hoặc đưa nó lên trước.
     @discardableResult
     public func openFromFinder(_ urls: [URL]) -> Task<Void, Never> {

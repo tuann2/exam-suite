@@ -30,7 +30,7 @@ settings:
     # và bản build có đuôi mà thiếu tham số cô lập thì dừng (LibraryData/AppLaunchStorage.swift; AppLaunchStorageTests
     # kiểm hai dòng PRODUCT_BUNDLE_IDENTIFIER bên dưới).
     EXAMSUITE_BUNDLE_ID_SUFFIX: ""
-    # Vai của app với file `.exam` (LSHandlerRank trong Info.plist): build thường lấy
+    # Vai của app với file `.exam`, `.oef` (LSHandlerRank trong Info.plist): build thường lấy
     # EXAMSUITE_DOC_HANDLER_RANK_NORMAL của từng target (Học viên Alternate, Admin Owner); build UI test (đuôi
     # `.uitest`, `:identifier` đổi thành `_uitest`) lấy EXAMSUITE_DOC_HANDLER_RANK_NORMAL_uitest = None, để bản `.uitest`
     # trong DerivedData không bao giờ được LaunchServices chọn mở `.exam` từ Finder (nó sẽ dừng vì thiếu tham số).

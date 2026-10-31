@@ -127,6 +127,14 @@ Thư viện, phiên thi đọc qua `ExamSourceReader`, UTType; sau khi I3 của 
   `.exam`; luồng 3 chưa dùng nên truyền `.oef` ngay lần mở đầu, không thêm lần mở app. Thông tin của macOS thay dòng
   "Phiên bản định dạng" bằng "Định dạng: Open Exam Suite (.oef)" (đề `.oef` luôn ra phiên bản 1, không có nghĩa); iOS
   chưa có màn Thông tin.
+- 2026-10-31 (review độc lập O2): không chặn; mọi đường đọc và nhận file của bản Học viên (Thêm đề, kéo thả, Finder,
+  `onOpenURL`, `Received/`, Tìm file…, Làm mới, Trước khi thi, làm bài, Kết quả, Xem lại, PDF) đi qua `ExamSourceReader`.
+  Đã sửa: chữ gợi ý (lớp phủ kéo thả, banner chào, Thư viện trống ở macOS và iOS) nhắc cả `.oef`; bản Admin, đề `.oef`
+  có lỗi: bước Sửa thành dòng chữ chỉ sang Import đề… (chú thích của nút tắt có thể không hiện); `uitest_plan.py` map
+  `fixtures/oef/co-ban.oef` sang `PhoneLeaveAppUITests`; câu của CHANGELOG-ios; test kiểm hạng của document type `.oef`;
+  comment. Để GO2: chú thích Sửa ở bản Admin; máy có Open Exam Suite (nếu app khác khai báo export UTI cho `.oef`,
+  LaunchServices có thể ưu tiên UTI đó: hộp chọn file của Thư viện làm mờ `.oef`, Open With không có Exam Suite;
+  Import đề… không bị vì tra theo đuôi).
 - 2026-10-31: `fixtures/oef/**` và `scripts/make_oef.py` để mức `full` của `verify_scope.py` (mặc định với đường dẫn chưa
   có trong bảng): test của ExamFeatures (`OEFImportTests`, `ImportFlowModelTests`) đọc `fixtures/oef/`.
 

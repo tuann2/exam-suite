@@ -32,7 +32,7 @@ public enum LibrarySection: String, CaseIterable, Identifiable, Hashable, Sendab
 
 /// Hộp thoại chọn file đang được yêu cầu.
 public enum FileImportRequest: Hashable, Sendable {
-    /// **Thêm đề…**: chọn một hoặc nhiều file `.exam`.
+    /// **Thêm đề…**: chọn một hoặc nhiều file `.exam`, `.oef`.
     case addExams
     /// **Tìm file…** cho đề mất file: chọn một file.
     case locate(examID: UUID)
