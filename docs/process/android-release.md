@@ -1,8 +1,9 @@
 # Phát hành bản Android
 
-APK phát riêng, ký bằng keystore của Nt0 (Q10 của [plan-android-v1.md](../product/plan-android-v1.md)). Keystore và mật
-khẩu chỉ ở máy của Nt0, không vào git, không lên GitHub (CI không đóng APK). Người dùng cài theo
-[install-android.md](../install-android.md).
+APK ký bằng keystore của Nt0, đăng ở GitHub Releases của repo dạng **Pre-release**, không phải Latest (bản macOS giữ
+Latest); không có trên Google Play. Q10 của [plan-android-v1.md](../product/plan-android-v1.md) ghi "phát riêng"; Nt0 đổi
+khi đăng 0.1.0 (2026-10-23). Keystore và mật khẩu chỉ ở máy của Nt0, không vào git, không lên GitHub (CI không đóng
+APK). Người dùng cài theo [install-android.md](../install-android.md).
 
 ## Một lần: tạo keystore (Nt0)
 
@@ -48,8 +49,16 @@ Thư viện, lịch sử thi (dữ liệu không sao lưu, mobile.md).
    Chứng chỉ in ra phải là của Nt0 (`CN=Nt0`, SHA-256 như các bản trước; bản đầu ghi vào `android/CHANGELOG.md`).
 3. Nt0 cài APK lên điện thoại, chạy thử (cổng GA3 với bản đầu), rồi gắn tag `android-v<versionName>` trên đúng SHA và
    đẩy tag (chỉ Nt0; tag chạy job `android` lint + test của `.github/workflows/android.yml`, không đóng APK).
-4. Gửi `dist/ExamSuite-<versionName>.apk` cùng `LICENSE.txt`, `NOTICE.txt`, `THIRD_PARTY_NOTICES.txt` (Apache-2.0 đòi
-   người nhận có giấy phép; bản macOS để chúng trong DMG, ADR 0001) và hướng dẫn cài.
+4. Nt0 tạo GitHub Release từ tag đó, kèm APK và ba file giấy phép (Apache-2.0 đòi người nhận có giấy phép; bản macOS
+   để chúng trong DMG, ADR 0001); ghi chú lấy từ mục của bản trong `android/CHANGELOG.md`:
+
+   ```bash
+   gh release create android-v<versionName> --verify-tag --prerelease --latest=false \
+     --title "Exam Suite cho Android <versionName> (beta)" --notes-file <ghi chú> \
+     dist/ExamSuite-<versionName>.apk dist/LICENSE.txt dist/NOTICE.txt dist/THIRD_PARTY_NOTICES.txt
+   ```
+
+   Gửi riêng APK (Zalo, WhatsApp…) thì kèm ba file giấy phép và hướng dẫn cài.
 
 Bản release chưa bật R8 (rút gọn, tối ưu mã) ở 0.1.0: test Compose chỉ chạy trên bản debug (Decisions A4 của exec-plan
 `android-v1`).

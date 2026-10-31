@@ -76,8 +76,11 @@ sealed interface ImportResult {
 }
 
 sealed interface ImportProblem {
-    /** Gói không đọc nghiêm được; giao diện dựng câu từ mã của `ExamFileError`. */
+    /** Gói `.exam` hay file `.oef` không đọc nghiêm được; giao diện dựng câu từ mã của `ExamFileError`. */
     data class InvalidPackage(val error: ExamFileError) : ImportProblem
+
+    /** Không phải file đề: không phải zip, không phải `.oef` (nhận theo nội dung, `ExamSourceKind`). */
+    data object NotAnExamFile : ImportProblem
 
     /** File lớn hơn trần chép (`ExamLibrary.MAX_FILE_BYTES`). */
     data class FileTooLarge(val limitBytes: Long) : ImportProblem

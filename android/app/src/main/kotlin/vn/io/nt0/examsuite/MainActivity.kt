@@ -13,11 +13,11 @@ import vn.io.nt0.examsuite.app.AppModel
 import vn.io.nt0.examsuite.app.AppRoot
 import vn.io.nt0.examsuite.ui.ExamSuiteTheme
 
-/** Một Activity cho cả app; nhận `.exam` từ app khác qua "Mở bằng" (VIEW) và "Chia sẻ" (SEND). */
+/** Một Activity cho cả app; nhận `.exam` và `.oef` từ app khác qua "Mở bằng" (VIEW) và "Chia sẻ" (SEND). */
 class MainActivity : ComponentActivity() {
     private val model: AppModel by viewModels()
 
-    // Hộp chọn file của hệ điều hành không biết MIME của .exam (spike A0): lọc mọi file, app tự kiểm nội dung.
+    // Hộp chọn file của hệ điều hành không biết MIME của .exam, .oef (spike A0): lọc mọi file, app tự kiểm nội dung.
     private val picker = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri -> uri?.let(model::add) }
 
     override fun onCreate(savedInstanceState: Bundle?) {

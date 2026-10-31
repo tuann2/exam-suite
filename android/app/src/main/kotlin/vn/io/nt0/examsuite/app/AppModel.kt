@@ -179,9 +179,9 @@ class AppModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    // ---------- Thêm đề, mở .exam từ app khác ----------
+    // ---------- Thêm đề, mở .exam, .oef từ app khác ----------
 
-    /** File `.exam` mở từ app khác (Mở bằng, Chia sẻ): thêm vào Thư viện rồi mở Trước khi thi của đề đó. */
+    /** File `.exam` hay `.oef` mở từ app khác (Mở bằng, Chia sẻ): thêm vào Thư viện rồi mở Trước khi thi của đề đó. */
     fun receive(uri: Uri) {
         if (!_state.value.ready) pendingIncoming += uri else viewModelScope.launch { importUri(uri, openAfter = true) }
     }
