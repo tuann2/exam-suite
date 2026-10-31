@@ -4,8 +4,8 @@ Date: 2026-10-30
 
 ## Status
 
-Active. I0 (PR #8), I1 (PR #9), I2a (PR #10), I2b (PR #11) đã merge; cổng GI1 đạt. Chờ cổng GI2 (Nt0 thử trên iPhone
-thật). I3 trên nhánh `feature/ios-i3` (PR mở, chưa merge tới khi qua GI2).
+Active. I0 (PR #8), I1 (PR #9), I2a (PR #10), I2b (PR #11) đã merge; cổng GI1 đạt. I3 (PR #12) merge trước cổng GI2
+theo lựa chọn của Nt0 (2026-10-31, Decisions); GI2 (Nt0 thử trên iPhone thật) làm sau, lỗi beta sửa bằng PR sau.
 
 ## Outcome
 
@@ -75,11 +75,11 @@ Không có cặp song song.
       Thư viện không làm mờ (ảnh cho thấy lý do lỗi khó đọc). Cổng GI2 sau I2b.
 - [ ] Cổng GI2 (Nt0): cài lên iPhone thật, làm trọn một đề, nhận file qua Zalo/Drive, file iCloud qua app Tệp, cuộc
       gọi đến khi đang làm bài (QI10), VoiceOver, kính iOS 26 ở giao diện sáng, dòng Đề có lỗi của Thư viện.
-- [ ] I3 Hoàn thiện, bản 0.1.0 (nhánh `feature/ios-i3`; chờ cổng GI2 trước khi merge). Đã làm: màn
+- [ ] I3 Hoàn thiện, bản 0.1.0 (nhánh `feature/ios-i3`, PR #12 merge trước GI2: Decisions 2026-10-31). Đã làm: màn
       Giới thiệu (QI13: phiên bản, Apache-2.0, NOTICE, ZIPFoundation; toàn văn giấy phép đi kèm app), biểu tượng tạm
       1024 px (`make_icons.swift`), `PaletteContrastTests` thêm nền của iOS, đo đề chuẩn trên simulator
       (`docs/notes/ios-measurements.md`) và sửa mục vượt ngân sách (ảnh của câu giải mã ngoài main thread),
-      `docs/install-ios.md`, `CHANGELOG-ios.md`. Còn lại (Nt0): sửa lỗi beta từ GI2, rà VoiceOver bốn màn chính trên máy
+      `docs/install-ios.md`, `CHANGELOG-ios.md`. Còn lại (Nt0): sửa lỗi beta từ GI2 (PR sau), rà VoiceOver bốn màn chính trên máy
       thật, cài 0.1.0 qua Xcode, `verify_local.sh --clean --uitest` trên SHA phát hành, tag `ios-v0.1.0`, cổng GI3, đóng
       exec-plan.
 
@@ -322,6 +322,9 @@ Không có cặp song song.
   xem: bố cục nhảy khi ảnh của câu hiện ra (đang giải mã chỉ có khung trống); ảnh giải mã cỡ gốc, chưa thu nhỏ theo cỡ
   hiển thị (plan Phần 6); ảnh ở chi tiết Xem lại bài của iOS chưa phóng to được (macOS có; có từ I2a); Giới thiệu nằm
   trong menu biểu tượng bộ lọc, có thể khó tìm.
+- 2026-10-31 (Nt0): merge I3 (PR #12) trước cổng GI2 để làm bước O2 của plan-oef.md liền mạch (QO12: O2 sau khi I3
+  merge); GI2 thử sau trên `main`, lỗi beta sửa bằng PR sau. Nhánh I3 merge `main` (OEF O1, O3) trước khi verify, chỉ
+  xung đột chữ ở AGENTS.md.
 
 ## Validation
 
