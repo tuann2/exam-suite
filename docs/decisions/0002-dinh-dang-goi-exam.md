@@ -43,3 +43,5 @@ Tradeoffs:
 - `passPercent` là số nguyên để hai cách so sánh ngưỡng đậu (thang 1000 và %) luôn trùng (docs/product/scoring.md).
 - Ràng buộc liên trường do ExamKit và `scripts/validate_exam.py` cùng kiểm.
 - 2026-10-15: trường lạ → bản Học viên từ chối, bản Admin bỏ qua và không giữ khi lưu; vì vậy thêm bất kỳ trường nào cũng phải tăng `formatVersion` (docs/product/exam-format.md, mục Trường lạ).
+- 2026-10-31: ADR 0014 cho phép **đọc** `.oef` bản Protobuf của Open Exam Suite (không ghi); gói `.exam` vẫn là định dạng
+  duy nhất app ghi ra. Câu "Không đọc/ghi `.oef` ở v1" ở trên là quyết định của v1.

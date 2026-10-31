@@ -43,6 +43,9 @@ LARGE_EXAM_DIR="$(mktemp -d)"
 trap 'rm -rf "$LARGE_EXAM_DIR"' EXIT
 $PY scripts/gen_large_exam.py --check --out "$LARGE_EXAM_DIR"
 $PY scripts/validate_exam.py "$LARGE_EXAM_DIR"/de-chuan-*/
+# File .oef của oracle chung (fixtures/oef/, ADR 0014) đúng từng byte với mô tả JSON; kết luận ở expected.json do test
+# Swift (bước 1) và Kotlin đọc.
+$PY scripts/make_oef.py --check
 
 echo "== 3/5 ranh giới kiến trúc; chữ giao diện tra catalog của module (bundle: .module), catalog nguồn vi đủ bản en;"
 echo "       sheet không chặn thoát app; màu tự định nghĩa chỉ ở bảng màu; bộ đọc dòng Timing của measure_large.sh;"

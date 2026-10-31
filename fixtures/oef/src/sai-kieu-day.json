@@ -1,0 +1,19 @@
+{
+ "description": "Title ghi với kiểu dây varint thay vì độ dài: dây hỏng ở byte 2 (khoá của trường).",
+ "message": [
+  [
+   1,
+   "message",
+   [
+    [
+     1,
+     "wire",
+     [
+      0,
+      "05"
+     ]
+    ]
+   ]
+  ]
+ ]
+}

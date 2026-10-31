@@ -1,0 +1,4 @@
+{
+ "description": "Gốc khai độ dài Properties 2^62 byte → dây hỏng ở byte 1 (đầu varint độ dài).",
+ "prefix": "0a80808080808080808040"
+}

@@ -49,7 +49,9 @@ struct AuthoringMessagesTests {
         .tooLarge(what: .docxEntryCount, limit: 20), .tooLarge(what: .docxTotalSize, limit: 512),
         .tooLarge(what: .docxPart("word/document.xml"), limit: 512),
         .tooDeep(part: "word/document.xml", limit: 128),
-        .noQuestions(dropped: 0), .noQuestions(dropped: 2),
+        .noQuestions(dropped: 0), .noQuestions(dropped: 2), .tooLarge(what: .oefFile, limit: 300),
+        .unreadableOEF(.legacyFormat), .unreadableOEF(.malformed(offset: 12)), .unreadableOEF(.noQuestions),
+        .unreadableOEF(.tooLarge(.elements, limit: 9)),
     ] + allVceProblems.map { ImportError.unreadableVCE($0) }
 
     @Test("Lỗi import: tiếng Việt trùng logMessage của ExamImport")
@@ -151,6 +153,10 @@ struct AuthoringMessagesTests {
             .multipleGroups(count: 3, fallbackSection: "Phần chung"),
             .unnamedSection(id: 4, fallbackSection: "Exam A"), .unknownSectionID(id: 12345, fallbackSection: "Phần chung"),
             .summary(code: .noOptions, count: 500, limit: 100),
+            .oefUnknownField("sections[0].questions[2].#9"), .invalidOefCode("MÃ CÓ DẤU"), .oefPassmarkOutOfRange,
+            .invalidOefTimeLimit(0), .oefEmptySection(section: 2),
+            .oefUntitledSection(section: 3, fallbackSection: "Phần chung"), .oefDuplicateOptionLetter("A"),
+            .oefAnswerNotInOptions(["D", "U+0000"]), .oefImageTooLarge,
         ]
         for field in [VceField.title, .code, .sectionNameWithID(3), .groupNameNumber(2), .questionANSIText, .answer] {
             details.append(.assumedEncoding(field: field, hasControlCharacters: false))
@@ -208,6 +214,15 @@ struct AuthoringMessagesTests {
         case .multipleGroups: "multipleGroups"
         case .unnamedSection: "unnamedSection"
         case .unknownSectionID: "unknownSectionID"
+        case .oefUnknownField: "oefUnknownField"
+        case .invalidOefCode: "invalidOefCode"
+        case .oefPassmarkOutOfRange: "oefPassmarkOutOfRange"
+        case .invalidOefTimeLimit: "invalidOefTimeLimit"
+        case .oefEmptySection: "oefEmptySection"
+        case .oefUntitledSection: "oefUntitledSection"
+        case .oefDuplicateOptionLetter: "oefDuplicateOptionLetter"
+        case .oefAnswerNotInOptions: "oefAnswerNotInOptions"
+        case .oefImageTooLarge: "oefImageTooLarge"
         case .summary: "summary"
         }
     }
@@ -215,7 +230,7 @@ struct AuthoringMessagesTests {
     @Test("Mục báo cáo import: đủ mọi loại, tiếng Việt trùng logMessage của ExamImport")
     func reportDetailsMatchData() {
         let details = Self.allDetails
-        #expect(Set(details.map(Self.caseName)).count == 44)
+        #expect(Set(details.map(Self.caseName)).count == 53)
         for detail in details {
             #expect(AuthoringMessages.message(for: detail) == detail.logMessage, "\(detail)")
         }

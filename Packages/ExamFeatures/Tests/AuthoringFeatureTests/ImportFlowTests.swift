@@ -1,6 +1,7 @@
 import AppKit
 import AuthoringData
 @testable import AuthoringFeature
+import ExamFile
 import ExamImport
 import ExamKit
 import Foundation
@@ -223,6 +224,23 @@ struct ImportFlowModelTests {
         #expect(imported.announcement.hasPrefix("Đã import “de-thu.txt”: 2 phần · 3 câu"))
     }
 
+    @Test(".oef thật qua bộ chuyển của app: điền sẵn cả bốn ô; đề dựng ra trùng đề bản Học viên đọc (id, hướng dẫn)")
+    func importOEFFile() async throws {
+        let url = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+            .deletingLastPathComponent().deletingLastPathComponent()
+            .appendingPathComponent("fixtures/oef/co-ban.oef")
+        let model = ImportFlowModel()
+        #expect(model.start(url) == .started)
+        await model.waitUntilSettled()
+        let form = try #require(model.form)
+        #expect(form.title == "Đề thử OEF cơ bản" && form.code == "OEF-01")
+        #expect(form.passPercent == "70" && form.timeLimitMinutes == "45")
+        let imported = try #require(model.confirm())
+        #expect(imported.draft.exam == (try OEFReader.read(contentsOf: url, mode: .strict)).exam)
+        #expect(imported.report.rows.isEmpty)
+    }
+
     @Test("Huỷ khi đang đọc: bộ chuyển đổi dừng, không báo lỗi, không có đề; import lại được")
     func cancelWhileReading() async throws {
         let (started, continuation) = AsyncStream<Void>.makeStream()
@@ -354,7 +372,7 @@ struct ImportFlowModelTests {
         #expect(model.failure?.message == error.logMessage)
     }
 
-    @Test("Đuôi không hỗ trợ: báo lỗi, không đọc file, không mở cửa sổ; hộp chọn file cho .txt, .docx, .vce")
+    @Test("Đuôi không hỗ trợ: báo lỗi, không đọc file, không mở cửa sổ; hộp chọn file cho .txt, .docx, .vce, .oef")
     func unsupportedExtensionIsRejected() {
         let fixed = FixedRunner(.success(sampleResult()))
         var failures: [ImportFailure] = []
@@ -365,7 +383,7 @@ struct ImportFlowModelTests {
         #expect(failures.count == 1)
         #expect(failures[0].message == ImportError.unsupportedFileType("pdf").logMessage)
         #expect(fixed.calls.isEmpty)
-        #expect(ImportFlowModel.selectableExtensions == ["txt", "docx", "vce"])
+        #expect(ImportFlowModel.selectableExtensions == ["txt", "docx", "vce", "oef"])
     }
 
     @Test(".vce tự dựng (bộ đọc thật): đọc nền, hộp xác nhận điền sẵn mã, ngưỡng, thời gian; Import dựng đề")

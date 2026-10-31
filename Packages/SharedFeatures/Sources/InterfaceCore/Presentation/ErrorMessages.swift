@@ -217,7 +217,46 @@ public enum ErrorMessages {
             localized("Loại ảnh \"\(ext)\" không được hỗ trợ (chỉ png, jpg, jpeg, gif, webp, heic).")
         case let .writeFailed(problem):
             writeMessage(problem)
+        case let .oef(problem):
+            message(for: problem)
         }
+    }
+
+    /// File `.oef` của Open Exam Suite. Vị trí byte là mã kỹ thuật, giữ chữ số trơn như số phiên bản định dạng.
+    private static func message(for problem: OEFProblem) -> String {
+        switch problem {
+        case .legacyFormat:
+            localized("File .oef không đọc được: file .oef bản cũ (trước Open Exam Suite 4). Mở file bằng Open Exam Suite rồi lưu lại để có bản mới.")
+        case let .malformed(offset):
+            localized("File .oef không đọc được: dữ liệu hỏng ở byte \(String(offset)), hoặc file không phải đề của Open Exam Suite.")
+        case .noQuestions:
+            localized("File .oef không đọc được: file không có câu hỏi nào.")
+        case let .tooLarge(.file, limit):
+            localized("File .oef không đọc được: file vượt giới hạn \(limit) byte.")
+        case let .tooLarge(.text, limit):
+            localized("File .oef không đọc được: phần chữ của file vượt giới hạn \(limit) byte.")
+        case let .tooLarge(.elements, limit):
+            localized("File .oef không đọc được: file có quá \(limit) phần, câu, lựa chọn và đáp án.")
+        case let .imageTooLarge(place, limit):
+            localized("File .oef không đọc được: ảnh của \(oefPlace(place)) vượt giới hạn \(limit) byte.")
+        case let .unknownFields(paths):
+            localized("File .oef không đọc được: file có trường không được hỗ trợ: \(paths.joined(separator: ", ")).")
+        case .passmarkOutOfRange:
+            localized("File .oef không đọc được: ngưỡng đậu không nằm trong thang 0–1000.")
+        case let .unsupportedImage(place):
+            localized("File .oef không đọc được: ảnh của \(oefPlace(place)) không thuộc loại được hỗ trợ (png, jpg, gif, webp, heic).")
+        case let .tooManyOptions(place, count):
+            localized("File .oef không đọc được: \(oefPlace(place)) có \(count) lựa chọn (tối đa 26).")
+        case let .duplicateOptionLetter(place, letter):
+            localized("File .oef không đọc được: \(oefPlace(place)) có hai lựa chọn cùng chữ \(letter).")
+        case let .answerNotInOptions(place, letters):
+            localized("File .oef không đọc được: đáp án \(letters.joined(separator: ", ")) của \(oefPlace(place)) không khớp lựa chọn nào.")
+        }
+    }
+
+    /// "phần 2, câu 3": vị trí câu trong file `.oef`, đếm từ 1.
+    public static func oefPlace(_ place: OEFPlace) -> String {
+        localized("phần \(place.section + 1), câu \(place.question + 1)")
     }
 
     private static func message(for problem: JSONProblem) -> String {

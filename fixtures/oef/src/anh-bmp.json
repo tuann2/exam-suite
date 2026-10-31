@@ -1,0 +1,90 @@
+{
+ "description": "Ảnh BMP (không thuộc png, jpg, gif, webp, heic).",
+ "message": [
+  [
+   1,
+   "message",
+   [
+    [
+     1,
+     "string",
+     "Đề có ảnh BMP"
+    ],
+    [
+     4,
+     "double",
+     500
+    ],
+    [
+     5,
+     "varint",
+     10
+    ]
+   ]
+  ],
+  [
+   2,
+   "message",
+   [
+    [
+     1,
+     "string",
+     "Phần 1"
+    ],
+    [
+     2,
+     "message",
+     [
+      [
+       2,
+       "string",
+       "Ảnh này là gì?"
+      ],
+      [
+       3,
+       "image",
+       "bmp-1x1"
+      ],
+      [
+       4,
+       "char",
+       "A"
+      ],
+      [
+       7,
+       "message",
+       [
+        [
+         1,
+         "char",
+         "A"
+        ],
+        [
+         2,
+         "string",
+         "Điểm đỏ"
+        ]
+       ]
+      ],
+      [
+       7,
+       "message",
+       [
+        [
+         1,
+         "char",
+         "B"
+        ],
+        [
+         2,
+         "string",
+         "Điểm xanh"
+        ]
+       ]
+      ]
+     ]
+    ]
+   ]
+  ]
+ ]
+}

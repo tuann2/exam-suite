@@ -23,5 +23,6 @@ the active execution plan and do not require a separate decision.
 | [0011](0011-android-kotlin-compose.md) | Bản Android: Kotlin + Compose, lõi viết lại bằng Kotlin (oracle chung), cùng repo `android/`, CI theo PR cho `android/` | Accepted |
 | [0012](0012-android-thu-vien.md) | Thư viện của bản Android: nền tảng AndroidX/Kotlin và công cụ test; ngoài danh sách phải có ADR | Accepted |
 | [0013](0013-ios-swiftui-hanh-vi-macos.md) | Bản iOS: SwiftUI, hành vi theo bản macOS, dùng lại lõi và tầng dữ liệu Swift; package theo nền tảng (ExamFeatures chỉ macOS, SharedFeatures dùng chung, MobileFeatures chỉ iOS) | Accepted |
+| [0014](0014-doc-file-oef.md) | Đọc file `.oef` của Open Exam Suite (chỉ đọc, bản Protobuf): một hợp đồng chuyển đổi, bộ đọc Swift ở ExamFile và Kotlin ở `android/core`, oracle chung `fixtures/oef/`, id dẫn xuất | Accepted |
 
-Quyết định tiếp theo lấy số 0014.
+Quyết định tiếp theo lấy số 0015.
