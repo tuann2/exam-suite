@@ -30,7 +30,8 @@ Tên các mục dưới đây theo Samsung (One UI) tiếng Việt; máy hãng k
   viện và mở luôn màn Trước khi thi.
 - Hoặc trong app: **Thêm đề** rồi chọn file `.exam` trong máy.
 - Từ bản 0.2.0, file `.oef` của Open Exam Suite mở được theo hai cách trên: app chuyển nó thành đề của Exam Suite lúc
-  thêm. File `.oef` bản cũ (trước Open Exam Suite 4) thì mở bằng Open Exam Suite, lưu lại rồi gửi lại.
+  thêm. File `.oef` bản cũ (trước Open Exam Suite 4) không mở được: app báo file bản cũ, hoặc báo gói đề hỏng với file
+  của Open Exam Suite 1, 2. Mở file bằng Open Exam Suite, lưu lại rồi gửi lại.
 - File của một đề đã có trong Thư viện (cùng mã định danh mà app soạn đề ghi trong file, không phải ô Mã đề; thường là
   bản mới của đề đó) thì app hỏi **Cập nhật đề**: lịch sử thi giữ lại; bài đang làm dở của đề đó bị bỏ.
 

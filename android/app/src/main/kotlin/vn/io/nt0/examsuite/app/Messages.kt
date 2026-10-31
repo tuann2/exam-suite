@@ -54,7 +54,10 @@ fun examFileErrorMessage(error: ExamFileError): String = when (error) {
     is ExamFileError.Oef -> oefProblemMessage(error.problem)
 }
 
-/** File `.oef` của Open Exam Suite không đọc được (cùng câu với bản macOS). Vị trí byte là mã: chữ số trơn. */
+/**
+ * File `.oef` của Open Exam Suite không đọc được: cùng câu với bản macOS, trừ danh sách đường dẫn và chữ đáp án rút gọn
+ * còn 5 mục như các câu khác của bản Android (`paths`). Vị trí byte là mã: chữ số trơn.
+ */
 @Composable
 @ReadOnlyComposable
 private fun oefProblemMessage(problem: OefProblem): String = when (problem) {

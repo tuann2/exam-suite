@@ -15,6 +15,8 @@ import org.junit.runner.RunWith
 import vn.io.nt0.examsuite.core.composer.CompositionOptions
 import vn.io.nt0.examsuite.core.composer.ExamComposer
 import vn.io.nt0.examsuite.core.file.ExamFileError
+import vn.io.nt0.examsuite.core.file.ExamPackageLimits
+import vn.io.nt0.examsuite.core.file.ExamPackageWriter
 import vn.io.nt0.examsuite.core.file.OefPlace
 import vn.io.nt0.examsuite.core.file.OefProblem
 import vn.io.nt0.examsuite.core.file.OefReader
@@ -30,6 +32,8 @@ import vn.io.nt0.examsuite.data.library.ExamLibrary
 import vn.io.nt0.examsuite.data.library.ImportProblem
 import vn.io.nt0.examsuite.data.library.ImportResult
 import java.io.File
+import java.nio.file.Files
+import java.util.zip.ZipFile
 import java.time.Instant
 import java.util.UUID
 
@@ -117,6 +121,21 @@ class ExamLibraryTest {
         assertTrue(rejected(DataTest.oef("ban-cu-zip")) is ImportProblem.InvalidPackage)
         assertEquals(emptyList<Any>(), library.items().first())
         assertEquals(0, File(library.examsDir, ".incoming").listFiles()?.size ?: 0)
+    }
+
+    @Test
+    fun oefWhoseConvertedPackageExceedsPackageLimitsIsRejectedAndNothingIsKept() = runBlocking {
+        // exam.json của đề đã chuyển dài hơn phần chữ của file `.oef` (khoá, id, thoát Markdown): trần exam.json nhỏ hơn
+        // exam.json một byte vẫn đủ cho phần chữ, nên lỗi đến từ bước đọc nghiêm gói đã chuyển (exam-format.md, Nhận diện).
+        val source = File(DataTest.fixtures, "oef/co-ban.oef")
+        val converted = File.createTempFile("co-ban", ".exam").also { it.deleteOnExit() }
+        OefReader.read(source).let { c -> converted.outputStream().use { ExamPackageWriter.write(c.exam, c.media, it) } }
+        val manifestBytes = ZipFile(converted).use { it.getEntry("exam.json").size } - 1
+        val small = ExamLibrary(db, Files.createTempDirectory("thu-vien").toFile(), clock, limits = ExamPackageLimits(manifestBytes = manifestBytes))
+        val rejected = small.import(DataTest.stream(source.readBytes())) as ImportResult.Rejected
+        assertEquals(ImportProblem.InvalidPackage(ExamFileError.TooLarge("exam.json", manifestBytes)), rejected.problem)
+        assertEquals(emptyList<Any>(), small.items().first())
+        assertEquals(0, File(small.examsDir, ".incoming").listFiles()?.size ?: 0)
     }
 
     @Test

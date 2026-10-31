@@ -9,7 +9,8 @@ macOS ghi ở `CHANGELOG.md` gốc repo. Cách đóng APK: `docs/process/android
 
 - Mở file **`.oef` của Open Exam Suite** (bản Protobuf, Open Exam Suite 4 trở lên) như `.exam`: Thêm đề, Mở bằng, Chia
   sẻ. App nhận file theo nội dung (không cần đuôi), chuyển thành đề lúc thêm, cùng đề và cùng mã định danh với bản macOS
-  đọc cùng file; đề có lỗi thì báo lý do, không thêm. File `.oef` bản cũ báo cần lưu lại bằng Open Exam Suite.
+  đọc cùng file; đề có lỗi thì báo lý do, không thêm. File `.oef` của Open Exam Suite 3 báo cần lưu lại bằng Open Exam
+  Suite; bản 1, 2 (dạng zip) báo lỗi của gói đề, vì app không dựa vào đuôi file.
 
 ### Changed
 

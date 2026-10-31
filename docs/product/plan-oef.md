@@ -103,7 +103,8 @@ bản Học viên để `ExamValidator` báo.
 
 1. **Nhận diện.** macOS và iOS: theo đuôi `.oef` (UTType nhập, QO11). Android: theo nội dung, vì URI từ app khác có
    thể không có tên: `PK\x03\x04` là gói `.exam`; header NRBF là `.oef` bản cũ; còn lại thử đọc như `.oef`, không
-   được thì "không phải file đề". File `.oef` mà là zip hay NRBF: lỗi "bản cũ" (QO1).
+   được thì "không phải file đề". File `.oef` mà là zip hay NRBF: lỗi "bản cũ" (QO1). O3 chốt luật cụ thể của Android
+   (zip rỗng `PK\x05\x06` cũng là gói, `.oef` phải mở đầu bằng `0A`): exam-format.md mục File `.oef`, Nhận diện.
 2. **Giải mã dây.** Kiểm biên mọi độ dài với phần còn lại của file; varint tối đa 10 byte; kiểu dây phải đúng kiểu của
    trường; chuỗi phải là UTF-8 hợp lệ. Trần: file tối đa 1 GiB (bằng tổng giải nén của gói `.exam`), mỗi ảnh 50 MiB,
    tổng các chuỗi 32 MiB. Trường không có trong bảng Phần 1: bản Học viên từ chối, bản Admin bỏ qua kèm cảnh báo (QO6).
@@ -225,7 +226,7 @@ Dùng lại các lớp hiện có; chỉ thêm phần cho hành vi mới (review
 | Sửa đề trong OES làm câu đổi id, Xem lại lần cũ báo nhiều câu đã sửa | Chấp nhận: không sai đáp án vì dấu vân tay chặn; ghi trong exam-format.md |
 | Ảnh BMP/TIFF từ OES trên Windows làm bản Học viên từ chối đề | Câu báo nêu ảnh không hỗ trợ và gợi ý chuyển bằng bản Admin (QO8) |
 | Hai bộ cài đặt lệch nhau | Oracle chung trong `fixtures/oef/`; đổi luật thì sửa oracle trước (như luật lõi Kotlin hiện có) |
-| Android đoán nhầm file nhị phân bất kỳ là `.oef` | Bộ đọc đòi đủ cấu trúc (Properties, ít nhất một phần có câu) rồi mới kiểm đề; không đạt thì "không phải file đề" |
+| Android đoán nhầm file nhị phân bất kỳ là `.oef` | Chỉ file mở đầu bằng khoá của Properties (`0A`) hay header bản cũ mới đọc như `.oef`; còn lại "không phải file đề" (O3, exam-format.md mục File `.oef`, Nhận diện). File chữ mở đầu bằng dòng trống vẫn vào bộ đọc và báo dây hỏng |
 | Pháp lý | Thấp hơn `.vce`: định dạng của dự án mã nguồn mở; viết mới, không chép code hay file mẫu GPL (ADR 0001); ghi trong ADR 0014 |
 | Đuôi `.oef` trùng file bài tập dạng chữ của WIMS (tìm trên GitHub ra toàn file WIMS) | Byte đầu của file chữ không mở được thông điệp Protobuf: "dữ liệu hỏng… hoặc không phải đề của Open Exam Suite"; fixture `van-ban-wims` |
 | Đặt tên ảnh phải băm SHA-256 mọi ảnh mỗi lần đọc: đề chuẩn 60 MB ảnh mất 14 s ở bản Debug (O1, test `oef.read`) | O1 viết lại vòng nén của `SHA256` (con trỏ, phép dịch có mặt nạ): 1,1 s ở Debug; `SHA256Tests` giữ đúng kết quả |

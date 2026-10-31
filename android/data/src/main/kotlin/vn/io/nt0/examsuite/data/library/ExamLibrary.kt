@@ -47,8 +47,9 @@ import java.util.zip.ZipOutputStream
  *
  * Nhập đề nguyên tử: chép nguồn vào `exams/.incoming/<ngẫu nhiên>.part` (có trần), đọc **nghiêm** bằng `:core`, rồi đổi
  * tên thành file đích; ghi kho sau khi đổi tên. File `.oef` của Open Exam Suite (nhận theo nội dung) được chuyển thành gói
- * `.exam` mới trong `.incoming` trước khi đọc nghiêm, nên Thư viện chỉ giữ gói `.exam` (plan-oef.md Phần 4, Kotlin). Cập
- * nhật đề ghi file đánh dấu `<examId>.updating` trước khi đổi tên, xoá sau khi ghi kho. Tắt giữa chừng thì `recoverOnStart` dọn file tạm, nạp lại file đề chưa có mục và làm mới mục có dấu.
+ * `.exam` mới trong `.incoming` trước khi đọc nghiêm, nên Thư viện chỉ giữ gói `.exam` (plan-oef.md Phần 4, Kotlin).
+ * Cập nhật đề ghi file đánh dấu `<examId>.updating` trước khi đổi tên, xoá sau khi ghi kho. Tắt giữa chừng thì
+ * `recoverOnStart` dọn file tạm, nạp lại file đề chưa có mục và làm mới mục có dấu.
  * Mọi thao tác ghi chạy tuần tự dưới một khoá (nhập đồng thời không ghi đè nhau mà không hỏi).
  */
 class ExamLibrary(
@@ -61,7 +62,8 @@ class ExamLibrary(
 ) {
     val examsDir = File(root, "exams")
     private val incomingDir = File(examsDir, ".incoming")
-    private val oefLimits = OefLimits(fileBytes = limits.totalUncompressedBytes, imageBytes = limits.mediaEntryBytes, textBytes = limits.manifestBytes)
+    private val oefLimits =
+        OefLimits(fileBytes = limits.totalUncompressedBytes, imageBytes = limits.mediaEntryBytes, textBytes = limits.manifestBytes)
 
     private val mutex = Mutex()
 

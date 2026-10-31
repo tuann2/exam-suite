@@ -104,6 +104,14 @@ Thư viện, phiên thi đọc qua `ExamSourceReader`, UTType; sau khi I3 của 
   đều mở đầu bằng `0A`, bốn file bản cũ bằng `00`. File khác (file chữ WIMS, file rỗng) báo "không phải file đề"
   (`ImportProblem.NotAnExamFile`) thay vì "không đọc được dạng zip". Đề chuyển rồi còn phải vừa trần của gói (`exam.json`
   32 MiB, 20.000 entry): chỉ khác bản macOS ở đề gần trần; ghi ở exam-format.md.
+- 2026-10-31 (review độc lập O3): không chặn. Người review tự sinh 60.000 đầu vào (protobuf ngẫu nhiên có cấu trúc và
+  đột biến của 32 fixture) và chạy cả hai bộ đọc: Swift và Kotlin không lệch nhau ở mã lỗi, vị trí, đường dẫn trường
+  lạ, đề đã chuyển; 326 đề đọc được ghi gói rồi đọc nghiêm lại đúng. Đã sửa: CHANGELOG và install-android.md nói rõ
+  `.oef` của Open Exam Suite 1, 2 (zip) báo lỗi của gói, không phải "bản cũ" (đổi bằng cách xét tên file khi có là đổi
+  hợp đồng, để Nt0 quyết); test `.oef` đổi xong vượt trần gói (`ExamLibraryTest`); oracle đọc nghiêm `.oef` chạy cả trên
+  ART (`PlatformTest`: giải mã UTF-8, NFC của ART khác JDK); plan-oef.md dẫn sang luật nhận diện đã chốt; nit tài liệu.
+  Danh sách đường dẫn, chữ đáp án trong câu báo của Android rút gọn còn 5 mục như các câu khác của bản Android (macOS
+  hiện tới 20).
 - 2026-10-31: `fixtures/oef/**` và `scripts/make_oef.py` để mức `full` của `verify_scope.py` (mặc định với đường dẫn chưa
   có trong bảng): test của ExamFeatures (`OEFImportTests`, `ImportFlowModelTests`) đọc `fixtures/oef/`.
 
