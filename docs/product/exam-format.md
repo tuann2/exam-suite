@@ -125,12 +125,20 @@ Quyết định của Nt0 ngày 2026-10-15:
 
 Thẩm quyền: ADR 0014; kế hoạch và lý do từng quyết định (QO1–QO14): [plan-oef.md](plan-oef.md). App đọc file `.oef` bản
 Protobuf của Open Exam Suite và chuyển thành đề theo các luật dưới đây; không ghi `.oef`. Hai bộ cài đặt (Swift
-`OEFReader` trong ExamFile; Kotlin trong `android/core`) phải cùng kết quả trên oracle `fixtures/oef/`; đổi luật thì sửa
-mục này và oracle trước.
+`OEFReader` trong ExamFile; Kotlin `OefReader` trong `android/core`, chỉ có đọc nghiêm vì bản Android không có bản Admin)
+phải cùng kết quả trên oracle `fixtures/oef/` (lõi Kotlin so phần đọc nghiêm); đổi luật thì sửa mục này và oracle
+trước.
 
 **Nhận diện.** macOS và iOS theo đuôi `.oef` (UTType nhập `vn.io.nt0.examsuite.oef`). File bắt đầu bằng `PK 03 04` hoặc
 `PK 05 06` (zip, OES bản 1, 2) hoặc header BinaryFormatter (`00`, 4 byte root id, `FF FF FF FF`, `01 00 00 00`,
 `00 00 00 00`; OES bản 3) là **bản cũ**: lỗi `legacyFormat`, cả hai chế độ.
+
+Android theo **nội dung**, vì file từ app khác có thể không có tên (`ExamSourceKind` của `android/core`): chữ ký zip
+`PK 03 04` hay `PK 05 06` là gói `.exam` (nên `.oef` bản 1, 2 báo lỗi của gói, không phải `legacyFormat`); header
+BinaryFormatter, hay byte đầu `0A` (khoá của Properties, trường protobuf-net luôn ghi đầu tiên), là `.oef`; còn lại báo
+"không phải file đề". Bản Android chuyển `.oef` thành gói `.exam` lúc thêm vào Thư viện rồi đọc nghiêm gói đó như mọi
+đề, nên đề còn phải vừa trần của gói (`exam.json` tối đa 32 MiB sau khi thoát Markdown và JSON, tối đa 20.000 entry);
+vượt trần thì báo lỗi của gói.
 
 **Dây.** Thông điệp và số trường:
 

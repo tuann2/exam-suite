@@ -6,6 +6,8 @@ import vn.io.nt0.examsuite.core.json.JsonObject
 import vn.io.nt0.examsuite.core.json.JsonValue
 import vn.io.nt0.examsuite.core.json.StrictJson
 import vn.io.nt0.examsuite.core.model.Exam
+import java.nio.ByteBuffer
+import java.security.MessageDigest
 
 /** Hằng số của định dạng gói (docs/product/exam-format.md). */
 object ExamFormat {
@@ -42,6 +44,16 @@ data class ExamPackageLimits(
 /** Tên ảnh trong gói (exam-format.md): `media/<16–64 hex thường>.<png|jpg|jpeg|gif|webp|heic>`. */
 object MediaNaming {
     val allowedExtensions = setOf("png", "jpg", "jpeg", "gif", "webp", "heic")
+
+    /** Số ký tự hex đầu của SHA-256 trong tên ảnh app đặt (như bản macOS). */
+    const val HASH_PREFIX_LENGTH = 16
+
+    /** `media/<16 ký tự hex đầu của SHA-256>.<đuôi>`, như `MediaNaming.path(for:fileExtension:)` của bản macOS. */
+    fun path(data: ByteBuffer, extension: String): String {
+        val digest = MessageDigest.getInstance("SHA-256").apply { update(data.duplicate()) }.digest()
+        val hash = digest.take(HASH_PREFIX_LENGTH / 2).joinToString("") { "%02x".format(it.toInt() and 0xFF) }
+        return "${ExamFormat.MEDIA_DIRECTORY}/$hash.$extension"
+    }
 
     /** Khớp tuyệt đối mẫu `image` của schema v1; chặn `media/../x.png`, `media/a/b.png`. */
     fun isValidPath(path: String): Boolean {

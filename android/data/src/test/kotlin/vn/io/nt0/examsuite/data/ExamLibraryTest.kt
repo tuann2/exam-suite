@@ -15,6 +15,9 @@ import org.junit.runner.RunWith
 import vn.io.nt0.examsuite.core.composer.CompositionOptions
 import vn.io.nt0.examsuite.core.composer.ExamComposer
 import vn.io.nt0.examsuite.core.file.ExamFileError
+import vn.io.nt0.examsuite.core.file.OefPlace
+import vn.io.nt0.examsuite.core.file.OefProblem
+import vn.io.nt0.examsuite.core.file.OefReader
 import vn.io.nt0.examsuite.core.model.Exam
 import vn.io.nt0.examsuite.core.session.ExamSession
 import vn.io.nt0.examsuite.core.session.PauseReason
@@ -71,8 +74,47 @@ class ExamLibraryTest {
     fun invalidOrNonZipFilesAreRejectedWithCodedReasonAndNothingIsKept() = runBlocking {
         val invalid = library.import(DataTest.stream(DataTest.packInvalid("one-option"))) as ImportResult.Rejected
         assertTrue((invalid.problem as ImportProblem.InvalidPackage).error is ExamFileError.ValidationFailed)
+        // Không phải zip, không phải `.oef` (nhận theo nội dung).
         val notZip = library.import(DataTest.stream("không phải zip".toByteArray())) as ImportResult.Rejected
-        assertEquals(ImportProblem.InvalidPackage(ExamFileError.NotAZipArchive), notZip.problem)
+        assertEquals(ImportProblem.NotAnExamFile, notZip.problem)
+        val brokenZip = library.import(DataTest.stream(byteArrayOf(0x50, 0x4B, 3, 4, 0, 0))) as ImportResult.Rejected
+        assertEquals(ImportProblem.InvalidPackage(ExamFileError.NotAZipArchive), brokenZip.problem)
+        assertEquals(emptyList<Any>(), library.items().first())
+        assertEquals(0, File(library.examsDir, ".incoming").listFiles()?.size ?: 0)
+    }
+
+    @Test
+    fun oefFileIsConvertedToExamPackageAndAddedLikeAnyExam() = runBlocking {
+        val item = add(DataTest.oef("co-ban"))
+        assertEquals(listOf(3, 2, 1), listOf(item.questionCount, item.sectionCount, item.mediaCount))
+        assertEquals("OEF-01", item.code)
+        assertEquals(70, item.passPercent)
+        // Đề trong Thư viện là gói `.exam`, cùng đề và ảnh như bản macOS đọc thẳng file `.oef` (oracle fixtures/oef).
+        val exam = library.open(item.examId).exam
+        assertEquals(OefReader.read(File(DataTest.fixtures, "oef/co-ban.oef")).exam, exam)
+        val png = library.media(item.examId, exam.allQuestions[1].image!!)
+        assertTrue(png.copyOf(8).contentEquals(byteArrayOf(0x89.toByte(), 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A)))
+        assertEquals(0, File(library.examsDir, ".incoming").listFiles()?.size ?: 0)
+        // Thêm lại cùng file (hay file sửa trong Open Exam Suite, cùng mã và tiêu đề): hỏi Cập nhật đề như `.exam`.
+        val again = library.import(DataTest.stream(DataTest.oef("co-ban"))) as ImportResult.NeedsUpdateConfirmation
+        assertEquals(item, again.existing)
+        library.discard(again.pending)
+        assertEquals(0, File(library.examsDir, ".incoming").listFiles()?.size ?: 0)
+    }
+
+    @Test
+    fun oefThatCannotBeReadIsRejectedWithCodedReasonAndNothingIsKept() = runBlocking {
+        suspend fun rejected(bytes: ByteArray) = (library.import(DataTest.stream(bytes)) as ImportResult.Rejected).problem
+        fun oef(problem: OefProblem) = ImportProblem.InvalidPackage(ExamFileError.Oef(problem))
+        assertEquals(oef(OefProblem.LegacyFormat), rejected(DataTest.oef("ban-cu-nrbf")))
+        assertEquals(oef(OefProblem.AnswerNotInOptions(OefPlace(0, 0), listOf("D"))), rejected(DataTest.oef("dap-an-khong-khop")))
+        assertEquals(oef(OefProblem.Malformed(1)), rejected(DataTest.oef("cat-cut")))
+        val invalid = rejected(DataTest.oef("phan-khong-ten")) as ImportProblem.InvalidPackage
+        assertTrue(invalid.error is ExamFileError.ValidationFailed)
+        // Không có tên file: file chữ cùng đuôi của WIMS, file rỗng không phải file đề; `.oef` bản cũ dạng zip đọc như gói.
+        assertEquals(ImportProblem.NotAnExamFile, rejected(DataTest.oef("van-ban-wims")))
+        assertEquals(ImportProblem.NotAnExamFile, rejected(ByteArray(0)))
+        assertTrue(rejected(DataTest.oef("ban-cu-zip")) is ImportProblem.InvalidPackage)
         assertEquals(emptyList<Any>(), library.items().first())
         assertEquals(0, File(library.examsDir, ".incoming").listFiles()?.size ?: 0)
     }

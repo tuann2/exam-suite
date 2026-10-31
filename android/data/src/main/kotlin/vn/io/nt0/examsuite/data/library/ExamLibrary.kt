@@ -14,6 +14,10 @@ import vn.io.nt0.examsuite.core.file.ExamFileError
 import vn.io.nt0.examsuite.core.file.ExamPackage
 import vn.io.nt0.examsuite.core.file.ExamPackageLimits
 import vn.io.nt0.examsuite.core.file.ExamPackageReader
+import vn.io.nt0.examsuite.core.file.ExamPackageWriter
+import vn.io.nt0.examsuite.core.file.ExamSourceKind
+import vn.io.nt0.examsuite.core.file.OefLimits
+import vn.io.nt0.examsuite.core.file.OefReader
 import vn.io.nt0.examsuite.core.model.StrictUuid
 import vn.io.nt0.examsuite.core.session.ExamSession
 import vn.io.nt0.examsuite.core.session.SessionMode
@@ -27,6 +31,7 @@ import vn.io.nt0.examsuite.data.db.LibraryDatabase
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
+import java.io.RandomAccessFile
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.security.MessageDigest
@@ -41,8 +46,9 @@ import java.util.zip.ZipOutputStream
  * `Dispatchers.Default`, không chặn luồng giao diện.
  *
  * Nhập đề nguyên tử: chép nguồn vào `exams/.incoming/<ngẫu nhiên>.part` (có trần), đọc **nghiêm** bằng `:core`, rồi đổi
- * tên thành file đích; ghi kho sau khi đổi tên. Cập nhật đề ghi file đánh dấu `<examId>.updating` trước khi đổi tên, xoá
- * sau khi ghi kho. Tắt giữa chừng thì `recoverOnStart` dọn file tạm, nạp lại file đề chưa có mục và làm mới mục có dấu.
+ * tên thành file đích; ghi kho sau khi đổi tên. File `.oef` của Open Exam Suite (nhận theo nội dung) được chuyển thành gói
+ * `.exam` mới trong `.incoming` trước khi đọc nghiêm, nên Thư viện chỉ giữ gói `.exam` (plan-oef.md Phần 4, Kotlin). Cập
+ * nhật đề ghi file đánh dấu `<examId>.updating` trước khi đổi tên, xoá sau khi ghi kho. Tắt giữa chừng thì `recoverOnStart` dọn file tạm, nạp lại file đề chưa có mục và làm mới mục có dấu.
  * Mọi thao tác ghi chạy tuần tự dưới một khoá (nhập đồng thời không ghi đè nhau mà không hỏi).
  */
 class ExamLibrary(
@@ -55,6 +61,7 @@ class ExamLibrary(
 ) {
     val examsDir = File(root, "exams")
     private val incomingDir = File(examsDir, ".incoming")
+    private val oefLimits = OefLimits(fileBytes = limits.totalUncompressedBytes, imageBytes = limits.mediaEntryBytes, textBytes = limits.manifestBytes)
 
     private val mutex = Mutex()
 
@@ -80,7 +87,8 @@ class ExamLibrary(
     suspend fun media(examId: UUID, path: String): ByteArray = withContext(Dispatchers.IO) { ExamPackageReader.readMedia(examFile(examId), path, limits) }
 
     /**
-     * Nhập một file đề (nút Thêm đề hay mở `.exam` từ app khác). Đọc nghiêm; không đọc được thì không thêm, trả lý do
+     * Nhập một file đề (nút Thêm đề hay mở file từ app khác): gói `.exam` hoặc `.oef` của Open Exam Suite, nhận theo nội
+     * dung (`ExamSourceKind`: file từ app khác có thể không có tên). Đọc nghiêm; không đọc được thì không thêm, trả lý do
      * (library.md phương án 2). Đã có đề cùng id thì trả `NeedsUpdateConfirmation`; file đã đọc được giữ chờ trả lời.
      */
     suspend fun import(source: InputStream): ImportResult = mutex.withLock { withContext(Dispatchers.IO) { importLocked(source) } }
@@ -98,13 +106,35 @@ class ExamLibrary(
             part.delete()
             return ImportResult.Rejected(ImportProblem.FileTooLarge(maxFileBytes))
         }
-        val package_ = try {
-            ExamPackageReader.readStrict(part, limits)
-        } catch (e: ExamFileError) {
+        val kind = try {
+            ExamSourceKind.of(head(part))
+        } catch (e: IOException) {
             part.delete()
+            return ImportResult.Rejected(ImportProblem.Io(e.message ?: e.javaClass.simpleName))
+        }
+        val packageFile = when (kind) {
+            ExamSourceKind.EXAM_PACKAGE -> part
+            ExamSourceKind.UNKNOWN -> {
+                part.delete()
+                return ImportResult.Rejected(ImportProblem.NotAnExamFile)
+            }
+            ExamSourceKind.OEF -> try {
+                convertOef(part)
+            } catch (e: ExamFileError) {
+                return ImportResult.Rejected(ImportProblem.InvalidPackage(e))
+            } catch (e: IOException) {
+                return ImportResult.Rejected(ImportProblem.Io(e.message ?: e.javaClass.simpleName))
+            } finally {
+                part.delete()
+            }
+        }
+        val package_ = try {
+            ExamPackageReader.readStrict(packageFile, limits)
+        } catch (e: ExamFileError) {
+            packageFile.delete()
             return ImportResult.Rejected(ImportProblem.InvalidPackage(e))
         }
-        val pending = PendingImport(part, package_, sha256(part))
+        val pending = PendingImport(packageFile, package_, sha256(packageFile))
         val id = package_.exam.id.toString()
         val existing = db.entries().get(id)
         if (existing != null && existing.removedAtMillis != null) purge(existing)
@@ -371,6 +401,27 @@ class ExamLibrary(
         }
     }
 
+    /** Byte đầu của file để nhận diện loại (`ExamSourceKind`). */
+    private fun head(file: File): ByteArray = RandomAccessFile(file, "r").use { raf ->
+        ByteArray(minOf(ExamSourceKind.HEAD_BYTES.toLong(), raf.length()).toInt()).also { raf.readFully(it) }
+    }
+
+    /**
+     * `.oef` → gói `.exam` mới trong `.incoming` (đề và ảnh như bản macOS đọc cùng file, oracle `fixtures/oef/`). File
+     * nguồn đọc qua ánh xạ bộ nhớ; ảnh ghi thẳng từ đó vào gói. Lỗi thì không để lại gói dở.
+     */
+    private fun convertOef(source: File): File {
+        val conversion = OefReader.read(source, oefLimits)
+        val target = File(incomingDir, "${UUID.randomUUID()}.part")
+        try {
+            target.outputStream().buffered().use { ExamPackageWriter.write(conversion.exam, conversion.media, it) }
+        } catch (e: IOException) {
+            target.delete()
+            throw e
+        }
+        return target
+    }
+
     /** Chép có trần; false nếu nguồn dài hơn `maxFileBytes`. */
     private fun copyCapped(source: InputStream, target: File): Boolean {
         var total = 0L
@@ -403,7 +454,7 @@ class ExamLibrary(
     companion object {
         /**
          * Trần kích thước file đề khi chép vào app: tổng giải nén tối đa (1 GiB, exam-format.md) cộng 64 MiB cho phần
-         * đầu zip. Gói nén lớn hơn mức này không thể đọc nghiêm được nên dừng chép sớm.
+         * đầu zip. Gói nén lớn hơn mức này không thể đọc nghiêm được nên dừng chép sớm (`.oef` có trần 1 GiB, thấp hơn).
          */
         val MAX_FILE_BYTES: Long = ExamPackageLimits.DEFAULT.totalUncompressedBytes + (64L shl 20)
     }

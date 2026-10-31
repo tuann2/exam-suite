@@ -4,7 +4,8 @@ Date: 2026-10-31
 
 ## Status
 
-Active. O1 trên nhánh `feature/oef-o1`.
+Active. O1 trên nhánh `feature/oef-o1` (PR #13); O3 trên nhánh `feature/oef-o3`, xếp chồng một tầng trên O1 (O2 chờ I3
+của iOS merge, QO12).
 
 ## Outcome
 
@@ -54,7 +55,15 @@ Thư viện, phiên thi đọc qua `ExamSourceReader`, UTType; sau khi I3 của 
       `AuthoringMessages`, `OEFImportTests`, ca `.oef` thật trong `ImportFlowModelTests`; catalog vi/en; ngân sách
       `oef.read` + test `Timing` (`OEFEncoding` chỉ cho test trong LargeExamSupport); vòng nén `SHA256`.
 - [ ] O2 Bản Học viên macOS và iOS (rủi ro cao). Sau I3 của iOS.
-- [ ] O3 Android (rủi ro cao). Song song O2.
+- [ ] O3 Android (rủi ro cao). Song song O2. Đã làm: `:core` `ProtobufWire`, `OefReader` (chỉ đọc nghiêm, file đọc qua
+      ánh xạ bộ nhớ), `OefProblem`/`OefPlace`/`OefLimits`, `ExamFileError.Oef`, `ExamSourceKind` (nhận diện theo nội
+      dung), `ExamPackageWriter`, `MediaNaming.path`; `SharedOracleTest` đọc `fixtures/oef/` (phần đọc nghiêm, vector),
+      `OefReaderTest` (cắt cụt, đột biến có seed, giới hạn, nhận diện, ghi gói rồi đọc lại); `:data` `ExamLibrary.import`
+      chuyển `.oef` thành gói trong `.incoming` rồi đọc nghiêm như cũ, `ImportProblem.NotAnExamFile`; `ExamLibraryTest`
+      thêm `.oef`; `:app` câu báo vi/en (`Messages.kt`, `strings.xml`); `ExamIntentFlowTest` thêm đoạn mở `.oef`;
+      exam-format.md (Nhận diện của Android), mobile.md, install-android.md, `android/CHANGELOG.md`. Kèm sửa tài liệu
+      phát hành Android theo việc Nt0 đăng 0.1.0 lên GitHub Releases dạng Pre-release (2026-10-23): android-release.md,
+      install-android.md, `android/CHANGELOG.md`, Q10 của plan-android-v1.md.
 
 ## Decisions
 
@@ -84,6 +93,17 @@ Thư viện, phiên thi đọc qua `ExamSourceReader`, UTType; sau khi I3 của 
   phần tử; danh sách chữ đáp án lệch giữ 20 chữ đầu như đường dẫn trường lạ (`OEFLimits.listedItems`, tối thiểu 1; câu
   báo không thành chuỗi nhiều MB khi lưu làm lý do của Thư viện ở O2); gói đọc dễ giữ nguyên TimeLimit của file; fixture
   `nhieu-dap-an-lech`.
+- 2026-10-31 (O3): nhánh `feature/oef-o3` xếp chồng một tầng trên O1 (review-and-merge.md cho phép một tầng) thay vì
+  rẽ từ `main` sau khi O1 merge như plan-oef.md Phần 5: O1 chờ cổng GO1; kết quả như nhau sau khi O1 merge bằng merge
+  commit (PR O3 đổi base sang `main`).
+- 2026-10-31 (O3, chi tiết cài đặt): lõi Kotlin chỉ có đọc nghiêm (Android không có bản Admin hay bước phân loại Đề có
+  lỗi), so phần đọc nghiêm của oracle; ghi ở exam-format.md. File đọc qua ánh xạ bộ nhớ (`FileChannel.map`), ảnh là vùng
+  byte của file và được ghi thẳng vào gói, nên `.oef` gần 1 GiB không nạp vào heap của điện thoại. Nhận diện theo nội
+  dung: plan-oef.md Phần 3 bước 1 nói `PK 03 04` là gói; thêm `PK 05 06` (zip rỗng) vào gói để zip rỗng không báo
+  "`.oef` bản cũ"; "đòi đủ cấu trúc" của Phần 7 thành byte đầu `0A` (khoá của Properties): bốn file Protobuf mẫu của OES
+  đều mở đầu bằng `0A`, bốn file bản cũ bằng `00`. File khác (file chữ WIMS, file rỗng) báo "không phải file đề"
+  (`ImportProblem.NotAnExamFile`) thay vì "không đọc được dạng zip". Đề chuyển rồi còn phải vừa trần của gói (`exam.json`
+  32 MiB, 20.000 entry): chỉ khác bản macOS ở đề gần trần; ghi ở exam-format.md.
 - 2026-10-31: `fixtures/oef/**` và `scripts/make_oef.py` để mức `full` của `verify_scope.py` (mặc định với đường dẫn chưa
   có trong bảng): test của ExamFeatures (`OEFImportTests`, `ImportFlowModelTests`) đọc `fixtures/oef/`.
 
@@ -92,5 +112,6 @@ Thư viện, phiên thi đọc qua `ExamSourceReader`, UTType; sau khi I3 của 
 - O1, 2026-10-31: `scripts/check.sh` đạt trước review và trên trạng thái cuối sau re-review (một lượt giữa chừng đỏ ở
   `OEFImportTests` vì fixture `truong-la` thêm trường lạ ở lựa chọn; đã sửa test); `make_oef.py --check` 32 file; `Timing`
   `oef.read` 1,11 s Debug (giới hạn 6 s); catalog ổn định qua `-exportLocalizations` ba scheme. Thử tại máy trên file mẫu
-  công khai của OES (Decisions). Review độc lập: 1 chặn, 4 nên sửa, nit; đã sửa. Re-review: không chặn, 2 nên sửa, 2 nit; đã sửa (Decisions). `verify_local.sh --uitest`:
-  chờ (CoreSimulator của máy cũ hơn Xcode, `simctl` treo; cần Nt0 cài thành phần bổ sung của Xcode).
+  công khai của OES (Decisions). Review độc lập: 1 chặn, 4 nên sửa, nit; đã sửa. Re-review: không chặn, 2 nên sửa, 2 nit; đã sửa (Decisions). `verify_local.sh --uitest`
+  (`--no-autosave-check`) xanh trên `d332ce2` sau khi Nt0 cập nhật CoreSimulator: mức full, UI test đủ bộ (Học viên 6,
+  Admin 4, iOS 3), kho thật không đổi, Linux đạt; check `android` của CI xanh.

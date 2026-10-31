@@ -1,8 +1,9 @@
 # Cài đặt Exam Suite trên Android
 
 Exam Suite cho Android là bản **Học viên** (làm bài, luyện tập, xem kết quả, lịch sử thi) của dự án cá nhân của Nt0.
-App không có trên Google Play: Nt0 gửi riêng file `ExamSuite-<phiên bản>.apk` (qua Zalo, WhatsApp, Drive…). Soạn đề
-vẫn làm trên bản Admin cho macOS.
+App không có trên Google Play. File cài `ExamSuite-<phiên bản>.apk` nằm ở trang
+[Releases](https://github.com/tuann2/exam-suite/releases) của repo (mục "Exam Suite cho Android", đánh dấu Pre-release),
+hoặc Nt0 gửi file qua Zalo, WhatsApp, Drive…. Soạn đề vẫn làm trên bản Admin cho macOS.
 
 ## Cần gì
 
@@ -28,6 +29,8 @@ Tên các mục dưới đây theo Samsung (One UI) tiếng Việt; máy hãng k
 - Nhận file `.exam` trong Zalo, WhatsApp, Drive…: chạm vào file › **Mở bằng** › **Exam Suite**. Đề được thêm vào Thư
   viện và mở luôn màn Trước khi thi.
 - Hoặc trong app: **Thêm đề** rồi chọn file `.exam` trong máy.
+- Từ bản 0.2.0, file `.oef` của Open Exam Suite mở được theo hai cách trên: app chuyển nó thành đề của Exam Suite lúc
+  thêm. File `.oef` bản cũ (trước Open Exam Suite 4) thì mở bằng Open Exam Suite, lưu lại rồi gửi lại.
 - File của một đề đã có trong Thư viện (cùng mã định danh mà app soạn đề ghi trong file, không phải ô Mã đề; thường là
   bản mới của đề đó) thì app hỏi **Cập nhật đề**: lịch sử thi giữ lại; bài đang làm dở của đề đó bị bỏ.
 
