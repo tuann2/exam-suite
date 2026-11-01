@@ -4,8 +4,9 @@ Date: 2026-10-30
 
 ## Status
 
-Active. I0 (PR #8), I1 (PR #9), I2a (PR #10), I2b (PR #11) đã merge; cổng GI1 đạt. I3 (PR #12) merge trước cổng GI2
-theo lựa chọn của Nt0 (2026-10-31, Decisions); GI2 (Nt0 thử trên iPhone thật) làm sau, lỗi beta sửa bằng PR sau.
+Completed 2026-11-01. I0 (PR #8), I1 (PR #9), I2a (PR #10), I2b (PR #11), I3 (PR #12) đã merge; cổng GI1, GI2, GI3 đạt
+(GI2, GI3 Nt0 thử trên iPhone thật ngày 2026-11-01, cùng lần với cổng GO2 của plan `.oef`). Đóng trong PR phát hành
+(nhánh `feature/oef-phat-hanh`); bản 0.1.0 (tag `ios-v0.1.0` do Nt0 đẩy sau khi PR đó merge, mục Result).
 
 ## Outcome
 
@@ -73,15 +74,19 @@ Không có cặp song song.
       bài, Kết quả, Xem lại bài ở cỡ chữ `accessibility1`), ADR 0010 và 0006 ghi thêm test target này, `check_boundaries.py` luật 5 cho phép
       `Packages/MobileFeatures/Tests`, `verify_local.sh` chạy ảnh cùng `MobileFeatureTests`; dòng đề chưa Sẵn sàng của
       Thư viện không làm mờ (ảnh cho thấy lý do lỗi khó đọc). Cổng GI2 sau I2b.
-- [ ] Cổng GI2 (Nt0): cài lên iPhone thật, làm trọn một đề, nhận file qua Zalo/Drive, file iCloud qua app Tệp, cuộc
-      gọi đến khi đang làm bài (QI10), VoiceOver, kính iOS 26 ở giao diện sáng, dòng Đề có lỗi của Thư viện.
-- [ ] I3 Hoàn thiện, bản 0.1.0 (nhánh `feature/ios-i3`, PR #12 merge trước GI2: Decisions 2026-10-31). Đã làm: màn
+- [x] Cổng GI2 (Nt0, 2026-11-01, đạt): cài lên iPhone thật, làm trọn một đề, nhận file qua Zalo/Drive, file iCloud qua
+      app Tệp, cuộc gọi đến khi đang làm bài (QI10), VoiceOver, kính iOS 26 ở giao diện sáng, dòng Đề có lỗi của Thư viện.
+- [x] I3 Hoàn thiện, bản 0.1.0 (nhánh `feature/ios-i3`, PR #12 merge trước GI2: Decisions 2026-10-31). Đã làm: màn
       Giới thiệu (QI13: phiên bản, Apache-2.0, NOTICE, ZIPFoundation; toàn văn giấy phép đi kèm app), biểu tượng tạm
       1024 px (`make_icons.swift`), `PaletteContrastTests` thêm nền của iOS, đo đề chuẩn trên simulator
       (`docs/notes/ios-measurements.md`) và sửa mục vượt ngân sách (ảnh của câu giải mã ngoài main thread),
-      `docs/install-ios.md`, `CHANGELOG-ios.md`. Còn lại (Nt0): sửa lỗi beta từ GI2 (PR sau), rà VoiceOver bốn màn chính trên máy
-      thật, cài 0.1.0 qua Xcode, `verify_local.sh --clean --uitest` trên SHA phát hành, tag `ios-v0.1.0`, cổng GI3, đóng
-      exec-plan.
+      `docs/install-ios.md`, `CHANGELOG-ios.md`. Phần của Nt0: GI2 không có lỗi beta phải sửa; rà VoiceOver bốn màn chính
+      trên máy thật và cài 0.1.0 qua Xcode làm cùng GI2.
+- [x] Cổng GI3 (Nt0, 2026-11-01, đạt): bản 0.1.0 (`main` `8cf506b`, code iOS như SHA phát hành) cài qua Xcode lên
+      iPhone, Nt0 dùng thử cùng lần GI2 và GO2, rồi cho phát hành.
+- [x] Phát hành 0.1.0 (nhánh `feature/oef-phat-hanh`, cùng macOS 0.2.0 và Android 0.2.0): CHANGELOG-ios mục 0.1.0 gồm
+      `.oef` (QO13 đổi, Decisions); đóng exec-plan. `verify_local.sh --clean --uitest` trên SHA phát hành và tag
+      `ios-v0.1.0` sau khi PR merge (Result).
 
 ## Decisions
 
@@ -325,6 +330,10 @@ Không có cặp song song.
 - 2026-10-31 (Nt0): merge I3 (PR #12) trước cổng GI2 để làm bước O2 của plan-oef.md liền mạch (QO12: O2 sau khi I3
   merge); GI2 thử sau trên `main`, lỗi beta sửa bằng PR sau. Nhánh I3 merge `main` (OEF O1, O3) trước khi verify, chỉ
   xung đột chữ ở AGENTS.md.
+- 2026-11-01 (Nt0): GI2 đạt hết theo thiết kế (kể cả cuộc gọi đến: QI10 giữ tạm dừng ở `.background`), không có lỗi
+  beta phải sửa; GI3 tính cùng lần thử đó (bản 0.1.0 từ `main`, code iOS như SHA phát hành). Bản iOS đầu tiên 0.1.0 đã có
+  `.oef` (O2 merge trước khi gắn tag; QO13 của plan-oef.md đổi theo). `MARKETING_VERSION` của iOS giữ đánh số riêng; bước
+  kiểm tag của job `release-dmg` (macOS) sửa để chỉ so hai target macOS (completed/oef.md, Decisions).
 
 ## Validation
 
@@ -412,7 +421,20 @@ I3 (nhánh `feature/ios-i3`):
 - Đo đề chuẩn trước/sau: `docs/notes/ios-measurements.md`.
 - `xcodebuild -exportLocalizations` (iOS): lần thứ hai không đổi catalog; `check_localization.py --require-en`,
   `check_boundaries.py`, `check_quit_sheets.py` đạt.
+- Sau khi merge `main` (OEF O1, O3) vào nhánh: `local/verify` xanh trên `163cc05` (mức full, UI test đủ bộ: Học viên 6,
+  Admin 4, iOS 3; kho thật không đổi; Linux ok); PR #12 merge.
+
+GI2, GI3 (Nt0, 2026-11-01, iPhone thật, bản 0.1.0 từ `main` cài qua Xcode): đạt; làm trọn một đề Thi, nhận file qua Zalo
+và Drive, file iCloud qua app Tệp, cuộc gọi đến khi đang làm bài, VoiceOver bốn màn chính, kính iOS 26 ở giao diện sáng,
+dòng Đề có lỗi, hộp Dùng file mới chờ tới khi về Thư viện; cùng lần với cổng GO2 (`.oef` qua Zalo và app Tệp).
 
 ## Result
 
-Chưa có.
+App iPhone bản Học viên 0.1.0: Thư viện, nhận file (Thêm đề, Mở bằng/chia sẻ, app Tệp; `.exam` và `.oef`), Trước khi
+thi, làm bài, Rà soát & nộp, Kết quả, Xem lại, Lịch sử thi, tự tạm dừng khi xuống nền, vi/en, sáng/tối, màn Giới thiệu;
+cài qua Xcode bằng Personal Team (`docs/install-ios.md`). Bản macOS không đổi hành vi. v1.1 (plan-ios-v1.md) lập plan
+khi Nt0 quyết.
+
+Các bước sau khi PR phát hành merge (bằng chứng nằm ở commit status và tag của SHA phát hành, không ghi lại vào plan):
+`scripts/verify_local.sh --clean --uitest` trên SHA `main` sau merge (gồm bước iOS: build simulator, `MobileFeatureTests`,
+`MobileSnapshotTests`, ba lớp `ExamSuiteiOSUITests`), rồi Nt0 đẩy tag `ios-v0.1.0` trên SHA đó.

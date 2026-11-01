@@ -3,7 +3,8 @@
 Soạn: 31/10/2026 · Trạng thái: **Nt0 chốt bảng Quyết định ngày 31/10/2026, như đề xuất** (QO14 đổi: file thử là file
 mẫu công khai tải về). O1 chép quyết định vào ADR 0014, exam-format.md (mục File `.oef`, hợp đồng chuyển đổi chính thức),
 import.md (mục `.oef`); O2, O3 chép phần của mình vào library.md, mobile.md. Exec-plan:
-[plans/active/oef.md](../plans/active/oef.md).
+[plans/completed/oef.md](../plans/completed/oef.md) (xong 01/11/2026: cổng GO1, GO2 đạt; phát hành macOS 0.2.0, Android
+0.2.0, iOS 0.1.0).
 
 ## Tóm tắt
 
@@ -251,7 +252,7 @@ exam-format.md, import.md.
 | QO10 | Bản Admin? | Import đề… nhận `.oef` với id dẫn xuất (khác luật id ngẫu nhiên của import.md) để `.exam` chuyển ra cùng id với `.oef`; không mở `.oef` từ Finder || **Như đề xuất** |
 | QO11 | Vai với Finder và "Mở bằng"? | UTType nhập `vn.io.nt0.examsuite.oef` (OES không khai báo UTType, chỉ đăng ký đuôi), hạng Alternate: máy có OES thì OES vẫn mở mặc định || **Như đề xuất** |
 | QO12 | Thứ tự với iOS? | O1 làm ngay; O2 sau khi I3 merge, không làm chậm cổng GI3; O3 song song O2 || **Như đề xuất** |
-| QO13 | Phát hành? | macOS 0.2.0, Android 0.2.0 (`android-v0.2.0`), iOS ở bản kế sau 0.1.0 || **Như đề xuất** |
+| QO13 | Phát hành? | macOS 0.2.0, Android 0.2.0 (`android-v0.2.0`), iOS ở bản kế sau 0.1.0 || **Như đề xuất**; 01/11/2026 Nt0 đổi phần iOS: 0.1.0 chưa gắn tag khi O2 merge, nên bản iOS đầu tiên 0.1.0 đã có `.oef` |
 | QO14 | File `.oef` thật để thử? | Nt0 tạo bằng OES Creator bản hiện tại: một đề có ảnh PNG và JPEG, câu nhiều đáp án, ẩn đáp án, nhiều phần; thêm file từ máy Windows nếu có (ảnh BMP). Chỉ thử tại máy, không vào git || **Đổi**: file mẫu công khai của repo Open Exam Suite (2 file Protobuf, 4 file bản cũ theo lịch sử repo), tải về thư mục tạm, thử tại máy, không vào git; không có file mẫu có ảnh hay câu nhiều đáp án nên phần đó phủ bằng fixture tự dựng |
 
 ## Việc Nt0 cần làm

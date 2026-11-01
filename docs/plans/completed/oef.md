@@ -4,8 +4,9 @@ Date: 2026-10-31
 
 ## Status
 
-Active. O1 (PR #13) và O3 (PR #14) đã merge 2026-10-31; cổng GO1 Nt0 thử sau. O2 trên nhánh `feature/oef-o2`, xếp
-chồng một tầng trên I3 (PR #12, Nt0 cho merge trước cổng GI2 để làm liền mạch).
+Completed 2026-11-01. O1 (PR #13), O3 (PR #14), O2 (PR #15) đã merge; cổng GO1 và GO2 đạt (Nt0 thử ngày 2026-11-01).
+Đóng trong PR phát hành (nhánh `feature/oef-phat-hanh`: macOS 0.2.0, Android 0.2.0, iOS 0.1.0); các bước sau khi PR đó
+merge ở mục Result.
 
 ## Outcome
 
@@ -54,7 +55,7 @@ Thư viện, phiên thi đọc qua `ExamSourceReader`, UTType; sau khi I3 của 
       `ImportSourceFormat.oef`, `OEFImporter`, mã và chi tiết mục báo cáo mới, `ImportError.unreadableOEF`,
       `AuthoringMessages`, `OEFImportTests`, ca `.oef` thật trong `ImportFlowModelTests`; catalog vi/en; ngân sách
       `oef.read` + test `Timing` (`OEFEncoding` chỉ cho test trong LargeExamSupport); vòng nén `SHA256`.
-- [ ] O2 Bản Học viên macOS và iOS (rủi ro cao). Sau I3 của iOS. Đã làm: hai điểm đọc của bản Học viên qua
+- [x] O2 Bản Học viên macOS và iOS (rủi ro cao; PR #15, merge 2026-11-01). Đã làm: hai điểm đọc của bản Học viên qua
       `ExamSourceReader` (`ExamFileInspector.defaultReader`, `SessionServices`); `inspectNewFile` nhận `.oef`; UTType
       `openExamFile`, `examSourceTypes` cho hộp chọn file của Thư viện macOS và iOS; `project.yml`: UTType import
       `vn.io.nt0.examsuite.oef` ở ba bản app, document type `.oef` hạng Alternate ở hai bản Học viên (bản `.uitest`
@@ -71,6 +72,10 @@ Thư viện, phiên thi đọc qua `ExamSourceReader`, UTType; sau khi I3 của 
       exam-format.md (Nhận diện của Android), mobile.md, install-android.md, `android/CHANGELOG.md`. Kèm sửa tài liệu
       phát hành Android theo việc Nt0 đăng 0.1.0 lên GitHub Releases dạng Pre-release (2026-10-23): android-release.md,
       install-android.md, `android/CHANGELOG.md`, Q10 của plan-android-v1.md.
+- [x] Cổng GO1 và GO2 (Nt0, 2026-11-01): đạt (Validation).
+- [x] Phát hành (nhánh `feature/oef-phat-hanh`): macOS 0.2.0 (`MARKETING_VERSION` của hai target macOS), Android 0.2.0
+      (`versionCode` 2), iOS 0.1.0 (bản đầu, đã có `.oef`); CHANGELOG ba bản; `docs/install.md` nhắc `.oef`; bước kiểm
+      tag của job `release-dmg` chỉ so phiên bản của hai target macOS (Decisions); đóng plan này và exec-plan iOS v1.
 
 ## Decisions
 
@@ -137,6 +142,22 @@ Thư viện, phiên thi đọc qua `ExamSourceReader`, UTType; sau khi I3 của 
   Import đề… không bị vì tra theo đuôi).
 - 2026-10-31: `fixtures/oef/**` và `scripts/make_oef.py` để mức `full` của `verify_scope.py` (mặc định với đường dẫn chưa
   có trong bảng): test của ExamFeatures (`OEFImportTests`, `ImportFlowModelTests`) đọc `fixtures/oef/`.
+- 2026-11-01 (GO1, GO2, Nt0): đạt hết theo thiết kế. Bản Admin, **Mở để sửa…** làm mờ file `.oef` trong hộp mở: đúng
+  QO10, giữ nguyên (không đổi sang mở luồng Import đề…); CHANGELOG và `docs/install.md` ghi đường Import đề…. Máy Mac
+  không chạy được Open Exam Suite (app Windows), nên "sửa một câu trong OES" thử bằng bản sao của file mẫu GMAT sửa chữ
+  câu 1 bằng script (mã, tiêu đề giữ nguyên); mục "máy có cài Open Exam Suite" của macOS không thử được.
+- 2026-11-01 (QO13, Nt0): iOS chưa phát hành 0.1.0 khi O2 merge, nên bản iOS đầu tiên **0.1.0** đã có `.oef` (thay "ở
+  bản kế sau 0.1.0"); macOS 0.2.0, Android 0.2.0 như QO13.
+- 2026-11-01 (phát hành, Nt0): bước "Tag must match MARKETING_VERSION" của job `release-dmg` gom mọi `MARKETING_VERSION`
+  trong `project.yml`, kể cả của target iOS (0.1.0, I3), nên mọi tag `v*` sẽ dừng ở bước đầu. Nt0 chọn sửa `ci.yml`: chỉ
+  so hai target macOS (`ExamSuite`, `ExamSuiteAdmin`), thiếu một trong hai thì dừng; iOS giữ đánh số riêng. Thử tại máy
+  bằng chính đoạn script của bước (v0.2.0, v0.2.0-beta1 đạt; v0.1.0, v0.1.1, Admin lệch số, Admin thiếu khai báo dừng;
+  bước cũ dừng với v0.2.0). Tag ba bản do Nt0 đẩy.
+- 2026-11-01 (phát hành, phát hiện): `scripts/make_dmg.sh` tại máy của Nt0 dừng ở bước quét chuỗi cấm, vì một mẫu cục bộ
+  (`~/.config/exam-suite/leak-patterns`, không lưu trong repo) khớp thư mục nhà, mà binary build tại máy nào cũng chứa
+  đường dẫn tuyệt đối của file nguồn (kể cả của ZIPFoundation): không do thay đổi của plan này. DMG phát hành do runner
+  CI đóng (chỉ `/Users/runner/`). DMG để Nt0 thử GO2 đóng với `EXAMSUITE_LEAK_PATTERNS_FILE=/dev/null` (mẫu chung vẫn
+  quét), không phát hành. Sửa mẫu cục bộ hay không: Nt0 quyết.
 
 ## Validation
 
@@ -146,3 +167,33 @@ Thư viện, phiên thi đọc qua `ExamSourceReader`, UTType; sau khi I3 của 
   công khai của OES (Decisions). Review độc lập: 1 chặn, 4 nên sửa, nit; đã sửa. Re-review: không chặn, 2 nên sửa, 2 nit; đã sửa (Decisions). `verify_local.sh --uitest`
   (`--no-autosave-check`) xanh trên `d332ce2` sau khi Nt0 cập nhật CoreSimulator: mức full, UI test đủ bộ (Học viên 6,
   Admin 4, iOS 3), kho thật không đổi, Linux đạt; check `android` của CI xanh.
+- O3, 2026-10-31: trên `922fed5` check `android` của CI xanh (lint, test, so ảnh; `SharedOracleTest` đọc
+  `fixtures/oef/`), `local/verify-android` xanh (6 test Compose trên emulator, kể cả đoạn mở `.oef` của
+  `ExamIntentFlowTest`; `PlatformTest` chạy oracle đọc nghiêm trên ART), `local/verify` mức none. Review độc lập không
+  chặn (Decisions).
+- O2, 2026-11-01: `scripts/check.sh` đạt trên `bdd209c`; sau sửa theo review, `swift test` có chọn lọc (`OEFLibraryTests`,
+  `AppLaunchStorageTests`, `LibraryModelTests`, snapshot Thư viện, `TiledWindowLayoutTests`) đạt và catalog đứng yên qua
+  `-exportLocalizations` ba scheme. `verify_local.sh --uitest --no-autosave-check` xanh trên `19c2dab`: mức full, UI test
+  đủ bộ (Học viên 6, Admin 4, iOS 3, kể cả luồng 3 thêm đề `.oef`), kho thật không đổi, Linux đạt.
+- GO1, GO2 (Nt0, 2026-11-01; macOS từ DMG đóng tại máy trên `main` `8cf506b`, iOS cài qua Xcode, Android bản có O3):
+  đạt. Bộ file thử ngoài git: hai file mẫu Protobuf công khai của OES (GMAT 20 câu, Basic Science 8 câu), một file bản cũ
+  của OES, bản GMAT sửa chữ câu 1 (Decisions), fixture tự dựng của `fixtures/oef/` (ảnh, nhiều đáp án, ẩn đáp án, có lỗi)
+  và một cặp đúng/lỗi cùng tiêu đề để thấy Đề có lỗi. Đã thử: Import đề… (số câu, phần, đáp án, ngưỡng, thời gian; file bản
+  cũ, file có lỗi) rồi mở `.exam` bằng bản Học viên; nhấp đúp và Mở bằng trong Finder; kéo thả; Thông tin; Thi; sửa câu
+  rồi Xem lại báo câu đã sửa; thêm `.exam` do Admin chuyển (Dùng file mới / Cập nhật đề, lịch sử nối tiếp); Đề có lỗi;
+  Sửa tắt ở bản Admin; iPhone nhận `.oef` qua Zalo và app Tệp; Android qua Zalo hoặc Drive.
+
+## Result
+
+`.oef` (bản Protobuf của Open Exam Suite 4 trở lên) mở được ở cả ba bản Học viên, bản Admin chuyển sang `.exam` qua
+Import đề…; một hợp đồng (exam-format.md, mục File `.oef`), một oracle (`fixtures/oef/`), hai bộ đọc Swift và Kotlin cùng
+kết luận. Phát hành cùng PR đóng plan: macOS 0.2.0, Android 0.2.0, iOS 0.1.0.
+
+Các bước sau khi PR phát hành merge (bằng chứng nằm ở commit status và tag của SHA phát hành, không ghi lại vào plan):
+
+1. Trên SHA `main` sau merge: `scripts/verify_local.sh --clean --uitest` (cổng macOS và iOS), `android/scripts/check_android.sh
+   --ui` (cổng Android).
+2. Nt0 đóng APK release ký (`docs/process/android-release.md` bước 2), cài đè lên điện thoại.
+3. Nt0 đẩy ba tag trên SHA đó: `v0.2.0` (job `release-dmg` đóng hai DMG và tạo GitHub Release), `android-v0.2.0` (rồi tạo
+   GitHub Release Pre-release kèm APK và ba file giấy phép, android-release.md bước 4), `ios-v0.1.0` (không có bản cài,
+   cài từ mã nguồn qua Xcode).

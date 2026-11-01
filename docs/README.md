@@ -18,8 +18,8 @@ Start with the smallest authoritative surface.
 - [`product/mobile.md`](product/mobile.md): bản mobile (Học viên): phạm vi v1/v1.1 và chỗ bản Android khác bản macOS (file đề sao chép vào app, tự tạm dừng và lưu phiên dở khi xuống nền…); mục "Bản iOS": chỗ bản iOS khác bản macOS.
 - [`product/plan-macos-v1.md`](product/plan-macos-v1.md): kế hoạch đầy đủ (phạm vi, kiến trúc, UX, lộ trình, rủi ro).
 - [`product/plan-android-v1.md`](product/plan-android-v1.md): kế hoạch app Android bản Học viên (v1 / v1.1); Nt0 chốt quyết định 2026-10-22, làm trước iOS.
-- [`product/plan-ios-v1.md`](product/plan-ios-v1.md): kế hoạch app iOS bản Học viên (v1 / v1.1); cùng cách chia v1 / v1.1 với Android nhưng hành vi theo bản macOS, chỗ khác ở mục "Bản iOS" của `mobile.md` (Nt0 chốt 2026-10-30, ADR 0013); exec-plan `plans/active/ios-v1.md`.
-- [`product/plan-oef.md`](product/plan-oef.md): kế hoạch mở file `.oef` của Open Exam Suite ở ba bản Học viên và Import đề… (Nt0 chốt 2026-10-31, ADR 0014; hợp đồng ở mục File `.oef` của `exam-format.md`); exec-plan `plans/active/oef.md`.
+- [`product/plan-ios-v1.md`](product/plan-ios-v1.md): kế hoạch app iOS bản Học viên (v1 / v1.1); cùng cách chia v1 / v1.1 với Android nhưng hành vi theo bản macOS, chỗ khác ở mục "Bản iOS" của `mobile.md` (Nt0 chốt 2026-10-30, ADR 0013); exec-plan `plans/completed/ios-v1.md` (v1 xong, bản 0.1.0).
+- [`product/plan-oef.md`](product/plan-oef.md): kế hoạch mở file `.oef` của Open Exam Suite ở ba bản Học viên và Import đề… (Nt0 chốt 2026-10-31, ADR 0014; hợp đồng ở mục File `.oef` của `exam-format.md`); exec-plan `plans/completed/oef.md` (xong: macOS 0.2.0, Android 0.2.0, iOS 0.1.0).
 - [`notes/vce-format.md`](notes/vce-format.md): ghi chú ngắn về định dạng `.vce` (cách tìm hiểu, phạm vi, kết quả thử; chi tiết ở mã nguồn).
 - [`notes/large-exam-measurements.md`](notes/large-exam-measurements.md): số đo Release của đề chuẩn (`scripts/measure_large.sh`).
 - [`notes/g5-spike-pdf-l10n.md`](notes/g5-spike-pdf-l10n.md): spike giai đoạn 5: số đo PDF bằng `ImageRenderer`, String Catalog trong Swift package (cho bước 4, 5).

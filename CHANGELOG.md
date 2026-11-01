@@ -4,6 +4,12 @@ Theo [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/), phiên bản theo
 
 ## [Unreleased]
 
+## [0.2.0] – mở file .oef của Open Exam Suite
+
+Hai DMG trên GitHub Release `v0.2.0`: `ExamSuite-0.2.0.dmg` (bản Học viên) và `ExamSuiteAdmin-0.2.0.dmg` (bản Admin).
+Cài đè lên 0.1.1, Thư viện và lịch sử thi giữ nguyên (`docs/install.md`, mục Cập nhật lên bản mới). Định dạng `.exam`,
+cách làm bài và chấm điểm không đổi.
+
 ### Added
 
 - Bản Admin: **Import đề…** nhận file `.oef` của Open Exam Suite (bản 4 trở lên). Tiêu đề, mã, ngưỡng đậu, thời gian,
@@ -12,7 +18,8 @@ Theo [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/), phiên bản theo
 - Bản Học viên mở thẳng file `.oef` như `.exam`: Thêm đề…, kéo thả, nhấp đúp hay Open With trong Finder (máy có Open Exam
   Suite thì Open Exam Suite vẫn mở mặc định). File được đọc tại chỗ và chuyển mỗi lần đọc: sửa đề trong Open Exam Suite
   rồi Làm mới là thấy; cùng mã và tiêu đề thì vẫn là cùng đề, lịch sử thi nối tiếp. Thông tin ghi định dạng Open Exam
-  Suite (.oef). Thư viện bản Admin cũng nhận `.oef` nhưng không Sửa được: dùng Import đề… để chuyển sang `.exam`.
+  Suite (.oef). Thư viện bản Admin cũng nhận `.oef` nhưng không Sửa được, và **Mở để sửa…** chỉ mở `.exam`: dùng
+  Import đề… để chuyển sang `.exam` rồi sửa.
 
 ## [0.1.1] – bản public đầu tiên
 

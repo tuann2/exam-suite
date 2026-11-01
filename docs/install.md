@@ -51,6 +51,8 @@ Lưu ý:
 - Muốn làm bài với file đó: mở bản Học viên rồi dùng **Tệp › Thêm đề…** (⌘O) hoặc kéo file vào cửa sổ Thư viện; hoặc
   chuột phải file trong Finder › **Mở bằng** › **Exam Suite**.
 - Hai bản có thư viện, lịch sử thi và cài đặt riêng.
+- File `.oef` của Open Exam Suite (từ 0.2.0): nhấp đúp mở bằng **bản Học viên**. Bản Admin không mở `.oef` để sửa:
+  dùng **Tệp › Import đề…** để chuyển sang `.exam` rồi sửa.
 
 ## Cập nhật lên bản mới
 
