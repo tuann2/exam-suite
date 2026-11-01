@@ -5,6 +5,12 @@ macOS ghi ở `CHANGELOG.md` gốc repo. Cách đóng APK: `docs/process/android
 
 ## [Unreleased]
 
+## [0.2.0] – mở file .oef của Open Exam Suite
+
+APK đăng ở GitHub Releases dạng Pre-release như 0.1.0, `versionCode` 2, ký bằng cùng chứng chỉ với 0.1.0 nên cài đè được,
+giữ Thư viện và lịch sử thi (`docs/install-android.md`, mục Cập nhật app). Nt0 thử trên điện thoại ở cổng GO2 của
+`docs/product/plan-oef.md` (2026-11-01): đạt.
+
 ### Added
 
 - Mở file **`.oef` của Open Exam Suite** (bản Protobuf, Open Exam Suite 4 trở lên) như `.exam`: Thêm đề, Mở bằng, Chia

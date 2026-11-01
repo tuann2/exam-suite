@@ -5,17 +5,12 @@ là của bản macOS). Bản macOS ghi ở `CHANGELOG.md`, bản Android ở `a
 
 ## [Unreleased]
 
-### Added
-
-- Mở file `.oef` của Open Exam Suite (bản 4 trở lên) như `.exam`: Thêm đề, "Mở bằng"/chia sẻ từ app khác, app Tệp. File
-  được đọc và chuyển mỗi lần mở; như bản macOS, sửa câu trong Open Exam Suite (giữ mã và tiêu đề) vẫn là cùng đề, lịch
-  sử thi nối tiếp.
-
-## [0.1.0] – chưa phát hành (chờ cổng GI3)
+## [0.1.0] – bản iPhone đầu tiên
 
 Bản iPhone đầu tiên của Exam Suite, bản **Học viên**: iOS 18 trở lên, giao diện iPhone, cài qua Xcode bằng Apple ID miễn
-phí (bản cài chạy 7 ngày rồi cài lại). Hành vi theo tài liệu của bản macOS; chỗ khác ghi ở bảng "Chỗ iOS khác macOS" của
-`docs/product/plan-ios-v1.md`.
+phí (bản cài chạy 7 ngày rồi cài lại), từ tag `ios-v0.1.0` (`docs/install-ios.md`). Hành vi theo tài liệu của bản macOS;
+chỗ khác ghi ở bảng "Chỗ iOS khác macOS" của `docs/product/plan-ios-v1.md`. Nt0 dùng thử trên iPhone ở cổng GI2 và GO2
+(2026-11-01): đạt.
 
 ### Added
 
@@ -24,6 +19,9 @@ phí (bản cài chạy 7 ngày rồi cài lại). Hành vi theo tài liệu c�
   màn **Giới thiệu** (phiên bản, giấy phép Apache-2.0, NOTICE, giấy phép của ZIPFoundation).
 - **Vào đề**: nút **Thêm đề** (chọn file trong app Tệp, dùng file tại chỗ như bản macOS) và mở `.exam` từ app khác (Zalo,
   Mail, AirDrop… qua Chia sẻ hay Mở bằng: iOS chép file vào app). Cùng đề, khác file thì hỏi **Dùng file mới** / **Huỷ**.
+- Mở file `.oef` của Open Exam Suite (bản 4 trở lên) như `.exam`: Thêm đề, "Mở bằng"/chia sẻ từ app khác, app Tệp. File
+  được đọc và chuyển mỗi lần mở; như bản macOS, sửa câu trong Open Exam Suite (giữ mã và tiêu đề) vẫn là cùng đề, lịch
+  sử thi nối tiếp.
 - **Trước khi thi, Làm bài, Rà soát & nộp, Kết quả, Xem lại bài, Luyện lại câu sai, Làm lại** dùng chung model với bản
   macOS (chấm điểm, chọn câu có seed, `hideAnswers`, câu đã sửa sau lần thi, Kiểm tra đáp án ở Luyện tập, đánh dấu câu,
   bảng câu hỏi, đồng hồ và cảnh báo 5/1 phút, so với lần trước, bộ lọc của Xem lại).

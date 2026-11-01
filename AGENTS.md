@@ -44,8 +44,8 @@ thêm Soạn đề). Đề là gói zip `.exam` = `exam.json` + `media/`.
 4. `schema/exam-v1.schema.json`, code và test: hành vi hiện tại.
 5. `docs/product/plan-macos-v1.md`: kế hoạch đầy đủ (lộ trình, UX, rủi ro). Bản mobile: `docs/product/mobile.md`
    (chỗ Android khác macOS; mục "Bản iOS": chỗ iOS khác macOS), `docs/product/plan-android-v1.md` (v1 xong, bản 0.1.0; exec-plan `docs/plans/completed/android-v1.md`; v1.1 lập plan khi Nt0 quyết),
-   `docs/product/plan-ios-v1.md` (đang làm, exec-plan `docs/plans/active/ios-v1.md`; hành vi theo macOS, không theo luật Android của `mobile.md`: Nt0 chốt 2026-10-30).
-   Mở `.oef` của Open Exam Suite ở ba bản Học viên và Import đề…: `docs/product/plan-oef.md` (ADR 0014, Nt0 chốt 2026-10-31; exec-plan `docs/plans/active/oef.md`).
+   `docs/product/plan-ios-v1.md` (v1 xong, bản 0.1.0; exec-plan `docs/plans/completed/ios-v1.md`; v1.1 lập plan khi Nt0 quyết; hành vi theo macOS, không theo luật Android của `mobile.md`: Nt0 chốt 2026-10-30).
+   Mở `.oef` của Open Exam Suite ở ba bản Học viên và Import đề…: `docs/product/plan-oef.md` (ADR 0014, Nt0 chốt 2026-10-31; xong, phát hành ở macOS 0.2.0, Android 0.2.0, iOS 0.1.0; exec-plan `docs/plans/completed/oef.md`).
    DESIGN_BRIEF của Open Exam Suite chỉ **đọc qua link** (GPLv3): không chép code hay đề mẫu.
 
 ### Bản đồ code

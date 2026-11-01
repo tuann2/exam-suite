@@ -61,7 +61,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: vn.io.nt0.examsuite$(EXAMSUITE_BUNDLE_ID_SUFFIX)
         EXAMSUITE_DOC_HANDLER_RANK_NORMAL: Alternate
         PRODUCT_NAME: Exam Suite
-        MARKETING_VERSION: "0.1.1"
+        MARKETING_VERSION: "0.2.0"
         # Số build: 1 khi build tay; scripts/make_dmg.sh truyền 1000 + số commit của HEAD (`git rev-list --count HEAD`) lúc
         # build bản đóng DMG, không sửa repo mỗi lần (plan giai đoạn 6, bước 1; độ lệch 1000 từ repo public 2026-10-20).
         CURRENT_PROJECT_VERSION: "1"
@@ -145,7 +145,7 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: vn.io.nt0.examsuite.admin$(EXAMSUITE_BUNDLE_ID_SUFFIX)
         EXAMSUITE_DOC_HANDLER_RANK_NORMAL: Owner
         PRODUCT_NAME: Exam Suite Admin
-        MARKETING_VERSION: "0.1.1"
+        MARKETING_VERSION: "0.2.0"
         # Số build: như bản Học viên (scripts/make_dmg.sh).
         CURRENT_PROJECT_VERSION: "1"
         # Biểu tượng tạm (burgundy, chữ A) trong Apps/Admin/Assets.xcassets, vẽ bằng scripts/make_icons.swift.

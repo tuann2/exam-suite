@@ -114,14 +114,30 @@ jobs:
           # nông (make_dmg.sh dừng khi repo là clone nông).
           fetch-depth: 0
       # Dừng ngay (trước bước build ~15 phút) khi tag không khớp phiên bản của app: tag phải là v<MARKETING_VERSION> hoặc
-      # v<MARKETING_VERSION>-<nhãn> (prerelease), mọi chỗ khai báo MARKETING_VERSION trong project.yml cùng một giá trị.
+      # v<MARKETING_VERSION>-<nhãn> (prerelease), hai target macOS (ExamSuite, ExamSuiteAdmin) trong project.yml cùng
+      # khai báo một giá trị. Target iOS đánh số riêng (tag ios-v*, plan-ios-v1.md) nên không tính.
       - name: Tag must match MARKETING_VERSION
         env:
           TAG: ${{ github.ref_name }}
         run: |
           version="${TAG#v}"
           base="${version%%-*}"
-          declared="$(sed -n 's/^[[:space:]]*MARKETING_VERSION:[[:space:]]*"\{0,1\}\([^"[:space:]]*\)"\{0,1\}[[:space:]]*$/\1/p' project.yml | sort -u)"
+          # Một dòng "<target> <phiên bản>" cho mỗi target macOS có khai báo (target là khoá thụt hai dấu cách dưới targets:).
+          found="$(awk '
+            /^[^[:space:]#]/ { in_targets = ($0 ~ /^targets:/); target = ""; next }
+            in_targets && /^  [^[:space:]#][^:]*:[[:space:]]*(#.*)?$/ { target = $1; sub(/:$/, "", target); next }
+            in_targets && (target == "ExamSuite" || target == "ExamSuiteAdmin") && /^[[:space:]]+MARKETING_VERSION:/ {
+              value = $0
+              sub(/^[[:space:]]*MARKETING_VERSION:[[:space:]]*/, "", value)
+              gsub(/["[:space:]]/, "", value)
+              print target, value
+            }
+          ' project.yml)"
+          declared="$(awk '{ print $2 }' <<< "$found" | sort -u)"
+          if [[ "$(awk '{ print $1 }' <<< "$found" | sort -u | wc -l | tr -d ' ')" != 2 ]]; then
+            echo "project.yml thiếu MARKETING_VERSION của target ExamSuite hoặc ExamSuiteAdmin ($(echo $found)): không build" >&2
+            exit 1
+          fi
           if [[ -z "$declared" || "$declared" != "$base" ]]; then
             echo "Tag $TAG không khớp MARKETING_VERSION trong project.yml ($(echo $declared)): không build, không tạo Release" >&2
             exit 1

@@ -67,6 +67,8 @@ lại `xcodegen generate` (mục Cập nhật) thì đổi lại.
 - Từ Zalo, Mail, AirDrop…: chạm file `.exam`, chọn **Chia sẻ** hoặc **Mở bằng**, rồi **Exam Suite**. iOS chép file vào
   app; đề có trong Thư viện. Nhận lại cùng một đề thì app hỏi **Dùng file mới** hay **Huỷ**.
 - Đang làm bài mà mở file từ app khác: đề vẫn được thêm, câu hỏi (nếu có) hiện khi bạn về Thư viện.
+- File `.oef` của Open Exam Suite (bản 4 trở lên) mở được theo cùng các cách trên. File `.oef` bản cũ báo cần mở bằng
+  Open Exam Suite rồi lưu lại.
 
 ## Cập nhật
 
@@ -75,8 +77,8 @@ Cài. Dữ liệu giữ nguyên.
 
 ## Gỡ cài
 
-Nhấn giữ biểu tượng Exam Suite, chọn **Xóa ứng dụng**, rồi xác nhận **Xóa ứng dụng**. Thư viện, lịch sử thi và các file đề nhận từ app
-khác mất theo app; file đề trong app Tệp không bị xoá.
+Nhấn giữ biểu tượng Exam Suite, chọn **Xóa ứng dụng**, rồi xác nhận **Xóa ứng dụng**. Thư viện, lịch sử thi và các file
+     đề nhận từ app khác mất theo app; file đề trong app Tệp không bị xoá.
 
 ## Dữ liệu nằm ở đâu
 

@@ -286,7 +286,8 @@ ghi.
    iOS.
 2. Bảng Quyết định đã chốt 2026-10-30; bắt đầu từ I0. Quyết định nào cần đổi thì dừng, hỏi Nt0, không tự sửa bảng.
 3. Mỗi bước một PR trên nhánh `feature/ios-<bước>`; không push `main`, không tự merge; cập nhật exec-plan
-   `docs/plans/active/ios-v1.md` trong cùng PR; không mở PR tài liệu riêng.
+   `docs/plans/active/ios-v1.md` (v1 đã đóng 2026-11-01: `docs/plans/completed/ios-v1.md`) trong cùng PR; không mở PR
+   tài liệu riêng.
 4. I1 chỉ di chuyển code (trừ việc gỡ `reportReviewLevel` khỏi `SessionPreferences` nếu chọn cách đó, Phần 3); thấy cần
    sửa hành vi thì dừng và ghi vào Decisions, không sửa trong PR tách.
 5. View iPhone viết mới; không chép model, chỉ dùng module tách; không lưu phiên dở.
