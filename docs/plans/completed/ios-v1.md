@@ -82,8 +82,9 @@ Không có cặp song song.
       (`docs/notes/ios-measurements.md`) và sửa mục vượt ngân sách (ảnh của câu giải mã ngoài main thread),
       `docs/install-ios.md`, `CHANGELOG-ios.md`. Phần của Nt0: GI2 không có lỗi beta phải sửa; rà VoiceOver bốn màn chính
       trên máy thật và cài 0.1.0 qua Xcode làm cùng GI2.
-- [x] Cổng GI3 (Nt0, 2026-11-01, đạt): bản 0.1.0 (`main` `8cf506b`, code iOS như SHA phát hành) cài qua Xcode lên
-      iPhone, Nt0 dùng thử cùng lần GI2 và GO2, rồi cho phát hành.
+- [x] Cổng GI3 (Nt0, 2026-11-01, đạt): bản 0.1.0 (`main` `8cf506b`; code iOS như SHA phát hành, chỉ tài nguyên `LICENSE`
+      của app khác một dòng: dòng Copyright của APPENDIX) cài qua Xcode lên iPhone, Nt0 dùng thử cùng lần GI2 và GO2,
+      rồi cho phát hành.
 - [x] Phát hành 0.1.0 (nhánh `feature/oef-phat-hanh`, cùng macOS 0.2.0 và Android 0.2.0): CHANGELOG-ios mục 0.1.0 gồm
       `.oef` (QO13 đổi, Decisions); đóng exec-plan. `verify_local.sh --clean --uitest` trên SHA phát hành và tag
       `ios-v0.1.0` sau khi PR merge (Result).

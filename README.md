@@ -2,22 +2,22 @@
 
 > **English summary.** Exam Suite is a native macOS app for practising and taking multiple-choice exams, written in
 > Swift 6 and SwiftUI for Apple silicon Macs running macOS 15 or later (deployment target; tested on macOS 26). One
-> codebase builds two apps: **Exam Suite** (student build: exam library, practice, timed exams, results, answer review,
-> PDF and printing of results) and **Exam Suite Admin** (everything above plus the exam editor and import from `.txt`,
-> `.docx` and one common `.vce` variant, text-only questions). Exams are open `.exam` packages: a zip with `exam.json`
-> ([JSON Schema](schema/exam-v1.schema.json)) and a `media/` folder. The interface is available in Vietnamese and
-> English. Download the DMGs from [Releases](https://github.com/tuann2/exam-suite/releases); the apps are ad-hoc signed,
-> so the first launch needs System Settings › Privacy & Security › Open Anyway ([install guide](docs/install.md), in
-> Vietnamese). Licensed under the [Apache License 2.0](LICENSE). Documentation and code comments are mostly in
-> Vietnamese.
+> codebase builds two apps: **Exam Suite** (student build: exam library that also opens Open Exam Suite `.oef` files,
+> practice, timed exams, results, answer review, PDF and printing of results) and **Exam Suite Admin** (everything
+> above plus the exam editor and import from `.txt`, `.docx`, one common `.vce` variant (text-only questions) and
+> `.oef`). Exams are open `.exam` packages: a zip with `exam.json` ([JSON Schema](schema/exam-v1.schema.json)) and a
+> `media/` folder. The interface is available in Vietnamese and English. Download the DMGs from
+> [Releases](https://github.com/tuann2/exam-suite/releases); the apps are ad-hoc signed, so the first launch needs
+> System Settings › Privacy & Security › Open Anyway ([install guide](docs/install.md), in Vietnamese). Licensed under
+> the [Apache License 2.0](LICENSE). Documentation and code comments are mostly in Vietnamese.
 
 Ứng dụng luyện tập và thi trắc nghiệm, dự án cá nhân của Nt0, viết bằng Swift 6 + SwiftUI cho Mac Apple silicon
 (macOS 15 trở lên). Một codebase, hai bản app:
 
 | Bản | Target | Bundle ID | Chức năng |
 | --- | --- | --- | --- |
-| Học viên | `ExamSuite` | `vn.io.nt0.examsuite` | Thư viện đề, Luyện tập, Thi, Kết quả, Xem lại bài, PDF và In kết quả |
-| Admin | `ExamSuiteAdmin` | `vn.io.nt0.examsuite.admin` | Như trên, thêm Soạn đề, Import đề (`.txt`, `.docx`, `.vce`), PDF và In đề |
+| Học viên | `ExamSuite` | `vn.io.nt0.examsuite` | Thư viện đề (`.exam`, `.oef`), Luyện tập, Thi, Kết quả, Xem lại bài, PDF và In kết quả |
+| Admin | `ExamSuiteAdmin` | `vn.io.nt0.examsuite.admin` | Như trên, thêm Soạn đề, Import đề (`.txt`, `.docx`, `.vce`, `.oef`), PDF và In đề |
 
 Bản Học viên không chứa code soạn đề ([ADR 0003](docs/decisions/0003-hai-ban-app-mot-codebase.md)). Đề thi là gói zip
 đuôi `.exam` gồm `exam.json` (theo [schema/exam-v1.schema.json](schema/exam-v1.schema.json)) và thư mục `media/`
@@ -26,11 +26,13 @@ Bản Học viên không chứa code soạn đề ([ADR 0003](docs/decisions/000
 Điểm chính (chi tiết ở [docs/product/overview.md](docs/product/overview.md) và [CHANGELOG.md](CHANGELOG.md)):
 
 - Thư viện đề: thêm file `.exam` (⌘O hoặc kéo thả), lưới hoặc danh sách, tìm, lọc, sắp xếp, hai đề mẫu, lịch sử thi.
+  Mở thẳng file `.oef` của Open Exam Suite (bản 4 trở lên) như `.exam`, kể cả nhấp đúp trong Finder (từ 0.2.0,
+  [ADR 0014](docs/decisions/0014-doc-file-oef.md)).
 - Luyện tập có Kiểm tra đáp án; Thi tính giờ (chọn câu ngẫu nhiên có seed, cảnh báo 5 và 1 phút, tạm dừng, rà soát và
   nộp); Kết quả theo thang 1000 và phần trăm, theo từng phần; Xem lại bài, Làm lại, Luyện lại câu sai.
 - Xuất PDF và In kết quả (hai bản); PDF và In đề, có hoặc không có đáp án (bản Admin).
 - Soạn đề (bản Admin): cửa sổ ba cột, ảnh, kiểm lỗi khi đang soạn, Hoàn tác/Làm lại, Thử đề này.
-- Import đề (bản Admin) từ `.txt`, `.docx` và `.vce`. Với `.vce`, app đọc một biến thể phổ biến, câu chỉ có văn bản;
+- Import đề (bản Admin) từ `.txt`, `.docx`, `.vce` và `.oef`. Với `.vce`, app đọc một biến thể phổ biến, câu chỉ có văn bản;
   ảnh, bảng, loại câu khác và phiên bản `.vce` khác chưa hỗ trợ, bị bỏ kèm báo cáo
   ([import.md](docs/product/import.md), [ADR 0009](docs/decisions/0009-doc-dinh-dang-vce.md)).
 - Giao diện tiếng Việt và tiếng Anh; VoiceOver, Dark Mode, nền đọc cho vùng câu hỏi, cỡ chữ nội dung (⌘+ / ⌘− / ⌘0).

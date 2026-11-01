@@ -154,19 +154,30 @@ Thư viện, phiên thi đọc qua `ExamSourceReader`, UTType; sau khi I3 của 
   bằng chính đoạn script của bước (v0.2.0, v0.2.0-beta1 đạt; v0.1.0, v0.1.1, Admin lệch số, Admin thiếu khai báo dừng;
   bước cũ dừng với v0.2.0). Tag ba bản do Nt0 đẩy.
 - 2026-11-01 (phát hành, phát hiện): `scripts/make_dmg.sh` tại máy của Nt0 dừng ở bước quét chuỗi cấm, vì một mẫu cục bộ
-  (`~/.config/exam-suite/leak-patterns`, không lưu trong repo) khớp thư mục nhà, mà binary build tại máy nào cũng chứa
-  đường dẫn tuyệt đối của file nguồn (kể cả của ZIPFoundation): không do thay đổi của plan này. DMG phát hành do runner
+  (`~/.config/exam-suite/leak-patterns`, không lưu trong repo) khớp đường dẫn tuyệt đối của file nguồn mà binary build
+  tại máy nào cũng chứa (kể cả của ZIPFoundation): không do thay đổi của plan này. DMG phát hành do runner
   CI đóng (chỉ `/Users/runner/`). DMG để Nt0 thử GO2 đóng với `EXAMSUITE_LEAK_PATTERNS_FILE=/dev/null` (mẫu chung vẫn
-  quét), không phát hành. Sửa mẫu cục bộ hay không: Nt0 quyết.
+  quét), không phát hành. Sửa mẫu cục bộ hay không: Nt0 quyết. Bù cho việc DMG phát hành không qua mẫu cục bộ: quét
+  hai DMG của Release bằng mẫu cục bộ sau khi job `release-dmg` xong (Result, bước 4).
+- 2026-11-01 (phát hành, Nt0 yêu cầu): `LICENSE` điền dòng mẫu `Copyright [yyyy] [name of copyright owner]` ở phần
+  APPENDIX thành `Copyright 2026 Nt0` (như NOTICE, README, ADR 0001). Điều khoản không đổi; API giấy phép của GitHub vẫn
+  nhận Apache-2.0 trên blob mới (review độc lập); `make_dmg.sh` chép rồi so từng byte `LICENSE.txt` với repo, màn Giới
+  thiệu của iOS đọc file của repo. ADR 0001 ghi chú theo.
+- 2026-11-01 (review độc lập PR phát hành): APPROVE, không chặn. Đã sửa: `docs/plans/README.md`; Decisions về `LICENSE`;
+  bước quét DMG của Release và các bước Android đủ theo android-release.md (Result); README gốc và `docs/install-ios.md`
+  nhắc `.oef`; CHANGELOG ghi "theo thiết kế" cho máy có Open Exam Suite; bước kiểm tag nhận dòng target có comment cuối
+  dòng. Rủi ro còn lại: job `release-dmg` chưa chạy lần nào từ khi có target iOS và hai package mới (nếu đỏ sau khi đẩy
+  tag thì có tag mà chưa có Release: sửa rồi Re-run job, hoặc Nt0 chạy tay `apps-macos` trước khi đẩy tag).
 
 ## Validation
 
 - O1, 2026-10-31: `scripts/check.sh` đạt trước review và trên trạng thái cuối sau re-review (một lượt giữa chừng đỏ ở
-  `OEFImportTests` vì fixture `truong-la` thêm trường lạ ở lựa chọn; đã sửa test); `make_oef.py --check` 32 file; `Timing`
-  `oef.read` 1,11 s Debug (giới hạn 6 s); catalog ổn định qua `-exportLocalizations` ba scheme. Thử tại máy trên file mẫu
-  công khai của OES (Decisions). Review độc lập: 1 chặn, 4 nên sửa, nit; đã sửa. Re-review: không chặn, 2 nên sửa, 2 nit; đã sửa (Decisions). `verify_local.sh --uitest`
-  (`--no-autosave-check`) xanh trên `d332ce2` sau khi Nt0 cập nhật CoreSimulator: mức full, UI test đủ bộ (Học viên 6,
-  Admin 4, iOS 3), kho thật không đổi, Linux đạt; check `android` của CI xanh.
+  `OEFImportTests` vì fixture `truong-la` thêm trường lạ ở lựa chọn; đã sửa test); `make_oef.py --check` 32 file;
+  `Timing` `oef.read` 1,11 s Debug (giới hạn 6 s); catalog ổn định qua `-exportLocalizations` ba scheme. Thử tại máy
+  trên file mẫu công khai của OES (Decisions). Review độc lập: 1 chặn, 4 nên sửa, nit; đã sửa. Re-review: không chặn, 2
+  nên sửa, 2 nit; đã sửa (Decisions). `verify_local.sh --uitest` (`--no-autosave-check`) xanh trên `d332ce2` sau khi Nt0
+  cập nhật CoreSimulator: mức full, UI test đủ bộ (Học viên 6, Admin 4, iOS 3), kho thật không đổi, Linux đạt; check
+  `android` của CI xanh.
 - O3, 2026-10-31: trên `922fed5` check `android` của CI xanh (lint, test, so ảnh; `SharedOracleTest` đọc
   `fixtures/oef/`), `local/verify-android` xanh (6 test Compose trên emulator, kể cả đoạn mở `.oef` của
   `ExamIntentFlowTest`; `PlatformTest` chạy oracle đọc nghiêm trên ART), `local/verify` mức none. Review độc lập không
@@ -176,12 +187,14 @@ Thư viện, phiên thi đọc qua `ExamSourceReader`, UTType; sau khi I3 của 
   `-exportLocalizations` ba scheme. `verify_local.sh --uitest --no-autosave-check` xanh trên `19c2dab`: mức full, UI test
   đủ bộ (Học viên 6, Admin 4, iOS 3, kể cả luồng 3 thêm đề `.oef`), kho thật không đổi, Linux đạt.
 - GO1, GO2 (Nt0, 2026-11-01; macOS từ DMG đóng tại máy trên `main` `8cf506b`, iOS cài qua Xcode, Android bản có O3):
-  đạt. Bộ file thử ngoài git: hai file mẫu Protobuf công khai của OES (GMAT 20 câu, Basic Science 8 câu), một file bản cũ
-  của OES, bản GMAT sửa chữ câu 1 (Decisions), fixture tự dựng của `fixtures/oef/` (ảnh, nhiều đáp án, ẩn đáp án, có lỗi)
-  và một cặp đúng/lỗi cùng tiêu đề để thấy Đề có lỗi. Đã thử: Import đề… (số câu, phần, đáp án, ngưỡng, thời gian; file bản
-  cũ, file có lỗi) rồi mở `.exam` bằng bản Học viên; nhấp đúp và Mở bằng trong Finder; kéo thả; Thông tin; Thi; sửa câu
-  rồi Xem lại báo câu đã sửa; thêm `.exam` do Admin chuyển (Dùng file mới / Cập nhật đề, lịch sử nối tiếp); Đề có lỗi;
-  Sửa tắt ở bản Admin; iPhone nhận `.oef` qua Zalo và app Tệp; Android qua Zalo hoặc Drive.
+  đạt. Máy Mac không chạy được Open Exam Suite, nên "so với OES" của GO1 là so với nội dung file đọc thẳng từ dây
+  Protobuf (tiêu đề, mã, ngưỡng, thời gian, số phần, số câu, đáp án từng câu) bằng công cụ dump ngoài repo. Bộ file thử
+  ngoài git: hai file mẫu Protobuf công khai của OES (GMAT 20 câu, Basic Science 8 câu), một file bản cũ của OES, bản
+  GMAT sửa chữ câu 1 (Decisions), fixture tự dựng của `fixtures/oef/` (ảnh, nhiều đáp án, ẩn đáp án, có lỗi) và một cặp
+  đúng/lỗi cùng tiêu đề để thấy Đề có lỗi. Đã thử: Import đề… (số câu, phần, đáp án, ngưỡng, thời gian; file bản cũ,
+  file có lỗi) rồi mở `.exam` bằng bản Học viên; nhấp đúp và Mở bằng trong Finder; kéo thả; Thông tin; Thi; sửa câu rồi
+  Xem lại báo câu đã sửa; thêm `.exam` do Admin chuyển (Dùng file mới / Cập nhật đề, lịch sử nối tiếp); Đề có lỗi; Sửa
+  tắt ở bản Admin; iPhone nhận `.oef` qua Zalo và app Tệp; Android qua Zalo hoặc Drive.
 
 ## Result
 
@@ -193,7 +206,10 @@ Các bước sau khi PR phát hành merge (bằng chứng nằm ở commit statu
 
 1. Trên SHA `main` sau merge: `scripts/verify_local.sh --clean --uitest` (cổng macOS và iOS), `android/scripts/check_android.sh
    --ui` (cổng Android).
-2. Nt0 đóng APK release ký (`docs/process/android-release.md` bước 2), cài đè lên điện thoại.
+2. Nt0 đóng APK release ký theo `docs/process/android-release.md` bước 2 (chứng chỉ in ra phải là `CN=Nt0`, SHA-256 như
+   0.1.0 trong `android/CHANGELOG.md`), cài đè lên điện thoại, chạy thử (bước 3).
 3. Nt0 đẩy ba tag trên SHA đó: `v0.2.0` (job `release-dmg` đóng hai DMG và tạo GitHub Release), `android-v0.2.0` (rồi tạo
    GitHub Release Pre-release kèm APK và ba file giấy phép, android-release.md bước 4), `ios-v0.1.0` (không có bản cài,
    cài từ mã nguồn qua Xcode).
+4. Sau khi job `release-dmg` xong: tải hai DMG của Release `v0.2.0`, gắn chỉ đọc, quét app trong đó bằng mẫu chung và
+   mẫu cục bộ như bước quét của `make_dmg.sh` (chỉ in tên file trúng); trúng thì gỡ Release, sửa, phát hành lại.

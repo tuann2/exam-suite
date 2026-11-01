@@ -32,11 +32,12 @@ hàm C# sang Swift.
 Positive:
 
 - App native, nhẹ, dùng DocumentGroup/UndoManager/Versions sẵn của macOS.
-- Giấy phép của app tự do (không bị GPLv3 ràng buộc). 2026-10-20 Nt0 chọn Apache-2.0: `LICENSE` (nguyên văn Apache-2.0),
-  `NOTICE` ("Exam Suite / Copyright 2026 Nt0" và ghi công ZIPFoundation), `THIRD_PARTY_NOTICES.md` (giấy phép MIT của
-  ZIPFoundation, thư viện link vào app; các gói chỉ dùng khi test) ở gốc repo, bản chữ trơn trong mỗi DMG
-  (`scripts/make_dmg.sh`). Không thêm tiêu đề giấy phép vào từng file mã nguồn (phụ lục của Apache-2.0 chỉ khuyên, không
-  bắt buộc; Nt0 chọn một `LICENSE` ở gốc repo).
+- Giấy phép của app tự do (không bị GPLv3 ràng buộc). 2026-10-20 Nt0 chọn Apache-2.0: `LICENSE` (nguyên văn Apache-2.0;
+  2026-11-01 Nt0 cho điền dòng `Copyright 2026 Nt0` ở phần APPENDIX, điều khoản không đổi), `NOTICE` ("Exam Suite /
+  Copyright 2026 Nt0" và ghi công ZIPFoundation), `THIRD_PARTY_NOTICES.md` (giấy phép MIT của ZIPFoundation, thư viện
+  link vào app; các gói chỉ dùng khi test) ở gốc repo, bản chữ trơn trong mỗi DMG (`scripts/make_dmg.sh`). Không thêm
+  tiêu đề giấy phép vào từng file mã nguồn (phụ lục của Apache-2.0 chỉ khuyên, không bắt buộc; Nt0 chọn một `LICENSE` ở
+  gốc repo).
 
 Tradeoffs:
 

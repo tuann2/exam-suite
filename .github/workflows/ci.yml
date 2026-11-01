@@ -125,7 +125,7 @@ jobs:
           # Một dòng "<target> <phiên bản>" cho mỗi target macOS có khai báo (target là khoá thụt hai dấu cách dưới targets:).
           found="$(awk '
             /^[^[:space:]#]/ { in_targets = ($0 ~ /^targets:/); target = ""; next }
-            in_targets && /^  [^[:space:]#][^:]*:[[:space:]]*$/ { target = $1; sub(/:$/, "", target); next }
+            in_targets && /^  [^[:space:]#][^:]*:[[:space:]]*(#.*)?$/ { target = $1; sub(/:$/, "", target); next }
             in_targets && (target == "ExamSuite" || target == "ExamSuiteAdmin") && /^[[:space:]]+MARKETING_VERSION:/ {
               value = $0
               sub(/^[[:space:]]*MARKETING_VERSION:[[:space:]]*/, "", value)
