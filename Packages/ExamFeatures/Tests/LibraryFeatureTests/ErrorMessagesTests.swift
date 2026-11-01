@@ -1,8 +1,8 @@
 import ExamFile
 import ExamKit
 import Foundation
+@testable import InterfaceCore
 import LibraryData
-@testable import LibraryFeature
 import Testing
 
 /// Câu báo lỗi của lõi (ExamKit, ExamFile) và LibraryData dựng ở tầng giao diện bằng chữ của catalog theo mã (bước 7b,
@@ -187,6 +187,14 @@ struct ErrorMessagesTests {
             .unsupportedImageType("bmp"),
             .writeFailed(.encodingFailed("E")), .writeFailed(.archiveUnavailable), .writeFailed(.archiveFailed("Z")),
             .writeFailed(.replaceFailed(fileName: "de.exam", systemReason: "Permission denied")),
+            .oef(.legacyFormat), .oef(.malformed(offset: 0)), .oef(.malformed(offset: 4_096)), .oef(.noQuestions),
+            .oef(.tooLarge(.file, limit: 100)), .oef(.tooLarge(.text, limit: 40)), .oef(.tooLarge(.elements, limit: 9)),
+            .oef(.imageTooLarge(OEFPlace(section: 0, question: 1), limit: 10)),
+            .oef(.unknownFields(["properties.#8", "sections[0].questions[0].#9", "#3"])),
+            .oef(.passmarkOutOfRange), .oef(.unsupportedImage(OEFPlace(section: 1, question: 0))),
+            .oef(.tooManyOptions(OEFPlace(section: 0, question: 0), count: 28)),
+            .oef(.duplicateOptionLetter(OEFPlace(section: 0, question: 1), letter: "A")),
+            .oef(.answerNotInOptions(OEFPlace(section: 2, question: 4), letters: ["D", "U+0000"])),
         ]
     }()
 
@@ -292,10 +300,12 @@ struct ErrorMessagesTests {
             == "The exam has 3 errors and can’t be opened. First error: X")
     }
 
+    /// Khoá của catalog InterfaceCore (`ErrorMessages` tách từ LibraryFeature sang đó ở bước I1 của plan iOS).
     static func catalogKeys() throws -> Set<String> {
         let url = URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
-            .appendingPathComponent("Sources/LibraryFeature/Resources/Localizable.xcstrings")
+            .deletingLastPathComponent()
+            .appendingPathComponent("SharedFeatures/Sources/InterfaceCore/Resources/Localizable.xcstrings")
         let object = try JSONSerialization.jsonObject(with: Data(contentsOf: url)) as? [String: Any]
         return Set((object?["strings"] as? [String: Any] ?? [:]).keys)
     }

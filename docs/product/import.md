@@ -1,8 +1,8 @@
 # Import đề từ file khác (bản Admin)
 
-Thẩm quyền: tài liệu này (Nt0 yêu cầu 2026-10-16: trước mắt **`.txt`, `.docx`, `.vce`**). Kết quả import là một đề
-theo [exam-format.md](exam-format.md), mở trong cửa sổ soạn đề ([authoring.md](authoring.md)). `.vce` phụ thuộc
-ADR 0009 (Accepted).
+Thẩm quyền: tài liệu này (Nt0 yêu cầu 2026-10-16: trước mắt **`.txt`, `.docx`, `.vce`**; 2026-10-31 thêm **`.oef`**,
+ADR 0014). Kết quả import là một đề theo [exam-format.md](exam-format.md), mở trong cửa sổ soạn đề
+([authoring.md](authoring.md)). `.vce` phụ thuộc ADR 0009 (Accepted).
 
 Code: bộ chuyển đổi thuần (không giao diện) trong module riêng chỉ bản Admin link (ADR 0003), dùng Foundation,
 `XMLParser` và ZIPFoundation (ADR 0006: không thêm thư viện; bộ đọc `.vce` chỉ Foundation); hộp thoại và báo cáo
@@ -13,7 +13,7 @@ trong `AuthoringFeature`.
 
 ## Luồng
 
-1. **Import đề…** (menu File, bản Admin) → chọn một file `.txt`, `.docx` hoặc `.vce`.
+1. **Import đề…** (menu File, bản Admin) → chọn một file `.txt`, `.docx`, `.vce` hoặc `.oef`.
 2. App đọc và chuyển đổi (chạy nền, có tiến độ cho file lớn; huỷ được). Tiến độ và hộp xác nhận (bước 3) ở **cửa sổ
    riêng "Import đề"** (gọi được cả khi chỉ có cửa sổ soạn đề đang mở); đóng cửa sổ đó là **Huỷ** (phương án 16).
 3. **Hộp thoại xác nhận** (Nt0 chốt: hỏi khi import): tiêu đề, mã đề, **ngưỡng đậu (%)** và **thời gian Thi (phút)**,
@@ -27,7 +27,7 @@ trong `AuthoringFeature`.
 5. **Báo cáo import** mở cùng cửa sổ (ẩn/hiện được): từng câu bị bỏ hoặc có cảnh báo, kèm vị trí trong file gốc
    (số câu, số dòng với txt) và lý do. Lỗi kiểm tra của đề (exam-format.md) hiện trên thanh lỗi như mọi đề.
 
-- **Id**: `id` đề, phần, câu sinh **ngẫu nhiên mỗi lần import** (Nt0 chốt). Import lại cùng file là một đề mới; muốn
+- **Id**: `id` đề, phần, câu sinh **ngẫu nhiên mỗi lần import** (Nt0 chốt); riêng `.oef` là id dẫn xuất (mục `.oef`). Import lại cùng file là một đề mới; muốn
   giữ lịch sử thi thì sửa trên `.exam` đã lưu.
 - Câu thiếu dữ liệu tối thiểu (không có lựa chọn nào) bị **bỏ** và ghi vào báo cáo. Câu có dữ liệu nhưng vi phạm ràng
   buộc (không có đáp án đúng, đáp án ngoài lựa chọn, một lựa chọn…) vẫn **giữ** để sửa trong cửa sổ soạn đề; thanh lỗi
@@ -197,6 +197,29 @@ khai), chi tiết cấu trúc ở mã nguồn. Ánh xạ sang cùng mô hình nh
   - Định dạng chữ (đậm, nghiêng…): bỏ định dạng, giữ chữ (xem trên).
   - Mô tả đề, phiên bản đề, ngày tạo/sửa, tiêu đề tình huống (case study): không đọc.
 
+## `.oef`
+
+File `.oef` bản Protobuf của Open Exam Suite (ADR 0014). Bộ chuyển là `OEFReader` của ExamFile ở **chế độ dễ**, cũng là
+bộ bản Học viên dùng khi mở thẳng file, nên luật ánh xạ, chuẩn hoá chuỗi, thoát Markdown, ảnh và id ở
+[exam-format.md](exam-format.md), mục File `.oef`; mục này chỉ ghi phần riêng của import.
+
+- **Id dẫn xuất** (khác luật id ngẫu nhiên ở trên; plan-oef.md QO10): đề import có cùng id với đề bản Học viên đọc từ
+  cùng file, nên `.exam` lưu ra thay được file `.oef` mà lịch sử thi nối tiếp. Import lại cùng file ra cùng id; id giữ
+  theo mã và tiêu đề **trong file**, kể cả khi hộp xác nhận đổi tiêu đề hay mã.
+- **Hộp xác nhận** điền sẵn tiêu đề (rỗng → tên file bỏ đuôi), mã (sai mẫu → bỏ, cảnh báo), ngưỡng đậu (Passmark/10 làm
+  tròn nửa lên; ngoài thang 0–1000 → để trống, cảnh báo), thời gian (ngoài 1–600 → để trống, cảnh báo). Hướng dẫn và cờ
+  ẩn đáp án lấy từ file, không hỏi.
+- **Báo cáo**: mỗi ghi chú của bộ đọc là một mục; vị trí "Câu N" là thứ tự câu trong cả file (từ 1, kể cả câu bị bỏ).
+  Câu không có lựa chọn: **bỏ câu** (`noOptions`). Cảnh báo: trường lạ bị bỏ qua (`unknownField`), mã sai mẫu
+  (`invalidCode`), ngưỡng đậu (`invalidPassingScore`), thời gian (`invalidTimeLimit`), phần không có câu bị bỏ
+  (`emptySection`), phần không tên lấy tên phần chung theo ngôn ngữ giao diện (`untitledSection`), quá 26 lựa chọn nối
+  vào Z (`tooManyOptions`), hai lựa chọn cùng chữ (`duplicateOptionLetter`), đáp án không khớp lựa chọn bị bỏ
+  (`answerNotInOptions`), ảnh loại khác hoặc quá lớn bị bỏ (`unsupportedImageFormat`, `imageTooLarge`).
+- **Không đọc được** (cả chế độ dễ): bản cũ (zip, BinaryFormatter: "mở bằng Open Exam Suite rồi lưu lại"), dây hỏng hay
+  file không phải đề của Open Exam Suite (ví dụ file chữ của WIMS cùng đuôi), không có câu nào, vượt giới hạn: báo lý
+  do, không mở cửa sổ. Câu báo trùng câu bản Học viên hiện khi mở thẳng file.
+- Không sửa mojibake (chuỗi của `.oef` là UTF-8 hợp lệ, bộ đọc đã kiểm).
+
 ## Kiểm chứng cần có
 
 - Test bộ chuyển đổi (không giao diện) trên file **tự soạn** cho từng quy tắc ở trên: nối dòng, gạch nối, lựa chọn
@@ -207,6 +230,9 @@ khai), chi tiết cấu trúc ở mã nguồn. Ánh xạ sang cùng mô hình nh
   câu nhiều đáp án (0 bỏ); ghi số câu, số câu bỏ, số cảnh báo vào PR.
 - `.vce`: test trên file tự dựng theo bố cục của bộ đọc (`VceTestWriter`): magic, kích thước, CRC-32, cắt cụt ở
   mọi vị trí, độ dài khổng lồ, đột biến ngẫu nhiên không crash/treo; bản ghi RVF và loại câu chưa hỗ trợ.
+- `.oef`: oracle chung `fixtures/oef/` (exam-format.md, mục Bằng chứng); `OEFImportTests` (ghi chú → mục báo cáo, đề
+  import trùng đề bản Học viên đọc, lỗi có mã), `ImportFlowModelTests` (file thật qua bộ chuyển của app). Thử tại máy
+  trên file mẫu công khai của Open Exam Suite (không commit): bản Protobuf đọc nghiêm được, bản cũ báo `legacyFormat`.
 
 ## Phương án đã chốt (Nt0 duyệt 2026-10-16)
 

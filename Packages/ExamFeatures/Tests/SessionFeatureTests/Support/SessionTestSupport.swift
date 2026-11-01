@@ -4,6 +4,7 @@ import Foundation
 import LibraryData
 import ReportFeature
 @testable import SessionFeature
+@testable import SessionModel
 import Testing
 
 // MARK: - Đồng hồ giả
@@ -34,7 +35,7 @@ final class FakeClock: SessionClock, @unchecked Sendable {
 // MARK: - Thư viện và cài đặt giả
 
 @MainActor
-final class FakePreferences: SessionPreferences {
+final class FakePreferences: SessionPreferences, ReportPreferences {
     var candidateName: String
     var lastMode: SessionMode
     var reportReviewLevel: ResultsReviewLevel = .default

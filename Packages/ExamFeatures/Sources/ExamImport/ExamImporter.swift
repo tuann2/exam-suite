@@ -2,7 +2,7 @@ import ExamFile
 import ExamKit
 import Foundation
 
-/// Import đề từ `.txt`, `.docx` và `.vce` (docs/product/import.md; `.vce` theo ADR 0009). Không giao diện, chỉ bản Admin link (ADR 0003).
+/// Import đề từ `.txt`, `.docx`, `.vce` và `.oef` (docs/product/import.md; `.vce` theo ADR 0009, `.oef` theo ADR 0014). Không giao diện, chỉ bản Admin link (ADR 0003).
 ///
 /// Chạy nền (task tách rời, không chiếm actor của người gọi), báo tiến độ qua `progress` và huỷ được: huỷ task gọi
 /// thì bộ chuyển đổi dừng ở lần kiểm kế tiếp và ném `CancellationError`. Không ghi file nào.
@@ -16,7 +16,7 @@ public enum ExamImporter {
     /// Đuôi file được hỗ trợ (chữ thường).
     public static let supportedExtensions: [String] = ImportSourceFormat.allCases.map(\.rawValue)
 
-    /// Import file theo đuôi (`txt`, `docx`, `vce`, không phân biệt hoa thường). `sharedSectionTitle`: tên phần cho câu
+    /// Import file theo đuôi (`txt`, `docx`, `vce`, `oef`, không phân biệt hoa thường). `sharedSectionTitle`: tên phần cho câu
     /// không thuộc phần nào (`ImportDefaults.sharedSectionTitle`); giao diện truyền tên theo ngôn ngữ giao diện lúc import.
     public static func importFile(
         at url: URL,
@@ -42,6 +42,10 @@ public enum ExamImporter {
                                                   sharedSectionTitle: sharedSectionTitle, progress: reporter)
             case .vce:
                 result = try VceImporter.convert(readFile(url, limit: limits.vceBytes, what: .vceFile),
+                                                 fileStem: stem, limits: limits, sharedSectionTitle: sharedSectionTitle,
+                                                 progress: reporter)
+            case .oef:
+                result = try OEFImporter.convert(readFile(url, limit: limits.oefBytes, what: .oefFile),
                                                  fileStem: stem, limits: limits, sharedSectionTitle: sharedSectionTitle,
                                                  progress: reporter)
             }
@@ -77,6 +81,9 @@ public enum ExamImporter {
                                                   sharedSectionTitle: sharedSectionTitle, progress: reporter)
             case .vce:
                 result = try VceImporter.convert(data, fileStem: stem, limits: limits,
+                                                 sharedSectionTitle: sharedSectionTitle, progress: reporter)
+            case .oef:
+                result = try OEFImporter.convert(data, fileStem: stem, limits: limits,
                                                  sharedSectionTitle: sharedSectionTitle, progress: reporter)
             }
             reporter.report(.finished, fraction: 1)
@@ -166,6 +173,9 @@ public struct ImportLimits: Equatable, Sendable {
     /// 64 MiB, gấp đôi trần `exam.json`: file mẫu 0,35–1,35 MB (600 câu ~1,35 MB); còn chỗ cho ảnh (chưa đọc nhưng
     /// vẫn nằm trong file). Hạ từ 256 MiB sau review độc lập PR #38.
     public var vceBytes: Int
+    /// Kích thước tối đa của file `.oef`, byte (đọc cả file vào bộ nhớ, ảnh nằm trong file). Mặc định như bản Học viên
+    /// mở thẳng file (`OEFLimits`: 1 GiB, bằng tổng giải nén của gói đề).
+    public var oefBytes: Int
 
     public init(
         textBytes: Int = ExamPackageLimits.default.manifestBytes,
@@ -174,7 +184,8 @@ public struct ImportLimits: Equatable, Sendable {
         totalUncompressedBytes: Int = ExamPackageLimits.default.totalUncompressedBytes,
         entryCount: Int = ExamPackageLimits.default.entryCount,
         maxXMLDepth: Int = 128,
-        vceBytes: Int = 64 << 20
+        vceBytes: Int = 64 << 20,
+        oefBytes: Int = OEFLimits.default.fileBytes
     ) {
         self.textBytes = textBytes
         self.xmlPartBytes = xmlPartBytes
@@ -183,6 +194,7 @@ public struct ImportLimits: Equatable, Sendable {
         self.entryCount = entryCount
         self.maxXMLDepth = maxXMLDepth
         self.vceBytes = vceBytes
+        self.oefBytes = oefBytes
     }
 
     public static let `default` = ImportLimits()
@@ -192,7 +204,7 @@ public struct ImportLimits: Equatable, Sendable {
 /// chữ của String Catalog (AuthoringFeature, `AuthoringMessages`; accessibility-localization.md, phương án 2);
 /// `logMessage` là câu tiếng Việt cho nhật ký và test. Không theo `LocalizedError`, để câu đó không tự lọt ra giao diện.
 public enum ImportError: Error, Equatable, Sendable {
-    /// Đuôi file không phải `.txt`/`.docx`/`.vce`. Tham số: đuôi.
+    /// Đuôi file không phải `.txt`/`.docx`/`.vce`/`.oef`. Tham số: đuôi.
     case unsupportedFileType(String)
     /// Không đọc được file (không có, không có quyền…).
     case unreadableFile(ImportReadProblem)
@@ -213,6 +225,8 @@ public enum ImportError: Error, Equatable, Sendable {
     /// `.vce` không đọc được (magic lạ, cắt cụt, sai kích thước, sai CRC-32, độ dài vượt dữ liệu, bố cục chưa biết,
     /// không có câu nào dùng được).
     case unreadableVCE(VceProblem)
+    /// `.oef` không đọc được kể cả ở chế độ dễ (bản cũ, dây hỏng, không có câu nào, vượt giới hạn).
+    case unreadableOEF(OEFProblem)
 }
 
 extension ImportError {
@@ -220,7 +234,7 @@ extension ImportError {
     public var logMessage: String {
         switch self {
         case let .unsupportedFileType(ext):
-            return "Không import được file \".\(ext)\". Chỉ hỗ trợ .txt, .docx và .vce."
+            return "Không import được file \".\(ext)\". Chỉ hỗ trợ .txt, .docx, .vce và .oef."
         case let .unreadableFile(problem):
             return "Không đọc được file: \(problem.logMessage)"
         case .notUTF8:
@@ -245,6 +259,8 @@ extension ImportError {
             return "Không tìm thấy câu hỏi nào. Mỗi câu phải bắt đầu bằng dòng \"Q1:\" hoặc \"QUESTION 1\"."
         case let .unreadableVCE(problem):
             return "File .vce không đọc được: \(problem.logMessage). Nếu có bản .docx xuất từ VCE thì import file đó."
+        case let .unreadableOEF(problem):
+            return ExamFileError.oef(problem).errorDescription ?? problem.logMessage
         }
     }
 }

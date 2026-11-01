@@ -539,6 +539,16 @@
         }
       }
     },
+    "Ảnh của câu vượt giới hạn kích thước nên bị bỏ." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The question’s image exceeds the size limit, so it was skipped."
+          }
+        }
+      }
+    },
     "Ảnh định dạng %@ không được hỗ trợ (chỉ png, jpg, jpeg, gif, webp, heic) nên bị bỏ." : {
       "localizations" : {
         "en" : {
@@ -1213,12 +1223,12 @@
         }
       }
     },
-    "Chọn một file .txt, .docx hoặc .vce để chuyển thành đề." : {
+    "Chọn một file .txt, .docx, .vce hoặc .oef để chuyển thành đề." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choose a .txt, .docx, or .vce file to convert into an exam."
+            "value" : "Choose a .txt, .docx, .vce, or .oef file to convert into an exam."
           }
         }
       }
@@ -1615,6 +1625,16 @@
           "stringUnit" : {
             "state" : "new",
             "value" : "Đáp án %1$@ → %2$@."
+          }
+        }
+      }
+    },
+    "Đáp án %@ không khớp lựa chọn nào nên bị bỏ." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Answer %@ doesn’t match any option, so it was ignored."
           }
         }
       }
@@ -2151,6 +2171,16 @@
         }
       }
     },
+    "File vượt giới hạn ở file .oef (tối đa %lld byte)." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The file exceeds the limit for .oef files (maximum %lld bytes)."
+          }
+        }
+      }
+    },
     "File vượt giới hạn ở file .txt (tối đa %lld byte)." : {
       "localizations" : {
         "en" : {
@@ -2207,6 +2237,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Explanation"
+          }
+        }
+      }
+    },
+    "Hai lựa chọn cùng chữ %@; đáp án theo lựa chọn đầu tiên mang chữ đó." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Two options have the letter %@; the answer uses the first option with that letter."
           }
         }
       }
@@ -2729,12 +2769,12 @@
         }
       }
     },
-    "Không import được file \".%@\". Chỉ hỗ trợ .txt, .docx và .vce." : {
+    "Không import được file \".%@\". Chỉ hỗ trợ .txt, .docx, .vce và .oef." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Can’t import \".%@\" files. Only .txt, .docx, and .vce are supported."
+            "value" : "Can’t import \".%@\" files. Only .txt, .docx, .vce, and .oef are supported."
           }
         }
       }
@@ -3459,6 +3499,16 @@
         }
       }
     },
+    "Ngưỡng đậu trong file không nằm trong thang 0–1000 nên để trống; hãy nhập khi import." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The passing score in the file isn’t on the 0–1000 scale, so it was left blank; enter it when importing."
+          }
+        }
+      }
+    },
     "Nhân bản" : {
       "localizations" : {
         "en" : {
@@ -3727,6 +3777,32 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "Phần thứ %lld không có câu nào nên bị bỏ." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section %lld has no questions, so it was skipped."
+          }
+        }
+      }
+    },
+    "Phần thứ %lld không có tên; đặt tên \"%@\"." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Section %1$lld has no name; it was named \"%2$@\"."
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Phần thứ %1$lld không có tên; đặt tên \"%2$@\"."
           }
         }
       }
@@ -4428,6 +4504,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "The exam already has a different image named %@; the existing image wasn’t replaced."
+          }
+        }
+      }
+    },
+    "Trường %@ của file .oef không được hỗ trợ nên bị bỏ qua." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Field %@ of the .oef file isn’t supported, so it was ignored."
           }
         }
       }

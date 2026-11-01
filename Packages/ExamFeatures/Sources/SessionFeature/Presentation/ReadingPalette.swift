@@ -1,4 +1,5 @@
 import AppKit
+import InterfaceCore
 import LibraryFeature
 
 /// **Nền đọc** của vùng nội dung câu (docs/product/accessibility-localization.md, mục Dark Mode và tương phản; plan giai đoạn

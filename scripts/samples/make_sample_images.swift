@@ -1,7 +1,7 @@
 // Vẽ ảnh minh hoạ cho hai đề mẫu của Thư viện (docs/product/library.md, mục Đề mẫu).
 // Chỉ dùng AppKit + CryptoKit có sẵn trên macOS; không tải gì từ Internet. Không chạy trên CI.
 //
-// Dùng: swift scripts/samples/make_sample_images.swift Packages/ExamFeatures/Sources/LibraryData/Resources/Samples
+// Dùng: swift scripts/samples/make_sample_images.swift Packages/SharedFeatures/Sources/LibraryData/Resources/Samples
 // Ảnh được ghi vào <Samples>/<đề>/media/<16 hex đầu SHA-256 nội dung>.png (docs/product/exam-format.md).
 // Font hệ thống khác nhau giữa các bản macOS nên vẽ lại có thể ra tên khác: khi đó sửa trường
 // "image" trong exam.json theo tên script in ra và xoá ảnh cũ (scripts/validate_exam.py --all

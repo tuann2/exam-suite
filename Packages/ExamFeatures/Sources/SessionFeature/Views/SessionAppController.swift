@@ -1,7 +1,9 @@
 import AppKit
 import ExamKit
+import InterfaceCore
 import LibraryData
 import LibraryFeature
+import SessionModel
 import SwiftUI
 
 /// Phần AppKit của phiên thi cho một bản app, giữ ở app delegate (một đối tượng cho cả app): tạo
@@ -55,6 +57,7 @@ public final class SessionAppController {
         )
         // Xuất PDF… / In…: hộp lưu, hộp In, hộp báo lỗi làm sheet trên cửa sổ làm bài.
         coordinator.reportServices = .live(window: { [weak self] in self?.sessionWindow })
+        coordinator.reportPreferences = UserDefaultsSessionPreferences(defaults: defaults)
     }
 
     /// Test tiêm điều phối, cách hiện lời hỏi và cách thoát app.

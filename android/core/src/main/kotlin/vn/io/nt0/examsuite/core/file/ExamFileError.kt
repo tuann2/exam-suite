@@ -71,4 +71,7 @@ sealed class ExamFileError(log: String) : Exception(log) {
 
     data class MigrationFailed(val from: Long, val reason: MigrationProblem) :
         ExamFileError("không chuyển được từ v$from: $reason")
+
+    /** File `.oef` của Open Exam Suite không đọc được (`OefReader`). */
+    data class Oef(val problem: OefProblem) : ExamFileError("File .oef không đọc được: ${problem.logMessage}")
 }

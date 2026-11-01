@@ -35,6 +35,9 @@ object DataTest {
         return zip(entries)
     }
 
+    /** File `.oef` của `fixtures/oef/<tên>` (oracle chung với bản macOS). */
+    fun oef(name: String): ByteArray = File(fixtures, "oef/$name.oef").readBytes()
+
     fun packInvalid(name: String) = zip(listOf("exam.json" to File(fixtures, "invalid/$name.json").readBytes()))
 
     fun zip(entries: List<Pair<String, ByteArray>>): ByteArray {

@@ -7,6 +7,9 @@ import androidx.compose.ui.res.stringResource
 import vn.io.nt0.examsuite.R
 import vn.io.nt0.examsuite.attempt.ui.num
 import vn.io.nt0.examsuite.core.file.ExamFileError
+import vn.io.nt0.examsuite.core.file.OefLimit
+import vn.io.nt0.examsuite.core.file.OefPlace
+import vn.io.nt0.examsuite.core.file.OefProblem
 import vn.io.nt0.examsuite.core.session.ExamSession
 import vn.io.nt0.examsuite.data.library.ImportProblem
 import vn.io.nt0.examsuite.pre.PreExamIssue
@@ -23,6 +26,7 @@ private fun paths(list: List<String>): String =
 @ReadOnlyComposable
 fun importProblemMessage(problem: ImportProblem): String = when (problem) {
     is ImportProblem.InvalidPackage -> examFileErrorMessage(problem.error)
+    ImportProblem.NotAnExamFile -> stringResource(R.string.error_not_exam_file)
     is ImportProblem.FileTooLarge -> stringResource(R.string.error_file_too_large, num((problem.limitBytes / (1024 * 1024)).toInt()))
     is ImportProblem.Io -> stringResource(R.string.error_file_unreadable)
 }
@@ -47,7 +51,37 @@ fun examFileErrorMessage(error: ExamFileError): String = when (error) {
     is ExamFileError.TooLarge -> stringResource(R.string.error_too_large, error.entry, error.limit.toString())
     is ExamFileError.TooDeep -> stringResource(R.string.error_too_deep, num(error.limit))
     is ExamFileError.MigrationFailed -> stringResource(R.string.error_migration_failed, error.from.toString(), (error.from + 1).toString())
+    is ExamFileError.Oef -> oefProblemMessage(error.problem)
 }
+
+/**
+ * File `.oef` của Open Exam Suite không đọc được: cùng câu với bản macOS, trừ danh sách đường dẫn và chữ đáp án rút gọn
+ * còn 5 mục như các câu khác của bản Android (`paths`). Vị trí byte là mã: chữ số trơn.
+ */
+@Composable
+@ReadOnlyComposable
+private fun oefProblemMessage(problem: OefProblem): String = when (problem) {
+    OefProblem.LegacyFormat -> stringResource(R.string.error_oef_legacy)
+    is OefProblem.Malformed -> stringResource(R.string.error_oef_malformed, problem.offset.toString())
+    OefProblem.NoQuestions -> stringResource(R.string.error_oef_no_questions)
+    is OefProblem.TooLarge -> when (problem.limit) {
+        OefLimit.FILE -> stringResource(R.string.error_oef_file_too_large, num(problem.value))
+        OefLimit.TEXT -> stringResource(R.string.error_oef_text_too_large, num(problem.value))
+        OefLimit.ELEMENTS -> stringResource(R.string.error_oef_too_many_elements, num(problem.value))
+    }
+    is OefProblem.ImageTooLarge -> stringResource(R.string.error_oef_image_too_large, oefPlace(problem.place), num(problem.limit))
+    is OefProblem.UnknownFields -> stringResource(R.string.error_oef_unknown_fields, paths(problem.paths))
+    OefProblem.PassmarkOutOfRange -> stringResource(R.string.error_oef_passmark_out_of_range)
+    is OefProblem.UnsupportedImage -> stringResource(R.string.error_oef_unsupported_image, oefPlace(problem.place))
+    is OefProblem.TooManyOptions -> stringResource(R.string.error_oef_too_many_options, oefPlace(problem.place), num(problem.count))
+    is OefProblem.DuplicateOptionLetter -> stringResource(R.string.error_oef_duplicate_letter, oefPlace(problem.place), problem.letter)
+    is OefProblem.AnswerNotInOptions -> stringResource(R.string.error_oef_answer_not_in_options, paths(problem.letters), oefPlace(problem.place))
+}
+
+/** "phần 2, câu 3": vị trí câu trong file `.oef`, đếm từ 1. */
+@Composable
+@ReadOnlyComposable
+private fun oefPlace(place: OefPlace): String = stringResource(R.string.oef_place, num(place.section + 1), num(place.question + 1))
 
 @Composable
 @ReadOnlyComposable

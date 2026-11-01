@@ -1,6 +1,6 @@
 import ExamKit
 import Foundation
-@testable import LibraryFeature
+@testable import InterfaceCore
 import PDFKit
 import ReportFeature
 @testable import SessionFeature

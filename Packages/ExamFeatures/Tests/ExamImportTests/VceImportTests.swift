@@ -891,7 +891,7 @@ struct VceImportTests {
     func errorDescription() {
         let error = ImportError.unreadableVCE(.checksumMismatch)
         #expect(error.logMessage == "File .vce không đọc được: sai mã kiểm tra CRC-32: file bị hỏng hoặc đã bị sửa. Nếu có bản .docx xuất từ VCE thì import file đó.")
-        #expect(ImportError.unsupportedFileType("pdf").logMessage.contains(".txt, .docx và .vce"))
+        #expect(ImportError.unsupportedFileType("pdf").logMessage.contains(".txt, .docx, .vce và .oef"))
     }
 
     // MARK: Luồng

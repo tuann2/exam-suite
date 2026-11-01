@@ -1,5 +1,7 @@
 import ExamKit
+import InterfaceCore
 import LibraryFeature
+import SessionModel
 import SwiftUI
 
 /// Màn **Kết quả** (docs/product/exam-taking.md, mục Kết quả và Lịch sử thi): Đậu/Trượt (biểu tượng + chữ),

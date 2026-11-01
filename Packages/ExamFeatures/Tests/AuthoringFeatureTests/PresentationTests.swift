@@ -3,6 +3,7 @@ import AuthoringData
 @testable import AuthoringFeature
 import ExamKit
 import Foundation
+import InterfaceCore
 import LibraryFeature
 import SwiftUI
 import Testing

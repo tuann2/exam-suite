@@ -1,5 +1,6 @@
 import AppKit
 import AuthoringFeature
+import InterfaceCore
 import LibraryData
 import LibraryFeature
 import SessionFeature

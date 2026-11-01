@@ -29,8 +29,8 @@ android {
         minSdk = 31
         targetSdk = 37
         // Mỗi bản phát hành tăng versionCode (Android không cài đè bản có số nhỏ hơn); tag `android-v<versionName>`.
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "0.2.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         // Mỗi test chạy trong tiến trình riêng, dữ liệu app xoá trước mỗi test (plan-android-v1.md Phần 4).
         testInstrumentationRunnerArguments["clearPackageData"] = "true"
@@ -75,10 +75,12 @@ android {
 }
 
 // Gói .exam nhị phân dùng chung với lõi Swift (fixtures/packages) làm assets của test trên máy: luồng mở `.exam` từ app
-// khác và đọc gói trên ART (ZipPathValidator của Android 14+).
+// khác và đọc gói trên ART (ZipPathValidator của Android 14+). File .oef (fixtures/oef) làm Java resource thay vì assets:
+// hai thư mục cùng có expected.json, gộp assets từ cả hai báo trùng tên.
 androidComponents {
     onVariants { variant ->
         variant.androidTest?.sources?.assets?.addStaticSourceDirectory(rootProject.file("../fixtures/packages").absolutePath)
+        variant.androidTest?.sources?.resources?.addStaticSourceDirectory(rootProject.file("../fixtures/oef").absolutePath)
     }
 }
 

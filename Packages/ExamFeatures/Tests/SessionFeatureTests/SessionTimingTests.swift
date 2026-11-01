@@ -4,6 +4,7 @@ import Foundation
 import LargeExamSupport
 import LibraryData
 @testable import SessionFeature
+@testable import SessionModel
 import Testing
 
 /// Làm bài trên đề chuẩn (2.000 câu, 200 ảnh; docs/product/large-exams.md) qua model thật: Thư viện SwiftData trong

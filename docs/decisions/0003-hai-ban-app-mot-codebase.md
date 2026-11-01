@@ -7,7 +7,8 @@ Date: 2026-10-15
 Accepted (2026-10-18: bundle ID và UTType đổi sang họ `vn.io.nt0` khi chuyển thành dự án cá nhân của Nt0;
 quyết định không đổi. 2026-10-20, repo public: cả hai bản phát hành công khai (Nt0 chốt), nên ai cũng có thể dùng bản
 Admin; bất biến "bản Học viên không chứa code soạn đề" giữ nguyên để người làm bài có app gọn, không còn là cách giới hạn
-ai soạn được đề)
+ai soạn được đề. 2026-10-30: bản iOS là bản Học viên thứ hai, cùng bất biến: `MobileShell` và target `ExamSuiteiOS` không
+phụ thuộc AuthoringFeature, AuthoringData, ExamImport; ADR 0013)
 
 ## Context
 
@@ -42,3 +43,6 @@ Tradeoffs:
 ## Follow-Up
 
 - Kiểm bằng `scripts/check_boundaries.py` (đồ thị phụ thuộc + `project.yml` + import trong `Apps/Student`) và job `apps-macos` (nm binary).
+- 2026-10-31 (ADR 0014): bộ đọc `.oef` nằm ở `ExamFile` (lõi dùng chung) vì bản Học viên mở thẳng `.oef`; Import đề…
+  của bản Admin gọi đúng bộ đọc đó qua `ExamImport`. Ranh giới không đổi: bản Học viên vẫn không chứa AuthoringFeature,
+  AuthoringData, ExamImport.

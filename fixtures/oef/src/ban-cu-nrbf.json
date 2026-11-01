@@ -1,0 +1,4 @@
+{
+ "description": "Header tự dựng theo MS-NRBF (bản ghi 0, root id 1, header id -1, phiên bản 1.0) như .oef của Open Exam Suite bản 3, kèm vài byte.",
+ "prefix": "0001000000ffffffff01000000000000000c0200000006"
+}

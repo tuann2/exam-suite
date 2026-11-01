@@ -5,8 +5,8 @@ Thẩm quyền: tài liệu này. Nguồn: mục "Thiết kế UX trên macOS" v
 không chép). Quy tắc của phiên (trạng thái, lệnh, đồng hồ) ở [exam-session.md](exam-session.md); chấm điểm
 và chọn câu ở [scoring.md](scoring.md). Những chỗ đặc tả gốc không nói được ghi ở mục cuối.
 
-Code: `SessionFeature` trong `Packages/ExamFeatures` (giao diện + model trình bày có test); lần thi lưu
-qua `LibraryData`. Cả hai bản app dùng chung, không khác nhau ở phần này.
+Code: `SessionFeature` trong `Packages/ExamFeatures` (giao diện macOS), model trình bày có test ở `SessionModel` trong
+`Packages/SharedFeatures` (dùng chung với bản iOS); lần thi lưu qua `LibraryData`. Cả hai bản app dùng chung, không khác nhau ở phần này.
 
 ## Bắt đầu
 

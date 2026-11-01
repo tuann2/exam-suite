@@ -2,8 +2,8 @@ import ExamFile
 import ExamKit
 import Foundation
 import LibraryData
-import LibraryFeature
 @testable import SessionFeature
+@testable import SessionModel
 import SwiftUI
 import Testing
 

@@ -35,7 +35,8 @@ Căn cứ của cách chia bước và cách kiểm (số đo bản macOS, bư�
 ## Phần 1 · Phạm vi và hợp đồng sản phẩm
 
 Phạm vi xếp theo mức thiết yếu cho học viên dùng điện thoại (rà 2026-10-21, Nt0 đồng ý hoãn bậc 3 sang v1.1). Cùng
-danh sách áp cho iOS ([plan-ios-v1.md](plan-ios-v1.md)).
+cách chia v1 / v1.1 áp cho iOS ([plan-ios-v1.md](plan-ios-v1.md)), nhưng hành vi iOS theo tài liệu macOS, không theo
+các luật riêng của Android dưới đây (Nt0 chốt 2026-10-30).
 
 ### v1
 
@@ -270,7 +271,7 @@ native. A0 chép các quyết định này vào ADR và `mobile.md`; tới lúc 
 | Q7 | Xuống nền tự tạm dừng và lưu phiên dở, khôi phục ở Tạm dừng (khác macOS phương án 2, 11)? | Có (ghi `mobile.md`, dùng chung iOS) | **Như đề xuất** |
 | Q8 | CI cho `android/`? | Chỉ chạy tay tới hết tháng 10 | **Bật `android.yml` theo PR** (lint + test trên runner Linux); check `android` xanh **thay** `local/verify-android` cho PR không chạm `android/app/**`; PR chạm giao diện và cổng thêm `local/verify-android --ui` (emulator trên Mac) |
 | Q9 | (v1.1) PDF kết quả nhúng ảnh JPEG co theo trang? | Nhúng JPEG co theo trang | **Để tới B1 mới chốt** |
-| Q10 | Phân phối beta? | APK phát riêng (keystore của Nt0) | **Như đề xuất** |
+| Q10 | Phân phối beta? | APK phát riêng (keystore của Nt0) | **Như đề xuất**; khi đăng 0.1.0 (2026-10-23) Nt0 đổi: GitHub Releases dạng Pre-release, không Latest (android-release.md) |
 | Q11 | Payload lần thi dùng đúng `AttemptRecord` v1 của macOS? | Có | **Định dạng riêng của Android**; dấu vân tay câu **dùng lại `QuestionFingerprint` của macOS** (vector chung) để quy tắc câu đã sửa sau lần thi giống hệt |
 | Q12 | Ai test tay ở cổng GA2? | Nt0 + 1 học viên | **Chỉ Nt0** |
 | Q13 | Android trước hay iOS trước? | Android trước khi chưa có iPhone | **Android trước** |

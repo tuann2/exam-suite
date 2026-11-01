@@ -3,6 +3,7 @@ import ExamKit
 import Foundation
 import LibraryData
 @testable import SessionFeature
+@testable import SessionModel
 import Testing
 
 /// `LibraryStoreSessionLibrary` trên kho thật trong bộ nhớ và file đề thật (fixture

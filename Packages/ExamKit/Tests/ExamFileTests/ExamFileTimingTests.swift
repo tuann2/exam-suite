@@ -28,4 +28,24 @@ struct ExamFileTimingTests {
         #expect(write.isWithinLimit, "\(write.line)")
         #expect(reading.isWithinLimit, "\(reading.line)")
     }
+
+    @Test("Đọc nghiêm đề chuẩn dạng .oef (2.000 câu, 200 ảnh)", .timeLimit(.minutes(3)))
+    func readStandardOEF() throws {
+        let package = StandardExam.standard
+        let directory = FileManager.default.temporaryDirectory
+            .appendingPathComponent("ExamFileTimingTests-\(UUID().uuidString)", isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let url = directory.appendingPathComponent("de-chuan.oef")
+        try OEFEncoding.encode(package).write(to: url)
+
+        var read: ExamPackage?
+        let reading = try Timing.measure(.oefRead, runs: 3) {
+            read = try OEFReader.read(contentsOf: url, mode: .strict)
+        }
+        #expect(read?.exam.questionCount == package.exam.questionCount)
+        #expect(read?.media.count == package.media.count)
+        #expect(read?.exam.allQuestions.map(\.correct) == package.exam.allQuestions.map(\.correct))
+        #expect(reading.isWithinLimit, "\(reading.line)")
+    }
 }

@@ -4,6 +4,7 @@ import Foundation
 import LibraryData
 import Observation
 import ReportFeature
+import SessionModel
 
 /// Màn đang hiện trong cửa sổ làm bài.
 public enum SessionScreen: Hashable, Sendable {
@@ -42,6 +43,8 @@ public final class SessionWindowModel: Identifiable {
     @ObservationIgnored private let environment: SessionEnvironment
     /// Hộp của macOS cho Xuất PDF/In (`SessionCoordinator.reportServices`); nil thì không xuất được.
     @ObservationIgnored var reportServices: ReportServices?
+    /// Phần xem lại dùng lần trước của Xuất PDF/In (`SessionCoordinator.reportPreferences`); nil thì không xuất được.
+    @ObservationIgnored var reportPreferences: (any ReportPreferences)?
 
     init(attempt: AttemptModel, environment: SessionEnvironment) {
         self.attempt = attempt
@@ -140,12 +143,12 @@ public final class SessionWindowModel: Identifiable {
     /// Mở hộp chọn của **Xuất PDF…** / **In…**. Trả `false` khi không được (`canRequestReport`).
     @discardableResult
     public func requestReport(_ action: ReportAction) -> Bool {
-        guard canRequestReport, let results, let reportServices else { return false }
+        guard canRequestReport, let results, let reportServices, let reportPreferences else { return false }
         let flow = ResultsReportFlow(
             action: action,
             results: results,
             openedReview: answerReview,
-            preferences: environment.preferences,
+            preferences: reportPreferences,
             services: reportServices
         )
         flow.onFinish = { [weak self, weak flow] in
@@ -159,26 +162,6 @@ public final class SessionWindowModel: Identifiable {
     /// Huỷ lần xuất đang chạy (cửa sổ đóng, đổi phiên, thoát app): không để lại file.
     public func cancelReport() {
         reportFlow?.cancelAll()
-    }
-}
-
-/// Phản hồi khi yêu cầu mở Trước khi thi hoặc một lần thi.
-public enum SessionOpenOutcome: Hashable, Sendable {
-    case opened
-    /// Đang có bài chưa nộp: cửa sổ làm bài được đưa lên trước, `notice` là "Đang có bài chưa nộp".
-    case blockedByUnsubmittedSession
-    /// Không mở được; lý do tiếng Việt (cũng ở `notice`).
-    case failed(String)
-}
-
-/// Thông báo không chặn cho cửa sổ Thư viện.
-public struct SessionNotice: Identifiable, Hashable, Sendable {
-    public let id: UUID
-    public let message: String
-
-    public init(message: String, id: UUID = UUID()) {
-        self.id = id
-        self.message = message
     }
 }
 
@@ -226,6 +209,11 @@ public final class SessionCoordinator {
     /// `SessionAppController` gán); nil thì hai lệnh không làm gì.
     @ObservationIgnored public var reportServices: ReportServices? {
         didSet { window?.reportServices = reportServices }
+    }
+    /// Phần xem lại dùng lần trước của **Xuất PDF…** / **In…** (app: `UserDefaultsSessionPreferences`, do
+    /// `SessionAppController` gán); nil thì hai lệnh không làm gì.
+    @ObservationIgnored public var reportPreferences: (any ReportPreferences)? {
+        didSet { window?.reportPreferences = reportPreferences }
     }
 
     @ObservationIgnored public let environment: SessionEnvironment
@@ -361,7 +349,7 @@ public final class SessionCoordinator {
 
     /// Máy sắp ngủ: tạm dừng bài đang làm (`systemSleep`).
     public func systemWillSleep() {
-        window?.attempt?.systemWillSleep()
+        window?.attempt?.autoPause(reason: .systemSleep)
     }
 
     public func dismissNotice() {
@@ -374,6 +362,7 @@ public final class SessionCoordinator {
     private func replaceWindow(with newWindow: SessionWindowModel?) {
         if let old = window, old !== newWindow { old.cancelReport() }
         newWindow?.reportServices = reportServices
+        newWindow?.reportPreferences = reportPreferences
         window = newWindow
     }
 

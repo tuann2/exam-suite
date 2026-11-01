@@ -4,6 +4,7 @@ import Foundation
 import LargeExamSupport
 import LibraryData
 @testable import SessionFeature
+@testable import SessionModel
 import Testing
 
 /// Thư viện chuẩn của large-exams.md (mục "Đề chuẩn để đo", dòng Thư viện): 50 đề, trong đó 5 đề chuẩn (2.000 câu,

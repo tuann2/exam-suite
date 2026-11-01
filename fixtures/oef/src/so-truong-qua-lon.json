@@ -1,0 +1,4 @@
+{
+ "description": "Khoá varint 80 80 80 80 10: số trường 2^29 (quá 2^29 - 1) → dây hỏng ở byte 0.",
+ "prefix": "808080801000"
+}

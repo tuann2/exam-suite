@@ -1,8 +1,9 @@
 import AuthoringData
 import ExamKit
 import Foundation
-import LibraryFeature
+import InterfaceCore
 import SessionFeature
+import SessionModel
 
 /// Chữ của cây đề và thanh lỗi, tách khỏi view để test (VoiceOver, biểu tượng + chữ).
 public enum AuthoringPresentation {

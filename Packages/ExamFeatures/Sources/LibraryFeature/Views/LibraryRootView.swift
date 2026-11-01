@@ -1,3 +1,4 @@
+import InterfaceCore
 import LibraryData
 import SwiftUI
 import UniformTypeIdentifiers
@@ -58,7 +59,7 @@ public struct LibraryRootView: View {
                 get: { model.fileImportRequest != nil && model.infoExamID == nil },
                 set: { presented in if !presented { model.fileImporterDismissed() } }
             ),
-            allowedContentTypes: [.examPackage],
+            allowedContentTypes: UTType.examSourceTypes,
             allowsMultipleSelection: model.fileImportRequest?.allowsMultipleSelection ?? true,
             onCompletion: { result in _ = model.completeFileImport(result) },
             onCancellation: { model.cancelFileImport() }
@@ -257,7 +258,7 @@ struct LibraryDetailView: View {
             ContentUnavailableView {
                 Label(localized("Chưa có đề nào"), systemImage: "books.vertical")
             } description: {
-                Text("Thêm file đề .exam bằng nút Thêm đề (⌘O) hoặc kéo file vào cửa sổ này.", bundle: .module)
+                Text("Thêm file đề .exam hay .oef bằng nút Thêm đề (⌘O) hoặc kéo file vào cửa sổ này.", bundle: .module)
             } actions: {
                 Button(localized("Thêm đề…")) { model.requestAddExams() }
             }
@@ -330,35 +331,6 @@ struct LibraryPromptPresenter: ViewModifier {
                 if newValue == nil, let target { model.dismissPrompt(target.id) }
             }
         )
-    }
-}
-
-extension LibraryPrompt {
-    var isAlert: Bool {
-        if case .importProblems = kind { return false }
-        return true
-    }
-
-    var alertTitle: String {
-        switch kind {
-        case .replace:
-            localized("Đề này đã có trong thư viện từ file khác")
-        case .message(let title, _):
-            title
-        case .importProblems:
-            ""
-        }
-    }
-
-    var alertMessage: String {
-        switch kind {
-        case .replace(let pending):
-            localized("“\(pending.title)” đang dùng file:\n\(pending.existingFileURL.path)\n\nDùng file mới?\n\(pending.newFileURL.path)")
-        case .message(_, let message):
-            message
-        case .importProblems:
-            ""
-        }
     }
 }
 

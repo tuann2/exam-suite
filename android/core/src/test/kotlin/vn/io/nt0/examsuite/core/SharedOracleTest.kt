@@ -22,6 +22,9 @@ import vn.io.nt0.examsuite.core.file.ExamDecoderAccess
 import vn.io.nt0.examsuite.core.file.ExamFileError
 import vn.io.nt0.examsuite.core.file.ExamPackageReader
 import vn.io.nt0.examsuite.core.file.JsonProblem
+import vn.io.nt0.examsuite.core.file.OefPlace
+import vn.io.nt0.examsuite.core.file.OefProblem
+import vn.io.nt0.examsuite.core.file.OefReader
 import vn.io.nt0.examsuite.core.file.QuestionFingerprint
 import vn.io.nt0.examsuite.core.model.ExamOption
 import vn.io.nt0.examsuite.core.model.OptionId
@@ -31,6 +34,8 @@ import vn.io.nt0.examsuite.core.validation.ExamValidator
 import vn.io.nt0.examsuite.core.validation.IssueCode
 import vn.io.nt0.examsuite.core.validation.IssueSeverity
 import java.io.File
+import java.nio.ByteBuffer
+import java.security.MessageDigest
 import java.util.UUID
 
 /**
@@ -53,6 +58,10 @@ class SharedOracleTest {
         private val packagesDoc = Repo.json("packages/expected.json").jsonObject
 
         @JvmStatic fun packageNames() = packagesDoc.getValue("cases").jsonObject.keys.sorted()
+
+        private val oefDoc = Repo.json("oef/expected.json").jsonObject
+
+        @JvmStatic fun oefNames() = oefDoc.getValue("files").jsonObject.keys.sorted()
 
         @JvmStatic fun sampleNames() = Repo.samples.list()!!.filter { File(Repo.samples, "$it/exam.json").isFile }.sorted()
 
@@ -91,6 +100,30 @@ class SharedOracleTest {
             }
             else -> error.toString() to null
         }
+
+        private val OefPlace.oracle get() = "$section/$question"
+
+        /** Mã lỗi như `OEFReaderTests.code` của lõi Swift (`oef.malformed:3`, `validationFailed:titleEmpty,…`). */
+        fun oefCode(error: Throwable): String = when (error) {
+            is ExamFileError.Oef -> "oef." + when (val p = error.problem) {
+                OefProblem.LegacyFormat -> "legacyFormat"
+                is OefProblem.Malformed -> "malformed:${p.offset}"
+                OefProblem.NoQuestions -> "noQuestions"
+                is OefProblem.TooLarge -> "tooLarge:${p.limit.raw}:${p.value}"
+                is OefProblem.ImageTooLarge -> "imageTooLarge:${p.place.oracle}:${p.limit}"
+                is OefProblem.UnknownFields -> "unknownFields:" + p.paths.joinToString(",")
+                OefProblem.PassmarkOutOfRange -> "passmarkOutOfRange"
+                is OefProblem.UnsupportedImage -> "unsupportedImage:${p.place.oracle}"
+                is OefProblem.TooManyOptions -> "tooManyOptions:${p.place.oracle}:${p.count}"
+                is OefProblem.DuplicateOptionLetter -> "duplicateOptionLetter:${p.place.oracle}:${p.letter}"
+                is OefProblem.AnswerNotInOptions -> "answerNotInOptions:${p.place.oracle}:" + p.letters.joinToString(",")
+            }
+            is ExamFileError.ValidationFailed -> "validationFailed:" + error.issues.joinToString(",") { swiftName(it.code) }
+            else -> error.toString()
+        }
+
+        fun sha256Hex(data: ByteBuffer): String =
+            MessageDigest.getInstance("SHA-256").apply { update(data.duplicate()) }.digest().joinToString("") { "%02x".format(it) }
     }
 
     // ---------- fixtures/expected-verdicts.json ----------
@@ -205,6 +238,60 @@ class SharedOracleTest {
     fun `mỗi gói trong fixtures packages có đúng một dòng kỳ vọng`() {
         val files = File(Repo.fixtures, "packages").list()!!.filter { it.endsWith(".exam") }.map { it.removeSuffix(".exam") }
         assertEquals(packageNames().toSet(), files.toSet())
+    }
+
+    // ---------- fixtures/oef (lõi Kotlin chỉ đọc nghiêm: so phần strict) ----------
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("oefNames")
+    fun `file oef đọc nghiêm ra đề hoặc mã lỗi như lõi Swift`(name: String) {
+        val expected = oefDoc.getValue("files").jsonObject.getValue(name).jsonObject.getValue("strict").jsonObject
+        val result = runCatching { OefReader.read(File(Repo.fixtures, "oef/$name.oef")) }
+        expected["error"]?.let {
+            assertEquals(it.jsonPrimitive.content, result.exceptionOrNull()?.let(::oefCode) ?: "ok", name)
+            return
+        }
+        val conversion = result.getOrThrow()
+        assertEquals(ExamDecoderAccess.decode(expected.getValue("exam").toString().toByteArray()), conversion.exam, name)
+        assertEquals(expected.getValue("media").jsonArray.map { it.jsonPrimitive.content }.toSet(), conversion.media.keys, name)
+        for ((path, data) in conversion.media) assertTrue(path.startsWith("media/${sha256Hex(data).take(16)}."), path)
+    }
+
+    @Test
+    fun `mỗi file oef có đúng một dòng kỳ vọng`() {
+        val files = File(Repo.fixtures, "oef").list()!!.filter { it.endsWith(".oef") }.map { it.removeSuffix(".oef") }
+        assertEquals(oefNames().toSet(), files.toSet())
+        assertTrue(files.size >= 32)
+    }
+
+    @Test
+    fun `vector của oef (id dẫn xuất, Markdown, ngưỡng đậu, loại ảnh, tên chữ cái)`() {
+        val v = oefDoc.getValue("vectors").jsonObject
+        for (id in v.getValue("ids").jsonArray.map { it.jsonObject }) {
+            assertEquals(id.getValue("uuid").jsonPrimitive.content, OefReader.derivedId(id.getValue("name").jsonPrimitive.content).toString())
+        }
+        val any = OefReader.derivedId("x").toString()
+        assertEquals('8', any[14], "phiên bản 8")
+        assertTrue(any[19] in "89ab", "biến thể RFC 9562")
+        for (m in v.getValue("markdown").jsonArray.map { it.jsonObject }) {
+            assertEquals(m.getValue("markdown").jsonPrimitive.content, OefReader.markdown(m.getValue("plain").jsonPrimitive.content))
+        }
+        for (pair in v.getValue("passmark").jsonArray.map { it.jsonArray }) {
+            assertEquals(pair[1].jsonPrimitive.content.toDouble().toInt(), OefReader.passPercent(pair[0].jsonPrimitive.content.toDouble()), pair.toString())
+        }
+        for (value in v.getValue("passmarkOutOfRange").jsonArray) {
+            assertEquals(null, OefReader.passPercent(value.jsonPrimitive.content.toDouble()), value.toString())
+        }
+        assertEquals(null, OefReader.passPercent(Double.NaN))
+        assertEquals(null, OefReader.passPercent(Double.POSITIVE_INFINITY))
+        for (kind in v.getValue("imageKinds").jsonArray.map { it.jsonObject }) {
+            val head = kind.getValue("head").jsonPrimitive.content.chunked(2).map { it.toInt(16).toByte() }.toByteArray()
+            val ext = kind.getValue("ext").takeUnless { it is JsonNull }?.jsonPrimitive?.content
+            assertEquals(ext, OefReader.imageExtension(ByteBuffer.wrap(head)), kind.toString())
+        }
+        for (pair in v.getValue("letters").jsonArray.map { it.jsonArray }) {
+            assertEquals(pair[1].jsonPrimitive.content, OefReader.letterName(pair[0].jsonPrimitive.content.toLong()))
+        }
     }
 
     // ---------- fixtures/vectors/composer.json ----------

@@ -15,10 +15,12 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
+import java.io.InputStream
 
 /**
  * Luồng 2: mở `.exam` từ app khác (Intent VIEW) → Trước khi thi của đề đó → Thi 1 phút → hết giờ (đồng hồ nhanh) sang
- * Rà soát khoá → nộp → Kết quả → Lịch sử thi có lần thi.
+ * Rà soát khoá → nộp → Kết quả → Lịch sử thi có lần thi. Rồi mở `.oef` của Open Exam Suite cùng cách → Trước khi thi của
+ * đề đã chuyển (plan-oef.md O3).
  */
 @RunWith(AndroidJUnit4::class)
 class ExamIntentFlowTest {
@@ -33,10 +35,7 @@ class ExamIntentFlowTest {
     @Test
     fun openExamFromAnotherAppThenTimeUp() {
         Flow.app.services.clock = FastClock(scale = 30.0)
-        val file = File(Flow.app.cacheDir, "kien-thuc-chung.exam")
-        InstrumentationRegistry.getInstrumentation().context.assets.open("pack-exam-py.exam").use { input ->
-            file.outputStream().use { input.copyTo(it) }
-        }
+        val file = copy(InstrumentationRegistry.getInstrumentation().context.assets.open("pack-exam-py.exam"), "kien-thuc-chung.exam")
         Flow.launch(Intent(Intent.ACTION_VIEW, Uri.fromFile(file))).use {
             compose.enterName("Trần Thị B") // Trước khi thi mở ngay sau khi thêm đề
             compose.clickTag("mode-EXAM")
@@ -54,9 +53,23 @@ class ExamIntentFlowTest {
             compose.onNodeWithContentDescription(Flow.str(R.string.history)).performClick()
             compose.assertShown("Trần Thị B")
         }
+
+        // `.oef` của Open Exam Suite (oracle fixtures/oef): chuyển thành đề rồi mở Trước khi thi như `.exam`.
+        val oef = copy(requireNotNull(javaClass.classLoader?.getResourceAsStream("co-ban.oef")), "de-thu.oef")
+        Flow.launch(Intent(Intent.ACTION_VIEW, Uri.fromFile(oef))).use {
+            compose.waitForTag("candidateName")
+            compose.assertShown(OEF_TITLE)
+        }
+    }
+
+    private fun copy(source: InputStream, name: String): File {
+        val file = File(Flow.app.cacheDir, name)
+        source.use { input -> file.outputStream().use { input.copyTo(it) } }
+        return file
     }
 
     private companion object {
         const val KIEN_THUC_CHUNG = "Kiến thức chung"
+        const val OEF_TITLE = "Đề thử OEF cơ bản"
     }
 }

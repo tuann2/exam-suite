@@ -33,31 +33,48 @@ enum SHA256 {
 
         var h = initial
         var w = [UInt32](repeating: 0, count: 64)
+        // Vòng nén viết cho bản Debug cũng đủ nhanh (đặt tên 200 ảnh ~60 MB của đề chuẩn khi đọc `.oef`; large-exams.md):
+        // con trỏ thay cho mảng, phép dịch có mặt nạ (`&>>`, `&<<`) và vòng `while` thay cho hàm `rotr`, phép dịch
+        // generic và vòng `for … in` (ở -Onone mỗi thứ là một lời gọi hàm). Thuật toán không đổi (SHA256Tests).
         message.withUnsafeBufferPointer { bytes in
-            for chunk in stride(from: 0, to: bytes.count, by: 64) {
-                for t in 0 ..< 16 {
-                    let i = chunk + t * 4
-                    w[t] = UInt32(bytes[i]) << 24 | UInt32(bytes[i + 1]) << 16
-                        | UInt32(bytes[i + 2]) << 8 | UInt32(bytes[i + 3])
+            w.withUnsafeMutableBufferPointer { w in
+                k.withUnsafeBufferPointer { k in
+                    h.withUnsafeMutableBufferPointer { h in
+                        var chunk = 0
+                        while chunk < bytes.count {
+                            var t = 0
+                            while t < 16 {
+                                let i = chunk &+ t &* 4
+                                w[t] = UInt32(bytes[i]) &<< 24 | UInt32(bytes[i &+ 1]) &<< 16
+                                    | UInt32(bytes[i &+ 2]) &<< 8 | UInt32(bytes[i &+ 3])
+                                t &+= 1
+                            }
+                            while t < 64 {
+                                let x = w[t &- 15], y = w[t &- 2]
+                                let s0 = (x &>> 7 | x &<< 25) ^ (x &>> 18 | x &<< 14) ^ (x &>> 3)
+                                let s1 = (y &>> 17 | y &<< 15) ^ (y &>> 19 | y &<< 13) ^ (y &>> 10)
+                                w[t] = w[t &- 16] &+ s0 &+ w[t &- 7] &+ s1
+                                t &+= 1
+                            }
+                            var a = h[0], b = h[1], c = h[2], d = h[3], e = h[4], f = h[5], g = h[6], hh = h[7]
+                            t = 0
+                            while t < 64 {
+                                let s1 = (e &>> 6 | e &<< 26) ^ (e &>> 11 | e &<< 21) ^ (e &>> 25 | e &<< 7)
+                                let ch = (e & f) ^ (~e & g)
+                                let t1 = hh &+ s1 &+ ch &+ k[t] &+ w[t]
+                                let s0 = (a &>> 2 | a &<< 30) ^ (a &>> 13 | a &<< 19) ^ (a &>> 22 | a &<< 10)
+                                let maj = (a & b) ^ (a & c) ^ (b & c)
+                                let t2 = s0 &+ maj
+                                hh = g; g = f; f = e; e = d &+ t1
+                                d = c; c = b; b = a; a = t1 &+ t2
+                                t &+= 1
+                            }
+                            h[0] = h[0] &+ a; h[1] = h[1] &+ b; h[2] = h[2] &+ c; h[3] = h[3] &+ d
+                            h[4] = h[4] &+ e; h[5] = h[5] &+ f; h[6] = h[6] &+ g; h[7] = h[7] &+ hh
+                            chunk &+= 64
+                        }
+                    }
                 }
-                for t in 16 ..< 64 {
-                    let s0 = rotr(w[t - 15], 7) ^ rotr(w[t - 15], 18) ^ (w[t - 15] >> 3)
-                    let s1 = rotr(w[t - 2], 17) ^ rotr(w[t - 2], 19) ^ (w[t - 2] >> 10)
-                    w[t] = w[t - 16] &+ s0 &+ w[t - 7] &+ s1
-                }
-                var a = h[0], b = h[1], c = h[2], d = h[3], e = h[4], f = h[5], g = h[6], hh = h[7]
-                for t in 0 ..< 64 {
-                    let s1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25)
-                    let ch = (e & f) ^ (~e & g)
-                    let t1 = hh &+ s1 &+ ch &+ k[t] &+ w[t]
-                    let s0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22)
-                    let maj = (a & b) ^ (a & c) ^ (b & c)
-                    let t2 = s0 &+ maj
-                    hh = g; g = f; f = e; e = d &+ t1
-                    d = c; c = b; b = a; a = t1 &+ t2
-                }
-                h[0] = h[0] &+ a; h[1] = h[1] &+ b; h[2] = h[2] &+ c; h[3] = h[3] &+ d
-                h[4] = h[4] &+ e; h[5] = h[5] &+ f; h[6] = h[6] &+ g; h[7] = h[7] &+ hh
             }
         }
         return h.flatMap { word in (0 ..< 4).map { UInt8(truncatingIfNeeded: word >> UInt32(24 - $0 * 8)) } }
@@ -74,7 +91,4 @@ enum SHA256 {
         }
         return out
     }
-
-    @inline(__always)
-    private static func rotr(_ x: UInt32, _ n: UInt32) -> UInt32 { (x >> n) | (x << (32 - n)) }
 }

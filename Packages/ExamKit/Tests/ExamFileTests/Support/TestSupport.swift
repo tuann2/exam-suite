@@ -18,7 +18,7 @@ enum RepoPaths {
     /// Đề mẫu bản app ghi ra lần đầu mở (docs/product/library.md); mỗi thư mục con là một gói
     /// đã giải nén như `fixtures/exams/<tên>`. Cùng đường dẫn với `SAMPLES` trong scripts/validate_exam.py.
     static let samples = root.appendingPathComponent(
-        "Packages/ExamFeatures/Sources/LibraryData/Resources/Samples", isDirectory: true)
+        "Packages/SharedFeatures/Sources/LibraryData/Resources/Samples", isDirectory: true)
 
     static func examDirectory(_ name: String) -> URL {
         fixtures.appendingPathComponent("exams/\(name)", isDirectory: true)

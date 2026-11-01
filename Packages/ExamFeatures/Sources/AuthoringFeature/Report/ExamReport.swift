@@ -1,9 +1,9 @@
 import ExamFile
 import ExamKit
 import Foundation
-import LibraryFeature
+import InterfaceCore
 import ReportFeature
-import SessionFeature
+import SessionModel
 
 /// Kiểu PDF đề (docs/product/export-print.md, mục Bản Admin, phương án 7).
 public enum ExamReportKind: String, CaseIterable, Hashable, Sendable, Identifiable {

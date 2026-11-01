@@ -1,0 +1,16 @@
+{
+ "description": "Title là byte C3 28 (không phải UTF-8): dây hỏng ở byte 4 (đầu nội dung chuỗi).",
+ "message": [
+  [
+   1,
+   "message",
+   [
+    [
+     1,
+     "hex",
+     "c328"
+    ]
+   ]
+  ]
+ ]
+}

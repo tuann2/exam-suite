@@ -82,14 +82,14 @@ def rename_self_test() -> list[str]:
             return subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@t", *args], cwd=repo, check=True,
                                   capture_output=True, text=True).stdout.strip()
         git("init", "-q")
-        sample = Path(repo, "Packages/ExamFeatures/Sources/LibraryData/Resources/Samples/a/exam.json")
+        sample = Path(repo, "Packages/SharedFeatures/Sources/LibraryData/Resources/Samples/a/exam.json")
         sample.parent.mkdir(parents=True)
         # Nội dung đủ dài: git không nhận file vài byte là đổi tên, test sẽ không tái hiện được lỗi.
         sample.write_text('{"title": "Đề mẫu đủ dài để git nhận ra là chuyển chỗ", "formatVersion": 1}\n' * 4)
         Path(repo, "docs").mkdir()
         git("add", "-A"); git("commit", "-qm", "a"); base = git("rev-parse", "HEAD")
         Path(repo, "android").mkdir()
-        git("mv", "Packages/ExamFeatures/Sources/LibraryData/Resources/Samples/a", "android/samples-a")
+        git("mv", "Packages/SharedFeatures/Sources/LibraryData/Resources/Samples/a", "android/samples-a")
         Path(repo, "docs/ghi chú đề.md").write_text("x")
         git("add", "-A"); git("commit", "-qm", "b")
         files = diff_files(base, "HEAD", cwd=repo)
@@ -110,6 +110,7 @@ def self_test() -> list[str]:
         # Đối chứng âm: những file sau phải là full dù đi cùng file nhẹ.
         ("android/x.kt", "Packages/ExamKit/Sources/ExamKit/Scoring/Scorer.swift"): "full",
         ("docs/a.md", "Packages/ExamFeatures/Sources/SessionFeature/X.swift"): "full",
+        ("docs/a.md", "Packages/SharedFeatures/Sources/SessionModel/X.swift"): "full",
         ("fixtures/exams/kien-thuc-chung/exam.json",): "full",
         ("fixtures/invalid/one-option.json",): "full",
         ("fixtures/large-exam.digest",): "full",

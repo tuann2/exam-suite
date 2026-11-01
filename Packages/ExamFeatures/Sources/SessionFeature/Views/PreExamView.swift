@@ -1,4 +1,5 @@
 import ExamKit
+import SessionModel
 import SwiftUI
 
 /// Sheet **Trước khi thi** trên cửa sổ Thư viện (docs/product/exam-taking.md, mục Trước khi thi): `Form` với

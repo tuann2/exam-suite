@@ -1,0 +1,853 @@
+{
+  "description": "Oracle chung của bộ đọc .oef (docs/product/exam-format.md, mục File .oef): lõi Swift (OEFReaderTests) và lõi Kotlin (SharedOracleTest) phải ra đúng các kết luận này. Viết tay, không sinh từ code. files: khoá là tên file trong fixtures/oef/ không có đuôi (file sinh bằng scripts/make_oef.py từ src/<tên>.json). strict: exam = exam.json của đề đã chuyển (so sau khi giải mã thành model), media = đường dẫn ảnh (16 ký tự hex đầu là SHA-256 của byte ảnh); error = mã lỗi. lenient: error = mã lỗi; notes = ghi chú theo thứ tự; khi strict đọc được thì gói đề lenient phải trùng gói strict; không thì passPercent, timeLimitMinutes (null = không điền sẵn) và questions (theo thứ tự trong đề đã chuyển: đáp án đúng nối bằng dấu phẩy, số lựa chọn, có ảnh không), zText (chữ của lựa chọn Z sau khi nối, khi có). Mã lỗi: oef.<case>[:đối số], validationFailed:<mã vấn đề mức error theo thứ tự validator>. Vị trí câu: <phần>/<câu> đếm từ 0 theo file. vectors: ids (UUID phiên bản 8 từ SHA-256), markdown (chữ trơn → Markdown), passmark ([ngưỡng thang 1000, phần trăm]; passmarkOutOfRange: ngoài thang), imageKinds (byte đầu → đuôi, null = không nhận), letters ([mã UTF-16, tên hiện trong câu báo]).",
+  "files": {
+    "anh-bmp": {
+      "strict": {
+        "error": "oef.unsupportedImage:0/0"
+      },
+      "lenient": {
+        "notes": [
+          "unsupportedImage:0/0"
+        ],
+        "passPercent": 50,
+        "timeLimitMinutes": 10,
+        "questions": [
+          {
+            "correct": "A",
+            "options": 2,
+            "image": false
+          }
+        ]
+      }
+    },
+    "anh-cac-loai": {
+      "strict": {
+        "exam": {
+          "formatVersion": 1,
+          "id": "6bb24235-4e7f-8002-b0b7-c4d48a2412d9",
+          "title": "Đề nhiều loại ảnh",
+          "passPercent": 50,
+          "timeLimitMinutes": 10,
+          "sections": [
+            {
+              "id": "bcb370f2-3d97-8ad7-a033-4c6c7cf3bf52",
+              "title": "Ảnh",
+              "questions": [
+                {
+                  "id": "76e0dffe-7509-8202-98f8-76fc5781b663",
+                  "type": "single",
+                  "text": "Ảnh 1?",
+                  "image": "media/d20f6ffd523b78a8.jpg",
+                  "options": [
+                    {
+                      "id": "A",
+                      "text": "Có"
+                    },
+                    {
+                      "id": "B",
+                      "text": "Không"
+                    }
+                  ],
+                  "correct": [
+                    "A"
+                  ]
+                },
+                {
+                  "id": "abd3ac88-fe2c-872e-8578-4ca297dc9422",
+                  "type": "single",
+                  "text": "Ảnh 2?",
+                  "image": "media/481f6f468a765b39.webp",
+                  "options": [
+                    {
+                      "id": "A",
+                      "text": "Có"
+                    },
+                    {
+                      "id": "B",
+                      "text": "Không"
+                    }
+                  ],
+                  "correct": [
+                    "A"
+                  ]
+                },
+                {
+                  "id": "a7099690-b91b-8b59-b546-96cc74245e0f",
+                  "type": "single",
+                  "text": "Ảnh 3?",
+                  "image": "media/99fa2182f97726a1.heic",
+                  "options": [
+                    {
+                      "id": "A",
+                      "text": "Có"
+                    },
+                    {
+                      "id": "B",
+                      "text": "Không"
+                    }
+                  ],
+                  "correct": [
+                    "A"
+                  ]
+                },
+                {
+                  "id": "0a2800ae-3aea-88b9-af9f-caee139c638d",
+                  "type": "single",
+                  "text": "Ảnh 4?",
+                  "image": "media/d20f6ffd523b78a8.jpg",
+                  "options": [
+                    {
+                      "id": "A",
+                      "text": "Có"
+                    },
+                    {
+                      "id": "B",
+                      "text": "Không"
+                    }
+                  ],
+                  "correct": [
+                    "A"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "media": [
+          "media/481f6f468a765b39.webp",
+          "media/99fa2182f97726a1.heic",
+          "media/d20f6ffd523b78a8.jpg"
+        ]
+      },
+      "lenient": {
+        "notes": []
+      }
+    },
+    "ban-cu-nrbf": {
+      "strict": {
+        "error": "oef.legacyFormat"
+      },
+      "lenient": {
+        "error": "oef.legacyFormat"
+      }
+    },
+    "ban-cu-zip": {
+      "strict": {
+        "error": "oef.legacyFormat"
+      },
+      "lenient": {
+        "error": "oef.legacyFormat"
+      }
+    },
+    "cat-cut": {
+      "strict": {
+        "error": "oef.malformed:1"
+      },
+      "lenient": {
+        "error": "oef.malformed:1"
+      }
+    },
+    "cau-khong-lua-chon": {
+      "strict": {
+        "error": "validationFailed:tooFewOptions,noCorrectAnswer"
+      },
+      "lenient": {
+        "notes": [
+          "noOptions:0/1"
+        ],
+        "passPercent": 50,
+        "timeLimitMinutes": 10,
+        "questions": [
+          {
+            "correct": "A",
+            "options": 2,
+            "image": false
+          }
+        ]
+      }
+    },
+    "chu-cai-lon": {
+      "strict": {
+        "error": "oef.answerNotInOptions:0/0:A"
+      },
+      "lenient": {
+        "notes": [
+          "answerNotInOptions:0/0:A"
+        ],
+        "passPercent": 50,
+        "timeLimitMinutes": 10,
+        "questions": [
+          {
+            "correct": "",
+            "options": 2,
+            "image": false
+          }
+        ]
+      }
+    },
+    "co-ban": {
+      "strict": {
+        "exam": {
+          "formatVersion": 1,
+          "id": "28e653ab-adcb-82cd-a684-5af689fedbab",
+          "title": "Đề thử OEF cơ bản",
+          "code": "OEF-01",
+          "passPercent": 70,
+          "timeLimitMinutes": 45,
+          "instructions": "Chọn \\*một\\* đáp án cho mỗi câu.",
+          "sections": [
+            {
+              "id": "7d8af21b-3fe8-8980-8ad9-125e5f1bebc8",
+              "title": "Phần 1",
+              "questions": [
+                {
+                  "id": "f1581192-c81f-82eb-83ed-4e69e355c70e",
+                  "type": "single",
+                  "text": "Thủ đô của Việt Nam là gì?",
+                  "options": [
+                    {
+                      "id": "A",
+                      "text": "Huế"
+                    },
+                    {
+                      "id": "B",
+                      "text": "Hà Nội"
+                    },
+                    {
+                      "id": "C",
+                      "text": "Đà Nẵng"
+                    }
+                  ],
+                  "correct": [
+                    "B"
+                  ],
+                  "explanation": "Hà Nội là thủ đô từ năm 1976."
+                },
+                {
+                  "id": "df1f2daf-338c-847c-aa54-9cfb73eea8f1",
+                  "type": "single",
+                  "text": "Ô màu trong ảnh là màu gì?",
+                  "image": "media/70bab43c3440b0a3.png",
+                  "options": [
+                    {
+                      "id": "A",
+                      "text": "Đỏ"
+                    },
+                    {
+                      "id": "B",
+                      "text": "Xanh"
+                    }
+                  ],
+                  "correct": [
+                    "A"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "e0f22544-916f-8a1c-bfcc-8a3d10198576",
+              "title": "Phần 2",
+              "questions": [
+                {
+                  "id": "d695d91a-4346-8371-91e5-fafa3a90e30d",
+                  "type": "multiple",
+                  "text": "Những tên biến nào viết theo kiểu snake\\_case?",
+                  "options": [
+                    {
+                      "id": "A",
+                      "text": "user\\_name"
+                    },
+                    {
+                      "id": "B",
+                      "text": "userName"
+                    },
+                    {
+                      "id": "C",
+                      "text": "max\\_size"
+                    }
+                  ],
+                  "correct": [
+                    "A",
+                    "C"
+                  ],
+                  "explanation": "Dấu \\_ nối các từ viết thường."
+                }
+              ]
+            }
+          ]
+        },
+        "media": [
+          "media/70bab43c3440b0a3.png"
+        ]
+      },
+      "lenient": {
+        "notes": []
+      }
+    },
+    "dap-an-khong-khop": {
+      "strict": {
+        "error": "oef.answerNotInOptions:0/0:D"
+      },
+      "lenient": {
+        "notes": [
+          "answerNotInOptions:0/0:D",
+          "duplicateOptionLetter:0/1:A"
+        ],
+        "passPercent": 60,
+        "timeLimitMinutes": 15,
+        "questions": [
+          {
+            "correct": "",
+            "options": 3,
+            "image": false
+          },
+          {
+            "correct": "A",
+            "options": 2,
+            "image": false
+          }
+        ]
+      }
+    },
+    "do-dai-khong-lo": {
+      "strict": {
+        "error": "oef.malformed:1"
+      },
+      "lenient": {
+        "error": "oef.malformed:1"
+      }
+    },
+    "fixed32-cut": {
+      "strict": {
+        "error": "oef.malformed:1"
+      },
+      "lenient": {
+        "error": "oef.malformed:1"
+      }
+    },
+    "fixed64-cut": {
+      "strict": {
+        "error": "oef.malformed:3"
+      },
+      "lenient": {
+        "error": "oef.malformed:3"
+      }
+    },
+    "goi-dap-an-packed": {
+      "strict": {
+        "exam": {
+          "formatVersion": 1,
+          "id": "9804e0e5-e57c-8d3c-a44e-d1fe71f8496b",
+          "title": "Tiếng Việt",
+          "passPercent": 73,
+          "timeLimitMinutes": 20,
+          "hideAnswers": true,
+          "sections": [
+            {
+              "id": "551f7dfe-f3b0-864d-b9dd-147c71c4ff35",
+              "title": "Từ vựng",
+              "questions": [
+                {
+                  "id": "d847d9d4-78bd-8c6a-a8e2-6dcce367914b",
+                  "type": "multiple",
+                  "text": "Chọn các từ có dấu ngã.",
+                  "image": "media/e35f718ebdf9d601.gif",
+                  "options": [
+                    {
+                      "id": "A",
+                      "text": "Ngã"
+                    },
+                    {
+                      "id": "B",
+                      "text": "Mỗi"
+                    },
+                    {
+                      "id": "C",
+                      "text": "Hỏi"
+                    }
+                  ],
+                  "correct": [
+                    "A",
+                    "B"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "media": [
+          "media/e35f718ebdf9d601.gif"
+        ]
+      },
+      "lenient": {
+        "notes": [
+          "invalidCode:MÃ CÓ DẤU",
+          "emptySection:0"
+        ]
+      }
+    },
+    "khong-cau-hoi": {
+      "strict": {
+        "error": "oef.noQuestions"
+      },
+      "lenient": {
+        "error": "oef.noQuestions"
+      }
+    },
+    "kieu-day-3": {
+      "strict": {
+        "error": "oef.malformed:0"
+      },
+      "lenient": {
+        "error": "oef.malformed:0"
+      }
+    },
+    "kieu-day-6": {
+      "strict": {
+        "error": "oef.malformed:0"
+      },
+      "lenient": {
+        "error": "oef.malformed:0"
+      }
+    },
+    "nguong-ngoai-thang": {
+      "strict": {
+        "error": "oef.passmarkOutOfRange"
+      },
+      "lenient": {
+        "notes": [
+          "passmarkOutOfRange",
+          "timeLimitOutOfRange:0"
+        ],
+        "passPercent": null,
+        "timeLimitMinutes": null,
+        "questions": [
+          {
+            "correct": "B",
+            "options": 2,
+            "image": false
+          }
+        ]
+      }
+    },
+    "nhieu-dap-an-lech": {
+      "strict": {
+        "error": "oef.answerNotInOptions:0/0:C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V"
+      },
+      "lenient": {
+        "notes": [
+          "answerNotInOptions:0/0:C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V"
+        ],
+        "passPercent": 50,
+        "timeLimitMinutes": 10,
+        "questions": [
+          {
+            "correct": "",
+            "options": 2,
+            "image": false
+          }
+        ]
+      }
+    },
+    "nhieu-truong-la": {
+      "strict": {
+        "error": "oef.unknownFields:#3,#4,#5,#6,#7,#8,#9,#10,#11,#12,#13,#14,#15,#16,#17,#18,#19,#20,#21,#22"
+      },
+      "lenient": {
+        "notes": [
+          "unknownField:#3",
+          "unknownField:#4",
+          "unknownField:#5",
+          "unknownField:#6",
+          "unknownField:#7",
+          "unknownField:#8",
+          "unknownField:#9",
+          "unknownField:#10",
+          "unknownField:#11",
+          "unknownField:#12",
+          "unknownField:#13",
+          "unknownField:#14",
+          "unknownField:#15",
+          "unknownField:#16",
+          "unknownField:#17",
+          "unknownField:#18",
+          "unknownField:#19",
+          "unknownField:#20",
+          "unknownField:#21",
+          "unknownField:#22"
+        ],
+        "passPercent": 50,
+        "timeLimitMinutes": 10,
+        "questions": [
+          {
+            "correct": "A",
+            "options": 2,
+            "image": false
+          }
+        ]
+      }
+    },
+    "phan-khong-ten": {
+      "strict": {
+        "error": "validationFailed:titleEmpty,titleEmpty,tooFewOptions,noCorrectAnswer"
+      },
+      "lenient": {
+        "notes": [
+          "untitledSection:0",
+          "noOptions:1/0"
+        ],
+        "passPercent": 50,
+        "timeLimitMinutes": 10,
+        "questions": [
+          {
+            "correct": "A",
+            "options": 2,
+            "image": false
+          },
+          {
+            "correct": "B",
+            "options": 2,
+            "image": false
+          }
+        ]
+      }
+    },
+    "qua-26-lua-chon": {
+      "strict": {
+        "error": "oef.tooManyOptions:0/0:28"
+      },
+      "lenient": {
+        "notes": [
+          "tooManyOptions:0/0:28"
+        ],
+        "passPercent": 50,
+        "timeLimitMinutes": 10,
+        "questions": [
+          {
+            "correct": "Z",
+            "options": 26,
+            "image": false
+          }
+        ],
+        "zText": "Lựa chọn 26\nLựa chọn 27\nLựa chọn 28"
+      }
+    },
+    "sai-kieu-day": {
+      "strict": {
+        "error": "oef.malformed:2"
+      },
+      "lenient": {
+        "error": "oef.malformed:2"
+      }
+    },
+    "so-truong-0": {
+      "strict": {
+        "error": "oef.malformed:0"
+      },
+      "lenient": {
+        "error": "oef.malformed:0"
+      }
+    },
+    "so-truong-qua-lon": {
+      "strict": {
+        "error": "oef.malformed:0"
+      },
+      "lenient": {
+        "error": "oef.malformed:0"
+      }
+    },
+    "thoi-gian-64bit": {
+      "strict": {
+        "exam": {
+          "formatVersion": 1,
+          "id": "d3922858-16a8-8897-a2be-174dd46b0b7d",
+          "title": "Đề thời gian 64 bit",
+          "passPercent": 50,
+          "timeLimitMinutes": 30,
+          "sections": [
+            {
+              "id": "56c886b6-d664-81d9-86bf-8de1aa9d6c12",
+              "title": "Phần 1",
+              "questions": [
+                {
+                  "id": "378e5133-2945-8d15-9359-42a27c28b4f4",
+                  "type": "single",
+                  "text": "Câu?",
+                  "options": [
+                    {
+                      "id": "A",
+                      "text": "Có"
+                    },
+                    {
+                      "id": "B",
+                      "text": "Không"
+                    }
+                  ],
+                  "correct": [
+                    "A"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "media": []
+      },
+      "lenient": {
+        "notes": []
+      }
+    },
+    "thoi-gian-am": {
+      "strict": {
+        "error": "validationFailed:timeLimitOutOfRange"
+      },
+      "lenient": {
+        "notes": [
+          "timeLimitOutOfRange:-5"
+        ],
+        "passPercent": 50,
+        "timeLimitMinutes": null,
+        "questions": [
+          {
+            "correct": "A",
+            "options": 2,
+            "image": false
+          }
+        ]
+      }
+    },
+    "trung-chu-qua-26": {
+      "strict": {
+        "error": "oef.tooManyOptions:0/0:28"
+      },
+      "lenient": {
+        "notes": [
+          "tooManyOptions:0/0:28",
+          "duplicateOptionLetter:0/0:A"
+        ],
+        "passPercent": 50,
+        "timeLimitMinutes": 10,
+        "questions": [
+          {
+            "correct": "A",
+            "options": 26,
+            "image": false
+          }
+        ],
+        "zText": "Lựa chọn 26\nLựa chọn 27"
+      }
+    },
+    "truong-la": {
+      "strict": {
+        "error": "oef.unknownFields:properties.#8,sections[0].questions[0].#9,sections[0].questions[0].options[0].#4,#3"
+      },
+      "lenient": {
+        "notes": [
+          "unknownField:properties.#8",
+          "unknownField:sections[0].questions[0].#9",
+          "unknownField:sections[0].questions[0].options[0].#4",
+          "unknownField:#3"
+        ],
+        "passPercent": 50,
+        "timeLimitMinutes": 10,
+        "questions": [
+          {
+            "correct": "A",
+            "options": 2,
+            "image": false
+          }
+        ]
+      }
+    },
+    "utf8-hong": {
+      "strict": {
+        "error": "oef.malformed:4"
+      },
+      "lenient": {
+        "error": "oef.malformed:4"
+      }
+    },
+    "van-ban-wims": {
+      "strict": {
+        "error": "oef.malformed:0"
+      },
+      "lenient": {
+        "error": "oef.malformed:0"
+      }
+    },
+    "varint-11-byte": {
+      "strict": {
+        "error": "oef.malformed:1"
+      },
+      "lenient": {
+        "error": "oef.malformed:1"
+      }
+    },
+    "varint-byte-10": {
+      "strict": {
+        "error": "oef.malformed:1"
+      },
+      "lenient": {
+        "error": "oef.malformed:1"
+      }
+    }
+  },
+  "vectors": {
+    "ids": [
+      {
+        "name": "oef-exam\u0000\u0000",
+        "uuid": "14a0c011-f891-8c53-9852-47c15aa2c68b"
+      },
+      {
+        "name": "oef-exam\u0000OEF-01\u0000Đề thử OEF cơ bản",
+        "uuid": "28e653ab-adcb-82cd-a684-5af689fedbab"
+      },
+      {
+        "name": "28e653ab-adcb-82cd-a684-5af689fedbab/s1/q0",
+        "uuid": "d695d91a-4346-8371-91e5-fafa3a90e30d"
+      }
+    ],
+    "markdown": [
+      {
+        "plain": "  a*b_c [x] <y> `z` ~w \\ & ok ",
+        "markdown": "a\\*b\\_c \\[x\\] \\<y\\> \\`z\\` \\~w \\\\ & ok"
+      },
+      {
+        "plain": "Việt",
+        "markdown": "Việt"
+      },
+      {
+        "plain": " 　\n",
+        "markdown": ""
+      }
+    ],
+    "passmark": [
+      [
+        0,
+        0
+      ],
+      [
+        4.9,
+        0
+      ],
+      [
+        5,
+        1
+      ],
+      [
+        15,
+        2
+      ],
+      [
+        25,
+        3
+      ],
+      [
+        724,
+        72
+      ],
+      [
+        725,
+        73
+      ],
+      [
+        999.9,
+        100
+      ],
+      [
+        1000,
+        100
+      ]
+    ],
+    "passmarkOutOfRange": [
+      -1,
+      -0.001,
+      1000.5,
+      1200
+    ],
+    "imageKinds": [
+      {
+        "head": "89504e470d0a1a0a0000000d",
+        "ext": "png"
+      },
+      {
+        "head": "ffd8ffe0",
+        "ext": "jpg"
+      },
+      {
+        "head": "474946383761",
+        "ext": "gif"
+      },
+      {
+        "head": "474946383961",
+        "ext": "gif"
+      },
+      {
+        "head": "524946460000000057454250",
+        "ext": "webp"
+      },
+      {
+        "head": "000000186674797068656963",
+        "ext": "heic"
+      },
+      {
+        "head": "000000186674797068657663",
+        "ext": "heic"
+      },
+      {
+        "head": "00000018667479706d696631",
+        "ext": null
+      },
+      {
+        "head": "00000018667479706176696631",
+        "ext": null
+      },
+      {
+        "head": "424d",
+        "ext": null
+      },
+      {
+        "head": "89504e47",
+        "ext": null
+      },
+      {
+        "head": "52494646000000004156492020",
+        "ext": null
+      },
+      {
+        "head": "",
+        "ext": null
+      }
+    ],
+    "letters": [
+      [
+        65,
+        "A"
+      ],
+      [
+        91,
+        "["
+      ],
+      [
+        126,
+        "~"
+      ],
+      [
+        0,
+        "U+0000"
+      ],
+      [
+        32,
+        "U+0020"
+      ],
+      [
+        7840,
+        "U+1EA0"
+      ],
+      [
+        65601,
+        "U+10041"
+      ]
+    ]
+  }
+}

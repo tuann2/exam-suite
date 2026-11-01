@@ -1,0 +1,48 @@
+{
+ "description": "Hai phần, không phần nào có câu.",
+ "message": [
+  [
+   1,
+   "message",
+   [
+    [
+     1,
+     "string",
+     "Đề rỗng"
+    ],
+    [
+     4,
+     "double",
+     500
+    ],
+    [
+     5,
+     "varint",
+     10
+    ]
+   ]
+  ],
+  [
+   2,
+   "message",
+   [
+    [
+     1,
+     "string",
+     "Phần A"
+    ]
+   ]
+  ],
+  [
+   2,
+   "message",
+   [
+    [
+     1,
+     "string",
+     "Phần B"
+    ]
+   ]
+  ]
+ ]
+}

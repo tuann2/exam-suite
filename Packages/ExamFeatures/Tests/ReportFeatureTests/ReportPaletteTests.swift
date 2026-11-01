@@ -1,5 +1,5 @@
 import Foundation
-import LibraryFeature
+import InterfaceCore
 @testable import ReportFeature
 import Testing
 

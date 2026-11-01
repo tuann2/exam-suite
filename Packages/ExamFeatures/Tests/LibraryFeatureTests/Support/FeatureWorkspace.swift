@@ -1,8 +1,8 @@
 import ExamFile
 import ExamKit
 import Foundation
+@testable import InterfaceCore
 import LibraryData
-@testable import LibraryFeature
 
 /// Thư mục tạm riêng của một test (đường dẫn thật, đã giải `/var` → `/private/var`), xoá khi test xong.
 /// Kho thư viện trong bộ nhớ, UserDefaults là file trong thư mục tạm: không test nào ghi vào

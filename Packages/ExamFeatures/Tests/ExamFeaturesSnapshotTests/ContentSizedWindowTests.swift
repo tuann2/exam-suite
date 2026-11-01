@@ -118,6 +118,7 @@ extension SnapshotSuite {
                 let harness = SessionHarness()
                 let window = try await harness.submittedWindow(package: ExamPackage(exam: SnapshotContent.manySectionsExam()))
                 window.reportServices = ReportServices.live(window: { nil })
+                window.reportPreferences = harness.preferences
                 #expect(window.requestReport(.exportPDF))
                 let sheet = ResultsReportSheet(window: window)
                 let minimum = minimumSize(sheet)

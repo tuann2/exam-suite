@@ -1,6 +1,6 @@
 import CoreGraphics
 import Foundation
-import LibraryFeature
+import InterfaceCore
 import SwiftUI
 
 /// Khổ trang và lề của PDF (docs/product/export-print.md, Trình bày chung): luôn **A4** dọc 595 × 842 pt, lề 18 mm.

@@ -1,5 +1,7 @@
 import ExamKit
+import InterfaceCore
 import LibraryFeature
+import SessionModel
 import SwiftUI
 
 /// Bảng câu hỏi (`.inspector`, ⌃⌘I): tiến độ "Đã làm 12/60", chú thích, các ô nhóm theo phần trong lưới lười

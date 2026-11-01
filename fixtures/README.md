@@ -18,5 +18,11 @@ ExamKit/ExamFile và kiểm tra schema trên CI.
 - `vectors/composer.json`, `vectors/question-fingerprints.json`: vector cố định của SplitMix64, chọn câu và dấu vân tay
   câu, dùng chung cho hai lõi. Đổi hành vi lõi thì sửa oracle trước, rồi hai lõi cùng xanh (ADR 0011).
 
+- `oef/<tên>.oef` + `oef/src/<tên>.json` + `oef/expected.json`: file `.oef` (Open Exam Suite, ADR 0014) tự dựng, sinh
+  bằng `scripts/make_oef.py` từ mô tả JSON (`--check` so từng byte, trong `scripts/check.sh`); kết luận đọc nghiêm/đọc dễ
+  và vector viết tay ở `expected.json`. Oracle chung của lõi Swift (`OEFReaderTests`) và lõi Kotlin (`SharedOracleTest`).
+  Thêm file thì thêm mô tả, chạy `scripts/make_oef.py`, rồi thêm dòng vào `expected.json`. Không chép file mẫu của Open
+  Exam Suite vào đây.
+
 Đóng gói thành `.exam` để mở bằng app: `python3 scripts/pack_exam.py fixtures/exams/kien-thuc-chung dist/`.
 Kiểm tra toàn bộ: `python3 scripts/validate_exam.py --all && python3 scripts/check_validator_parity.py`.

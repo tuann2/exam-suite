@@ -1,4 +1,5 @@
 import Foundation
+@testable import InterfaceCore
 @testable import LibraryFeature
 import Testing
 
@@ -17,15 +18,21 @@ struct LocalizationTests {
 
     @Test func moduleBundleDeclaresVietnameseSource() {
         #expect(LibraryFeature.ModuleStrings.bundle.developmentLocalization == "vi")
+        #expect(InterfaceCore.ModuleStrings.bundle.developmentLocalization == "vi")
+    }
+
+    /// Chữ của `key` trong catalog của LibraryFeature (view của Thư viện); `catalogText` tra catalog của InterfaceCore.
+    private func libraryText(_ key: String.LocalizationValue, language: String) -> String {
+        InterfaceStrings.resolve(key, bundle: LibraryFeature.ModuleStrings.bundle, locale: Locale(identifier: language))
     }
 
     /// Khoá là chữ tiếng Việt: tra `vi` ra đúng khoá, nội suy số và chuỗi điền đúng chỗ (phần trăm qua `FormatStyle`,
     /// bước 7a).
     @Test func vietnameseResolvesToSourceText() {
-        #expect(catalogText("Thư viện", language: "vi") == "Thư viện")
+        #expect(libraryText("Thư viện", language: "vi") == "Thư viện")
         #expect(catalogText("\(12) câu", language: "vi") == "12 câu")
         #expect(catalogText("Đậu từ \(LibraryFormat.percent(70))", language: "vi") == "Đậu từ 70%")
-        #expect(localized("Đậu từ \(LibraryFormat.percent(70))") == "Đậu từ 70%")
+        #expect(InterfaceCore.localized("Đậu từ \(LibraryFormat.percent(70))") == "Đậu từ 70%")
         #expect(LibraryFormat.passThreshold(70) == "Đậu từ 70%")
     }
 
@@ -33,7 +40,7 @@ struct LocalizationTests {
     /// `locale: nil`) trong trình chạy `swift test` (bundle chính không khai báo ngôn ngữ; spike giai đoạn 5: macOS chọn
     /// `en`) ra chữ của một trong hai ngôn ngữ của catalog, không ra chữ rỗng hay khoá lạ.
     @Test func englishResolves() {
-        #expect(catalogText("Thư viện", language: "en") == "Library")
+        #expect(libraryText("Thư viện", language: "en") == "Library")
         #expect(catalogText("\("850")/1000", language: "en") == "850/1000")
         #expect(catalogText("\(1) câu", language: "en") == "1 question")
         #expect(catalogText("\(12) câu", language: "en") == "12 questions")
@@ -42,7 +49,7 @@ struct LocalizationTests {
             == "Passing score 70%")
         #expect(catalogText("\(2) giờ \(1) phút", language: "en") == "2 hours 1 minute")
         #expect(catalogText("\(1) phút \(30) giây", language: "en") == "1 minute 30 seconds")
-        let bundle = LibraryFeature.ModuleStrings.bundle
+        let bundle = InterfaceCore.ModuleStrings.bundle
         #expect(["12 câu", "12 questions"].contains(InterfaceStrings.resolve("\(12) câu", bundle: bundle, locale: nil)))
     }
 }

@@ -1,0 +1,4 @@
+{
+ "description": "Trường lạ #3 varint dài 11 byte → dây hỏng ở byte 1 (đầu varint).",
+ "prefix": "18ffffffffffffffffffff01"
+}

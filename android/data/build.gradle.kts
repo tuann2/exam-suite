@@ -32,7 +32,7 @@ room {
 androidComponents {
     onVariants { variant ->
         variant.sources.assets?.addStaticSourceDirectory(
-            rootProject.file("../Packages/ExamFeatures/Sources/LibraryData/Resources/Samples").absolutePath,
+            rootProject.file("../Packages/SharedFeatures/Sources/LibraryData/Resources/Samples").absolutePath,
         )
     }
 }

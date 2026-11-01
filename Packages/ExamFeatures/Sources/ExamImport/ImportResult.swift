@@ -8,9 +8,11 @@ import Foundation
 /// (import.md, Luồng bước 3), nên đề chỉ được dựng bằng `makePackage(_:)` sau khi có `ImportConfirmation`.
 /// Không có giá trị giả cho ngưỡng/thời gian trong kết quả.
 public struct ImportResult: Equatable, Sendable {
-    /// `id` của đề, sinh ngẫu nhiên mỗi lần import (import.md, phương án 4).
+    /// `id` của đề, sinh ngẫu nhiên mỗi lần import (import.md, phương án 4); riêng `.oef` là id dẫn xuất từ mã và tiêu
+    /// đề trong file, như khi bản Học viên mở thẳng file đó (exam-format.md, mục File `.oef`).
     public var examID: UUID
-    /// Các phần theo thứ tự xuất hiện; mọi `id` ngẫu nhiên, chuỗi đã chuẩn hoá NFC và bỏ khoảng trắng hai đầu.
+    /// Các phần theo thứ tự xuất hiện; mọi `id` ngẫu nhiên (`.oef`: dẫn xuất như `examID`), chuỗi đã chuẩn hoá NFC và
+    /// bỏ khoảng trắng hai đầu.
     public var sections: [ExamSection]
     /// Ảnh được câu hỏi tham chiếu, khoá `media/<sha256>.<ext>` (như `ExamPackage.media`).
     public var media: [String: Data]
@@ -20,6 +22,9 @@ public struct ImportResult: Equatable, Sendable {
     public var suggestions: ImportSuggestions
     /// Định dạng file gốc.
     public var sourceFormat: ImportSourceFormat
+    /// Hướng dẫn và cờ ẩn đáp án đọc từ file (chỉ `.oef` có); hộp xác nhận không hỏi hai giá trị này.
+    public var instructions: String?
+    public var hideAnswers: Bool
 
     public init(
         examID: UUID,
@@ -27,7 +32,9 @@ public struct ImportResult: Equatable, Sendable {
         media: [String: Data],
         report: ImportReport,
         suggestions: ImportSuggestions,
-        sourceFormat: ImportSourceFormat
+        sourceFormat: ImportSourceFormat,
+        instructions: String? = nil,
+        hideAnswers: Bool = false
     ) {
         self.examID = examID
         self.sections = sections
@@ -35,6 +42,8 @@ public struct ImportResult: Equatable, Sendable {
         self.report = report
         self.suggestions = suggestions
         self.sourceFormat = sourceFormat
+        self.instructions = instructions
+        self.hideAnswers = hideAnswers
     }
 
     /// Số câu giữ lại (không gồm câu bị bỏ).
@@ -50,6 +59,8 @@ public struct ImportResult: Equatable, Sendable {
             code: code,
             passPercent: confirmation.passPercent,
             timeLimitMinutes: confirmation.timeLimitMinutes,
+            hideAnswers: hideAnswers,
+            instructions: instructions,
             sections: sections
         )
         return ExamPackage(exam: exam, media: media)
@@ -95,6 +106,8 @@ public enum ImportSourceFormat: String, Sendable, CaseIterable {
     case docx
     /// Avanset VCE (ADR 0009, docs/notes/vce-format.md).
     case vce
+    /// Open Exam Suite, bản Protobuf (ADR 0014): đọc bằng `OEFReader` của ExamFile ở chế độ dễ.
+    case oef
 
     /// Định dạng theo đuôi file (không phân biệt hoa thường); `nil` nếu không hỗ trợ.
     public init?(fileExtension: String) {
@@ -188,6 +201,16 @@ public enum ImportIssueCode: String, Sendable, CaseIterable {
     case unknownSection
     /// vce: chữ 1 byte/ký tự có byte ngoài ASCII, đã đọc theo Windows-1252 (giả thuyết chưa kiểm trên file mẫu).
     case assumedEncoding
+    /// oef: trường không có trong định dạng đã biết, bị bỏ qua.
+    case unknownField
+    /// oef: phần không có câu nào, bị bỏ.
+    case emptySection
+    /// oef: phần không có tên, đặt tên phần chung.
+    case untitledSection
+    /// oef: hai lựa chọn của một câu cùng chữ cái.
+    case duplicateOptionLetter
+    /// oef: đáp án không khớp lựa chọn nào, bị bỏ.
+    case answerNotInOptions
 
     public var severity: ImportSeverity {
         switch self {

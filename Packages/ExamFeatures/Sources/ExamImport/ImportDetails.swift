@@ -111,6 +111,26 @@ public enum ImportIssueDetail: Equatable, Sendable {
     /// `unknownSection`: câu trỏ tới phần id không có trong bảng.
     case unknownSectionID(id: Int, fallbackSection: String)
 
+    // Riêng oef (chỗ `OEFReader` đã sửa hoặc bỏ khi đọc dễ; docs/product/import.md mục `.oef`)
+    /// `unknownField`: trường lạ của file `.oef`, bị bỏ qua. Tham số: đường dẫn như `sections[0].questions[2].#9`.
+    case oefUnknownField(String)
+    /// `invalidCode`: mã đề của file `.oef` sai mẫu, bị bỏ.
+    case invalidOefCode(String)
+    /// `invalidPassingScore`: ngưỡng đậu của file `.oef` không nằm trong thang 0–1000.
+    case oefPassmarkOutOfRange
+    /// `invalidTimeLimit`: thời gian của file `.oef` ngoài 1–600 phút. Tham số: giá trị trong file.
+    case invalidOefTimeLimit(Int)
+    /// `emptySection`: phần thứ `section` (từ 1) không có câu nào, bị bỏ.
+    case oefEmptySection(section: Int)
+    /// `untitledSection`: phần thứ `section` (từ 1) không có tên, đặt tên `fallbackSection`.
+    case oefUntitledSection(section: Int, fallbackSection: String)
+    /// `duplicateOptionLetter`: hai lựa chọn cùng chữ; đáp án theo lựa chọn đầu tiên mang chữ đó.
+    case oefDuplicateOptionLetter(String)
+    /// `answerNotInOptions`: các chữ đáp án không khớp lựa chọn nào, bị bỏ.
+    case oefAnswerNotInOptions([String])
+    /// `imageTooLarge`: ảnh của câu trong file `.oef` vượt giới hạn, bị bỏ.
+    case oefImageTooLarge
+
     /// Mục tóm tắt của một loại vượt trần chi tiết: `count` mục, báo cáo ghi `limit` mục đầu.
     case summary(code: ImportIssueCode, count: Int, limit: Int)
 
@@ -221,6 +241,24 @@ public enum ImportIssueDetail: Equatable, Sendable {
             return "Phần id \(id) trong bảng phần không có tên; câu được xếp vào phần \"\(fallback)\"."
         case let .unknownSectionID(id, fallback):
             return "Câu trỏ tới phần id \(id) không có trong bảng phần; xếp vào phần \"\(fallback)\"."
+        case let .oefUnknownField(path):
+            return "Trường \(path) của file .oef không được hỗ trợ nên bị bỏ qua."
+        case let .invalidOefCode(code):
+            return "Mã đề \"\(code)\" không hợp lệ (1–32 ký tự chữ không dấu, số, . _ -) nên bị bỏ."
+        case .oefPassmarkOutOfRange:
+            return "Ngưỡng đậu trong file không nằm trong thang 0–1000 nên để trống; hãy nhập khi import."
+        case let .invalidOefTimeLimit(value):
+            return "Thời gian trong file (\(value)) không hợp lệ nên để trống; hãy nhập khi import."
+        case let .oefEmptySection(section):
+            return "Phần thứ \(section) không có câu nào nên bị bỏ."
+        case let .oefUntitledSection(section, fallback):
+            return "Phần thứ \(section) không có tên; đặt tên \"\(fallback)\"."
+        case let .oefDuplicateOptionLetter(letter):
+            return "Hai lựa chọn cùng chữ \(letter); đáp án theo lựa chọn đầu tiên mang chữ đó."
+        case let .oefAnswerNotInOptions(letters):
+            return "Đáp án \(letters.joined(separator: ", ")) không khớp lựa chọn nào nên bị bỏ."
+        case .oefImageTooLarge:
+            return "Ảnh của câu vượt giới hạn kích thước nên bị bỏ."
         case let .summary(code, count, limit):
             return "… và \(count) mục tương tự (\(code.rawValue)) không liệt kê chi tiết: báo cáo chỉ ghi "
                 + "\(limit) mục đầu của mỗi loại."
@@ -611,6 +649,7 @@ public enum XMLProblem: Equatable, Sendable {
 public enum ImportSizeLimit: Equatable, Sendable {
     case textFile
     case vceFile
+    case oefFile
     case docxEntryCount
     case docxTotalSize
     /// Một phần của `.docx` (đường dẫn trong zip).
@@ -620,6 +659,7 @@ public enum ImportSizeLimit: Equatable, Sendable {
         switch self {
         case .textFile: "file .txt"
         case .vceFile: "file .vce"
+        case .oefFile: "file .oef"
         case .docxEntryCount: "số entry trong file .docx"
         case .docxTotalSize: "tổng giải nén của file .docx"
         case let .docxPart(path): path

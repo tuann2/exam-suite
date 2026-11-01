@@ -1,0 +1,19 @@
+{
+ "description": "Passmark (fixed64) chỉ còn 2 byte trong Properties → dây hỏng ở byte 3 (đầu giá trị).",
+ "message": [
+  [
+   1,
+   "message",
+   [
+    [
+     4,
+     "wire",
+     [
+      1,
+      "0000"
+     ]
+    ]
+   ]
+  ]
+ ]
+}

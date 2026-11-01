@@ -5,13 +5,14 @@ của [plan-macos-v1.md](plan-macos-v1.md); DESIGN_BRIEF §5.1, §5.8, §7 của
 (đọc qua link, không chép). Những chỗ đặc tả gốc không nói được ghi ở mục cuối
 "Phương án đã chốt" (Nt0 duyệt 2026-10-15).
 
-Code: `LibraryData` (dữ liệu, không giao diện) và `LibraryFeature` (SwiftUI) trong
+Code: `LibraryData` (dữ liệu, không giao diện) và `LibraryModel` (model trình bày, InterfaceCore) trong
+`Packages/SharedFeatures` (dùng chung với bản iOS), `LibraryFeature` (SwiftUI của bản macOS) trong
 `Packages/ExamFeatures`. Cả hai bản app dùng chung; khác nhau ghi rõ ở từng mục.
 
 ## Cửa sổ
 
 - Một cửa sổ Thư viện duy nhất cho mỗi bản app, tối thiểu 960×640, co giãn được; giữ bố cục ở 200%.
-- Bản Học viên: đóng cửa sổ Thư viện thì app thoát; mở `.exam` từ Finder khi đó khởi động lại app vào Thư viện.
+- Bản Học viên: đóng cửa sổ Thư viện thì app thoát; mở `.exam`, `.oef` từ Finder khi đó khởi động lại app vào Thư viện.
   Bản Admin: luôn mở Thư viện khi khởi động, kể cả khi khởi động bằng một file `.exam` (mở kèm cửa sổ soạn đề).
 - `NavigationSplitView`: sidebar có **Tất cả đề**, **Gần đây**, **Lịch sử thi**; vùng nội dung bên phải.
 - Thanh công cụ: **Thêm đề** (⌘O), tìm kiếm (⌘F), sắp xếp, lọc, chuyển **lưới / danh sách**.
@@ -48,17 +49,24 @@ Hành động trên thẻ:
   (hành động tắt như hai nút trên; exam-taking.md, phương án 17, Nt0 chốt 2026-10-15).
 - Menu chuột phải và nút "…": **Luyện tập**, **Thi** (tắt khi đề chưa Sẵn sàng), **Thông tin** (⌘I),
   **Hiện trong Finder**, **Xem lịch sử thi**, **Xoá khỏi thư viện** (⌫); bản Admin thêm **Sửa** (⌘E) mở đề
-  trong cửa sổ soạn đề.
-- **Thông tin**: đường dẫn file, dung lượng, phiên bản định dạng, ngày thêm, số phần/câu/ảnh,
-  thời gian, ngưỡng đậu, trạng thái và lý do.
+  trong cửa sổ soạn đề. Đề là file `.oef` thì **Sửa** tắt, chú thích "Dùng Import đề… để chuyển sang .exam rồi sửa"
+  (plan-oef.md QO10; Nt0 chốt 2026-10-31).
+- **Thông tin**: đường dẫn file, dung lượng, phiên bản định dạng (file `.oef`: dòng "Định dạng: Open Exam Suite
+  (.oef)" thay cho phiên bản định dạng), ngày thêm, số phần/câu/ảnh, thời gian, ngưỡng đậu, trạng thái và lý do.
 
 ## Thêm đề
 
-- **Thêm đề…** (nút, ⌘O, menu File): chọn một hoặc nhiều file `.exam`.
-- **Kéo thả** một hoặc nhiều file `.exam` vào cửa sổ. File không phải `.exam` bị bỏ qua và được báo.
-- **Bản Học viên mở `.exam` từ Finder** (nhấp đúp, Open With, kéo vào biểu tượng Dock): thêm vào thư viện,
-  mở cửa sổ Thư viện nếu đang đóng và chọn đề đó. Bản Admin mở `.exam` từ Finder vào cửa sổ soạn đề
-  như hiện nay (kết luận spike giai đoạn 0).
+- **Thêm đề…** (nút, ⌘O, menu File): chọn một hoặc nhiều file `.exam` hay `.oef`.
+- **Kéo thả** một hoặc nhiều file `.exam`, `.oef` vào cửa sổ. File đuôi khác bị bỏ qua và được báo.
+- **Bản Học viên mở `.exam`, `.oef` từ Finder** (nhấp đúp, Open With, kéo vào biểu tượng Dock): thêm vào thư viện,
+  mở cửa sổ Thư viện nếu đang đóng và chọn đề đó. Với `.oef` app có hạng Alternate: máy có Open Exam Suite thì nhấp
+  đúp vẫn mở bằng Open Exam Suite, Exam Suite ở Open With (plan-oef.md QO11). Bản Admin mở `.exam` từ Finder vào cửa
+  sổ soạn đề như hiện nay (kết luận spike giai đoạn 0); không mở `.oef` từ Finder, chỉ qua Import đề… (QO10).
+- **File `.oef`** của Open Exam Suite (exam-format.md, mục File `.oef`; ADR 0014): tham chiếu tại chỗ như `.exam`,
+  chuyển thành đề **mỗi lần đọc** (thêm, Làm mới, mở Trước khi thi, làm bài, Xem lại, PDF; plan-oef.md QO9), nên sửa
+  file trong Open Exam Suite rồi Làm mới là thấy. Id đề lấy từ mã và tiêu đề: sửa câu giữ đề (lịch sử nối tiếp); đổi
+  mã hay tiêu đề thì file là đề khác, mục cũ thành Không tìm thấy file. Gói `.exam` bản Admin chuyển từ cùng file có
+  cùng id đề (Dùng file mới / Huỷ như hai file cùng đề).
 - Đọc theo chế độ của bản app: Học viên **nghiêm**, Admin **dễ** (exam-format.md).
 - File được **tham chiếu tại chỗ** bằng bookmark, không chép vào app; vẫn tìm được khi file đổi tên
   hoặc di chuyển trên cùng ổ.
@@ -70,7 +78,7 @@ Hành động trên thẻ:
 - Lần đầu mở app (chưa từng tạo đề mẫu), app ghi **2 đề mẫu tự soạn** vào
   `~/Library/Application Support/<bundle ID>/Samples/` và thêm vào thư viện, kèm dải chào mừng có thể đóng.
 - Xoá đề mẫu khỏi thư viện thì không tự tạo lại. Menu Trợ giúp có **Khôi phục đề mẫu**.
-- Nội dung đề mẫu nằm trong repo ở `Packages/ExamFeatures/Sources/LibraryData/Resources/Samples/<tên>/`
+- Nội dung đề mẫu nằm trong repo ở `Packages/SharedFeatures/Sources/LibraryData/Resources/Samples/<tên>/`
   (`exam.json` + `media/`), được kiểm theo schema như fixture và đọc nghiêm được, không có cả warning:
   `scripts/validate_exam.py --all` và test `LibrarySampleTests` (ExamFileTests). Ảnh vẽ bằng
   `scripts/samples/make_sample_images.swift`.

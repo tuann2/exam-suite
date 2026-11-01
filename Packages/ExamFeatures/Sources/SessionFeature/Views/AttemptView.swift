@@ -1,6 +1,8 @@
 import Accessibility
 import ExamKit
+import InterfaceCore
 import LibraryFeature
+import SessionModel
 import SwiftUI
 
 /// Cửa sổ làm bài khi chưa nộp (docs/product/exam-taking.md, mục Cửa sổ làm bài, Tạm dừng, Cảnh báo và hết

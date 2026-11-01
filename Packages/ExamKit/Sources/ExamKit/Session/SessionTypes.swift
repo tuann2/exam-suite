@@ -39,6 +39,9 @@ public enum PauseReason: String, Sendable, Codable {
     case user
     /// Máy sắp ngủ. Thời gian ngủ không bị trừ; thức dậy phiên vẫn ở `paused` tới khi `resume`.
     case systemSleep
+    /// App xuống nền (bản iOS: chuyển app, về màn hình chính, khoá màn hình; docs/product/mobile.md, mục Bản iOS).
+    /// Như máy ngủ: thời gian ở nền không bị trừ, mở lại phiên vẫn ở `paused` tới khi `resume`.
+    case background
 }
 
 /// Sự kiện đồng hồ, trả về từ `ExamSession.tick()`.

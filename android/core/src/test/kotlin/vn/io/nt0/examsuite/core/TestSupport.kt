@@ -20,7 +20,7 @@ import java.util.zip.ZipOutputStream
 object Repo {
     val fixtures = File(requireNotNull(System.getProperty("examsuite.fixtures")) { "thiếu examsuite.fixtures" })
     val root: File = fixtures.parentFile
-    val samples = File(root, "Packages/ExamFeatures/Sources/LibraryData/Resources/Samples")
+    val samples = File(root, "Packages/SharedFeatures/Sources/LibraryData/Resources/Samples")
 
     fun json(relative: String): JsonElement = Json.parseToJsonElement(File(fixtures, relative).readText())
 

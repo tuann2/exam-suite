@@ -6,6 +6,7 @@ import Foundation
 import LibraryData
 import ReportFeature
 @testable import SessionFeature
+@testable import SessionModel
 
 // Dữ liệu cố định cho snapshot: id, ngày giờ, seed, đồng hồ đều là hằng số để ảnh không đổi giữa các lần chạy.
 
@@ -37,7 +38,7 @@ final class FixedClock: SessionClock, @unchecked Sendable {
 }
 
 @MainActor
-final class FixedPreferences: SessionPreferences {
+final class FixedPreferences: SessionPreferences, ReportPreferences {
     var candidateName = "Nguyễn Thị Minh Khai"
     var lastMode: SessionMode = .practice
     var reportReviewLevel: ResultsReviewLevel = .default

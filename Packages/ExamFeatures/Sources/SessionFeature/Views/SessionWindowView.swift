@@ -1,6 +1,7 @@
 import ExamKit
 import LibraryFeature
 import ReportFeature
+import SessionModel
 import SwiftUI
 
 /// Scene cửa sổ làm bài, dùng ở cả hai bản app (docs/product/exam-taking.md, mục Cửa sổ làm bài).

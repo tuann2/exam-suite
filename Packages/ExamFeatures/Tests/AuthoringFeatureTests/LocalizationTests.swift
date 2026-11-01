@@ -1,6 +1,6 @@
 import Foundation
 @testable import AuthoringFeature
-import LibraryFeature
+import InterfaceCore
 import Testing
 
 /// Catalog của AuthoringFeature được đóng gói đúng bundle của module (docs/product/accessibility-localization.md,

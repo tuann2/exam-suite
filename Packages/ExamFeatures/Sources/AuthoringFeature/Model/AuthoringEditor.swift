@@ -2,7 +2,7 @@ import AuthoringData
 import ExamFile
 import ExamKit
 import Foundation
-import LibraryFeature
+import InterfaceCore
 import Observation
 import OSLog
 

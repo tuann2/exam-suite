@@ -5,6 +5,7 @@ import LibraryData
 import PDFKit
 import ReportFeature
 @testable import SessionFeature
+@testable import SessionModel
 import Testing
 
 /// Xuất PDF… / In… kết quả từ cửa sổ làm bài (docs/product/export-print.md, mục Bản Học viên, Tên file và hộp lưu, In,
@@ -58,6 +59,7 @@ struct ResultsReportFlowTests {
         let coordinator = SessionCoordinator(environment: harness.environment)
         let panels = FakeReportPanels()
         coordinator.reportServices = panels.services
+        coordinator.reportPreferences = harness.preferences
         return Setup(harness: harness, coordinator: coordinator, panels: panels, workspace: try SessionWorkspace())
     }
 

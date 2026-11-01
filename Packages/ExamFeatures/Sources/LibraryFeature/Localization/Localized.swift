@@ -1,4 +1,5 @@
 import Foundation
+import InterfaceCore
 
 /// Chữ giao diện của LibraryFeature: tra `Resources/Localizable.xcstrings` của target này (bundle của module), không tra
 /// bundle chính của app. Dùng cho API chỉ nhận chuỗi (`Button`, `Label`, `.help`, `NSAlert`…) và chuỗi của model

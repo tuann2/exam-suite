@@ -3,6 +3,7 @@ import ExamKit
 import Foundation
 import LibraryData
 @testable import SessionFeature
+@testable import SessionModel
 import Testing
 
 /// Màn Trước khi thi (docs/product/exam-taking.md, mục Trước khi thi và Bắt đầu).

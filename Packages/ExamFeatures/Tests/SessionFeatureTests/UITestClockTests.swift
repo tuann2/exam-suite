@@ -1,6 +1,6 @@
 import ExamKit
 import Foundation
-@testable import SessionFeature
+@testable import SessionModel
 import Testing
 
 /// Đồng hồ chạy nhanh cho UI test (chỉ build Debug): nhân thời gian đo, giữ mốc giờ thật; hệ số 1 là đồng hồ

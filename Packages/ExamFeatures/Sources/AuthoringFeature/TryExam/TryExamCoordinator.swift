@@ -1,8 +1,8 @@
 import ExamFile
 import ExamKit
 import Foundation
+import InterfaceCore
 import LibraryData
-import LibraryFeature
 import Observation
 import OSLog
 

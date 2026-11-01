@@ -1,7 +1,8 @@
 import ExamKit
 import Foundation
-import LibraryFeature
+import InterfaceCore
 import ReportFeature
+import SessionModel
 
 extension ResultsReport {
     /// PDF kết quả của màn **Kết quả** đang mở (docs/product/export-print.md, mục Nội dung và Quy tắc ẩn/hiện).

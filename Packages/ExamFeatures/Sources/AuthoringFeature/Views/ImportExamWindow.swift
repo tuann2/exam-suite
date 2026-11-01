@@ -220,7 +220,7 @@ public enum ImportFilePanel {
     public static func chooseFile() -> URL? {
         let panel = NSOpenPanel()
         panel.title = localized("Import đề")
-        panel.message = localized("Chọn một file .txt, .docx hoặc .vce để chuyển thành đề.")
+        panel.message = localized("Chọn một file .txt, .docx, .vce hoặc .oef để chuyển thành đề.")
         panel.prompt = localized("Chọn")
         panel.allowsMultipleSelection = false
         panel.canChooseDirectories = false

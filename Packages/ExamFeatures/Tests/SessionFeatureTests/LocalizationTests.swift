@@ -1,6 +1,7 @@
 import Foundation
-import LibraryFeature
+import InterfaceCore
 @testable import SessionFeature
+@testable import SessionModel
 import Testing
 
 /// Catalog của SessionFeature được đóng gói đúng bundle của module và tra theo ngôn ngữ cố định
@@ -11,14 +12,21 @@ struct SessionLocalizationTests {
         InterfaceStrings.resolve(key, bundle: SessionFeature.ModuleStrings.bundle, locale: Locale(identifier: language))
     }
 
+    /// Chữ của `key` trong catalog của SessionModel (model trình bày của phiên thi, tách ở bước I1 của plan iOS).
+    private func modelText(_ key: String.LocalizationValue, language: String) -> String {
+        InterfaceStrings.resolve(key, bundle: SessionModel.ModuleStrings.bundle, locale: Locale(identifier: language))
+    }
+
     @Test func moduleBundleDeclaresVietnameseSource() {
         #expect(SessionFeature.ModuleStrings.bundle.developmentLocalization == "vi")
         #expect(SessionFeature.ModuleStrings.bundle.bundleURL.lastPathComponent.contains("SessionFeature"))
+        #expect(SessionModel.ModuleStrings.bundle.developmentLocalization == "vi")
+        #expect(SessionModel.ModuleStrings.bundle.bundleURL.lastPathComponent.contains("SessionModel"))
     }
 
     @Test func vietnameseResolvesWithArguments() {
         #expect(catalogText("Câu \(3)/\(60)", language: "vi") == "Câu 3/60")
-        #expect(localized("Câu \(3)/\(60)") == "Câu 3/60")
+        #expect(SessionFeature.localized("Câu \(3)/\(60)") == "Câu 3/60")
         #expect(SessionFormat.percent(85) == "85%")
     }
 
@@ -32,8 +40,8 @@ struct SessionLocalizationTests {
         #expect(SessionFormat.percentDelta(0) == "bằng")
         let row = ResultSectionRow(id: UUID(), title: "Phần 1", correct: 1234, total: 2000, percent: 61, isWeakest: false)
         #expect(row.detailText == "1.234/2.000 · 61%")
-        #expect(localized("Câu \(1234)/\(2000)") == "Câu 1.234/2.000")
-        #expect(localized("Đã làm \(1500)/\(2000)") == "Đã làm 1.500/2.000")
+        #expect(SessionFeature.localized("Câu \(1234)/\(2000)") == "Câu 1.234/2.000")
+        #expect(SessionModel.localized("Đã làm \(1500)/\(2000)") == "Đã làm 1.500/2.000")
         #expect(catalogText("Câu \(1234)/\(2000)", language: "en") == "Question 1,234 of 2,000")
     }
 
@@ -50,11 +58,11 @@ struct SessionLocalizationTests {
         #expect(catalogText("Rà soát & nộp", language: "en") == "Review & Submit")
         #expect(catalogText("Kiểm tra đáp án", language: "en") == "Check Answer")
         #expect(catalogText("Luyện lại câu sai", language: "en") == "Practice Incorrect")
-        #expect(catalogText("Đã làm \(12)/\(60)", language: "en") == "12 of 60 answered")
-        #expect(catalogText("Còn \(1) câu chưa làm. Vẫn nộp?", language: "en") == "1 question is unanswered. Submit anyway?")
-        #expect(catalogText("Còn \(2) câu chưa làm. Vẫn nộp?", language: "en") == "2 questions are unanswered. Submit anyway?")
-        #expect(catalogText("\(1) giờ \(1) phút", language: "en") == "1 hour 1 minute")
-        #expect(catalogText("\(2) giờ \(5) phút", language: "en") == "2 hours 5 minutes")
+        #expect(modelText("Đã làm \(12)/\(60)", language: "en") == "12 of 60 answered")
+        #expect(modelText("Còn \(1) câu chưa làm. Vẫn nộp?", language: "en") == "1 question is unanswered. Submit anyway?")
+        #expect(modelText("Còn \(2) câu chưa làm. Vẫn nộp?", language: "en") == "2 questions are unanswered. Submit anyway?")
+        #expect(modelText("\(1) giờ \(1) phút", language: "en") == "1 hour 1 minute")
+        #expect(modelText("\(2) giờ \(5) phút", language: "en") == "2 hours 5 minutes")
         #expect(catalogText("Câu \(3) trên \(60), \("Section Networking")", language: "en")
             == "Question 3 of 60, Section Networking")
         // Menu Xem/View (bước 8b): tên chuẩn của macOS.
