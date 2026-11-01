@@ -8,7 +8,7 @@ import SwiftUI
 // Bản Học viên. Không import AuthoringFeature, trực tiếp hay gián tiếp (ADR 0003,
 // kiểm bằng scripts/check_boundaries.py và scripts/check_bundle_boundary.sh).
 
-/// App delegate của bản Học viên: giữ thư viện và phiên thi của app, nhận file `.exam` mở từ Finder, hỏi
+/// App delegate của bản Học viên: giữ thư viện và phiên thi của app, nhận file `.exam`, `.oef` mở từ Finder, hỏi
 /// trước khi thoát khi có bài chưa nộp.
 ///
 /// Vì sao `application(_:open:)` thay vì `WindowGroup` + `onOpenURL`: AppKit giao cả ba đường mở file
@@ -60,7 +60,7 @@ public final class StudentAppDelegate: NSObject, NSApplicationDelegate {
 ///
 /// Đóng cửa sổ Thư viện thì app thoát (library.md, phương án 10), kể cả khi cửa sổ làm bài đang mở:
 /// `SessionLibraryDecoration` chuyển việc đóng thành `NSApp.terminate`, nên có bài chưa nộp thì hỏi trước.
-/// Mở `.exam` từ Finder khi app đã thoát thì khởi động lại app vào Thư viện.
+/// Mở `.exam`, `.oef` từ Finder khi app đã thoát thì khởi động lại app vào Thư viện.
 public struct StudentScenes: Scene {
     private let library: LibraryModel
     private let sessions: SessionAppController

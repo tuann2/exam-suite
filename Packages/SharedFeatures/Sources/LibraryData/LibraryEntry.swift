@@ -164,4 +164,6 @@ public struct LibraryEntry: Identifiable, Hashable, Sendable {
 
     public var title: String { summary.title }
     public var code: String? { summary.code }
+    /// File của mục là `.oef` của Open Exam Suite (đọc và chuyển mỗi lần đọc, plan-oef.md QO9).
+    public var isOEF: Bool { ExamSourceReader.isOEF(fileURL) }
 }

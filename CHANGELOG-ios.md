@@ -5,6 +5,12 @@ là của bản macOS). Bản macOS ghi ở `CHANGELOG.md`, bản Android ở `a
 
 ## [Unreleased]
 
+### Added
+
+- Mở file `.oef` của Open Exam Suite (bản 4 trở lên) như `.exam`: Thêm đề, "Mở bằng"/chia sẻ từ app khác, app Tệp. File
+  được đọc và chuyển mỗi lần mở; như bản macOS, sửa câu trong Open Exam Suite (giữ mã và tiêu đề) vẫn là cùng đề, lịch
+  sử thi nối tiếp.
+
 ## [0.1.0] – chưa phát hành (chờ cổng GI3)
 
 Bản iPhone đầu tiên của Exam Suite, bản **Học viên**: iOS 18 trở lên, giao diện iPhone, cài qua Xcode bằng Apple ID miễn

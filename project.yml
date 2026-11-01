@@ -30,7 +30,7 @@ settings:
     # và bản build có đuôi mà thiếu tham số cô lập thì dừng (LibraryData/AppLaunchStorage.swift; AppLaunchStorageTests
     # kiểm hai dòng PRODUCT_BUNDLE_IDENTIFIER bên dưới).
     EXAMSUITE_BUNDLE_ID_SUFFIX: ""
-    # Vai của app với file `.exam` (LSHandlerRank trong Info.plist): build thường lấy
+    # Vai của app với file `.exam`, `.oef` (LSHandlerRank trong Info.plist): build thường lấy
     # EXAMSUITE_DOC_HANDLER_RANK_NORMAL của từng target (Học viên Alternate, Admin Owner); build UI test (đuôi
     # `.uitest`, `:identifier` đổi thành `_uitest`) lấy EXAMSUITE_DOC_HANDLER_RANK_NORMAL_uitest = None, để bản `.uitest`
     # trong DerivedData không bao giờ được LaunchServices chọn mở `.exam` từ Finder (nó sẽ dừng vì thiếu tham số).
@@ -82,13 +82,20 @@ targets:
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         LSMinimumSystemVersion: "15.0"
         NSHumanReadableCopyright: "© 2026 Nt0"
-        # Bản Học viên: chỉ xem (Viewer). Kiểu `.exam` do bản Admin export; ở đây import.
+        # Bản Học viên: chỉ xem (Viewer). Kiểu `.exam` do bản Admin export; ở đây import. `.oef` của Open Exam Suite:
+        # import, hạng Alternate như `.exam` (OES không khai báo UTType, máy có OES thì OES vẫn mở mặc định; plan-oef.md
+        # QO11), cùng biến hạng nên bản `.uitest` là None.
         CFBundleDocumentTypes:
           - CFBundleTypeName: Exam Suite Exam
             CFBundleTypeRole: Viewer
             LSHandlerRank: $(EXAMSUITE_DOC_HANDLER_RANK)
             LSItemContentTypes:
               - vn.io.nt0.exam
+          - CFBundleTypeName: Open Exam Suite Exam
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: $(EXAMSUITE_DOC_HANDLER_RANK)
+            LSItemContentTypes:
+              - vn.io.nt0.examsuite.oef
         UTImportedTypeDeclarations:
           - UTTypeIdentifier: vn.io.nt0.exam
             UTTypeDescription: Exam Suite Exam
@@ -97,6 +104,13 @@ targets:
             UTTypeTagSpecification:
               public.filename-extension:
                 - exam
+          - UTTypeIdentifier: vn.io.nt0.examsuite.oef
+            UTTypeDescription: Open Exam Suite Exam
+            UTTypeConformsTo:
+              - public.data
+            UTTypeTagSpecification:
+              public.filename-extension:
+                - oef
   # XCUITest cho bản Học viên: luồng bàn phím 1–3 của docs/product/overview.md. Lái app ở chế độ cô lập (kho,
   # đề mẫu, cài đặt trong thư mục tạm; chỉ build Debug). Chạy trên Mac của người điều phối bằng
   # `scripts/verify_local.sh --uitest`, không vào CI. Cần quyền Accessibility/Automation cho trình chạy test.
@@ -166,6 +180,16 @@ targets:
             UTTypeTagSpecification:
               public.filename-extension:
                 - exam
+        # `.oef` chỉ khai báo import (hộp chọn file của Thư viện và Import đề… nhận ra kiểu); không có document type: bản
+        # Admin không mở `.oef` từ Finder (plan-oef.md QO10).
+        UTImportedTypeDeclarations:
+          - UTTypeIdentifier: vn.io.nt0.examsuite.oef
+            UTTypeDescription: Open Exam Suite Exam
+            UTTypeConformsTo:
+              - public.data
+            UTTypeTagSpecification:
+              public.filename-extension:
+                - oef
   # XCUITest cho bản Admin, cùng cách chạy với ExamSuiteUITests (chế độ cô lập, chỉ build Debug, bundle ID
   # `vn.io.nt0.examsuite.admin.uitest`; `scripts/verify_local.sh --uitest`, không vào CI): mở app cô lập, luồng 4, 5
   # của docs/product/overview.md, Import đề… với file tự soạn (Apps/AdminUITests/Fixtures, chép vào bundle test).
@@ -250,13 +274,18 @@ targets:
           - UIInterfaceOrientationLandscapeRight
         # Hành vi như macOS (QI9): file mở từ app Tệp được tham chiếu tại chỗ khi iOS cho phép.
         LSSupportsOpeningDocumentsInPlace: true
-        # Bản Học viên: chỉ xem (Viewer), kiểu `.exam` khai báo import như bản Học viên macOS.
+        # Bản Học viên: chỉ xem (Viewer), kiểu `.exam` và `.oef` khai báo import như bản Học viên macOS.
         CFBundleDocumentTypes:
           - CFBundleTypeName: Exam Suite Exam
             CFBundleTypeRole: Viewer
             LSHandlerRank: Alternate
             LSItemContentTypes:
               - vn.io.nt0.exam
+          - CFBundleTypeName: Open Exam Suite Exam
+            CFBundleTypeRole: Viewer
+            LSHandlerRank: Alternate
+            LSItemContentTypes:
+              - vn.io.nt0.examsuite.oef
         UTImportedTypeDeclarations:
           - UTTypeIdentifier: vn.io.nt0.exam
             UTTypeDescription: Exam Suite Exam
@@ -265,6 +294,13 @@ targets:
             UTTypeTagSpecification:
               public.filename-extension:
                 - exam
+          - UTTypeIdentifier: vn.io.nt0.examsuite.oef
+            UTTypeDescription: Open Exam Suite Exam
+            UTTypeConformsTo:
+              - public.data
+            UTTypeTagSpecification:
+              public.filename-extension:
+                - oef
   # XCUITest bản iOS trên simulator (docs/product/plan-ios-v1.md Phần 5), build với đuôi `.uitest` như hai bản macOS:
   # chế độ cô lập của AppLaunchStorage, hỗ trợ test riêng (Support/), chỉ dùng chung đề mẫu của Apps/UITestSupport.
   ExamSuiteiOSUITests:
@@ -274,6 +310,9 @@ targets:
     sources:
       - Apps/StudentiOSUITests
       - Apps/UITestSupport/Samples.swift
+      # File `.oef` của oracle chung (luồng 3 thêm nó bằng Thêm đề; plan-oef.md O2).
+      - path: fixtures/oef/co-ban.oef
+        buildPhase: resources
     dependencies:
       - target: ExamSuiteiOS
     settings:

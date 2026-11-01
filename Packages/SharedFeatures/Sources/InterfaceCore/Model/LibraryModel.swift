@@ -321,7 +321,7 @@ public final class LibraryModel {
         lhs.standardizedFileURL.resolvingSymlinksInPath().path == rhs.standardizedFileURL.resolvingSymlinksInPath().path
     }
 
-    /// Bản Học viên: file `.exam` mở từ Finder (nhấp đúp, Open With, kéo vào biểu tượng Dock). Đi qua
+    /// Bản Học viên: file `.exam`, `.oef` mở từ Finder (nhấp đúp, Open With, kéo vào biểu tượng Dock). Đi qua
     /// đúng luồng Thêm đề; mở cửa sổ Thư viện hoặc đưa nó lên trước.
     @discardableResult
     public func openFromFinder(_ urls: [URL]) -> Task<Void, Never> {
@@ -536,7 +536,8 @@ public final class LibraryModel {
 
     /// **Sửa** dùng được không: chỉ bản Admin, khi file đọc được ở chế độ dễ (hoặc chưa kiểm xong).
     public func canEdit(_ entry: LibraryEntry) -> Bool {
-        guard isAdmin else { return false }
+        // `.oef` không mở thẳng vào cửa sổ soạn đề, chỉ qua Import đề… (plan-oef.md QO10; Sửa tắt, Nt0 chốt 2026-10-31).
+        guard isAdmin, !entry.isOEF else { return false }
         switch entry.status {
         case .ready, .checking, .readableWithIssues:
             return true

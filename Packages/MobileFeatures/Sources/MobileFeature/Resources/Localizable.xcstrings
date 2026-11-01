@@ -1027,12 +1027,12 @@
         }
       }
     },
-    "Thêm file đề .exam bằng nút Thêm đề, hoặc mở file .exam từ app khác." : {
+    "Thêm file đề .exam hay .oef bằng nút Thêm đề, hoặc mở file từ app khác." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Add .exam files with the Add Exam button, or open an .exam file from another app."
+            "value" : "Add .exam or .oef files with the Add Exam button, or open a file from another app."
           }
         }
       }
@@ -1108,12 +1108,12 @@
         }
       }
     },
-    "Thư viện có sẵn đề mẫu để bạn làm quen. Thêm đề của bạn bằng nút Thêm đề, hoặc mở file .exam từ app khác." : {
+    "Thư viện có sẵn đề mẫu để bạn làm quen. Thêm đề của bạn bằng nút Thêm đề, hoặc mở file .exam hay .oef từ app khác." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The library includes sample exams to help you get started. Add your own exams with the Add Exam button, or open an .exam file from another app."
+            "value" : "The library includes sample exams to help you get started. Add your own exams with the Add Exam button, or open an .exam or .oef file from another app."
           }
         }
       }

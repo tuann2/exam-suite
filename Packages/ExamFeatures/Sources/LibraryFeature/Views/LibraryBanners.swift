@@ -85,7 +85,7 @@ struct LibraryBanners: View {
                         systemImage: "sparkles",
                         tone: LibraryPalette.accentForeground,
                         title: localized("Chào mừng bạn đến với Exam Suite"),
-                        message: localized("Thư viện có sẵn đề mẫu để bạn làm quen. Thêm đề của bạn bằng nút Thêm đề (⌘O) hoặc kéo file .exam vào cửa sổ này. Xoá đề mẫu thì lấy lại được bằng Trợ giúp > Khôi phục đề mẫu."),
+                        message: localized("Thư viện có sẵn đề mẫu để bạn làm quen. Thêm đề của bạn bằng nút Thêm đề (⌘O) hoặc kéo file .exam hay .oef vào cửa sổ này. Xoá đề mẫu thì lấy lại được bằng Trợ giúp > Khôi phục đề mẫu."),
                         closeTitle: localized("Đóng"),
                         onClose: { welcomeBanner = .dismissed }
                     )
@@ -169,7 +169,7 @@ struct DropTargetOverlay: View {
                 in: RoundedRectangle(cornerRadius: 12)
             )
             .overlay {
-                Label(localized("Thả file .exam vào đây để thêm vào thư viện"), systemImage: "square.and.arrow.down")
+                Label(localized("Thả file .exam hay .oef vào đây để thêm vào thư viện"), systemImage: "square.and.arrow.down")
                     .font(.title3.weight(.semibold))
                     .padding(16)
                     .adaptiveBackground(.material, in: RoundedRectangle(cornerRadius: 10))

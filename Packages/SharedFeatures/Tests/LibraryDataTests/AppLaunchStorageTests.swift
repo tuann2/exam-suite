@@ -308,8 +308,10 @@ struct AppLaunchStorageTests {
     /// project.yml khai báo kiểu file `.exam` ở sáu chỗ: `LSItemContentTypes` và `UTTypeIdentifier` của ba bản app (bản
     /// Học viên macOS và bản iOS import, bản Admin export; exam-format.md, ADR 0003). Cả sáu phải là
     /// `ExamFileFormat.uniformTypeIdentifier` mà `UTType.examPackage` dùng; lệch thì Finder và hộp chọn file không coi
-    /// `.exam` là đề của app (đổi tên kiểu 2026-10-18, plan giai đoạn 6 mục G6 Nt0).
-    @Test("project.yml: kiểu file .exam của ba bản app khớp ExamFileFormat.uniformTypeIdentifier")
+    /// `.exam` là đề của app (đổi tên kiểu 2026-10-18, plan giai đoạn 6 mục G6 Nt0). Kiểu `.oef` (plan-oef.md QO11): ba
+    /// bản app khai báo import `ExamFileFormat.oefUniformTypeIdentifier` (`UTType.openExamFile`), chỉ hai bản Học viên
+    /// có document type cho nó (bản Admin không mở `.oef` từ Finder, QO10).
+    @Test("project.yml: kiểu file .exam, .oef của ba bản app khớp ExamFileFormat")
     func projectExamTypeIdentifiers() throws {
         let lines = try Self.projectLines()
         let identifier = ExamFileFormat.uniformTypeIdentifier
@@ -326,9 +328,23 @@ struct AppLaunchStorageTests {
             #expect(try firstItem(under: "LSItemContentTypes:") == "- " + identifier, "\(target): LSItemContentTypes")
             #expect(try firstItem(under: declarationKey) == "- UTTypeIdentifier: " + identifier, "\(target): \(declarationKey)")
         }
-        // Không có khai báo kiểu nào khác (ví dụ tên cũ sót ở chỗ thứ năm).
-        let declarations = lines.map { $0.trimmingCharacters(in: .whitespaces) }.filter { $0.hasPrefix("- UTTypeIdentifier:") }
-        #expect(declarations == Array(repeating: "- UTTypeIdentifier: " + identifier, count: 3), "\(declarations)")
+        // Không có khai báo kiểu nào khác (ví dụ tên cũ sót ở chỗ thứ năm): mỗi bản app khai báo `.exam` rồi `.oef`.
+        let oef = ExamFileFormat.oefUniformTypeIdentifier
+        let trimmedLines = lines.map { $0.trimmingCharacters(in: .whitespaces) }
+        let declarations = trimmedLines.filter { $0.hasPrefix("- UTTypeIdentifier:") }
+        let pair = ["- UTTypeIdentifier: " + identifier, "- UTTypeIdentifier: " + oef]
+        #expect(declarations == pair + pair + pair, "\(declarations)")
+        // Document type `.oef`: hai bản Học viên có, hạng như `.exam` (Alternate; bản `.uitest` của macOS None qua biến
+        // hạng), bản Admin không.
+        for (target, rank) in [("ExamSuite", "$(EXAMSUITE_DOC_HANDLER_RANK)"), ("ExamSuiteAdmin", nil),
+                               ("ExamSuiteiOS", "Alternate")] {
+            let block = try #require(Self.targetBlock(target, in: lines), "project.yml thiếu target \(target)")
+            let trimmed = block.map { $0.trimmingCharacters(in: .whitespaces) }
+            #expect(trimmed.filter { $0 == "- " + oef }.count == (rank == nil ? 0 : 1), "\(target): LSItemContentTypes của .oef")
+            guard let rank else { continue }
+            let name = try #require(trimmed.firstIndex(of: "- CFBundleTypeName: Open Exam Suite Exam"), "\(target): document type .oef")
+            #expect(trimmed[name + 2] == "LSHandlerRank: " + rank, "\(target): hạng của .oef")
+        }
     }
 
     /// Giá trị `EXAMSUITE_IOS_CONFIG_SUFFIX` theo tên cấu hình (`Debug:`, `Release:`) trong khối target ExamSuiteiOS,

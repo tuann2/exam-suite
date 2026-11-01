@@ -47,13 +47,13 @@ struct ReadableFile: Hashable, Sendable {
 }
 
 /// Mọi việc chạm tới file đề của Thư viện: phân giải bookmark, kiểm file còn không, đọc bằng
-/// `ExamPackageReader`, ghi đề mẫu. Không trạng thái, `Sendable`, đồng bộ (chặn luồng): `LibraryStore`
-/// gọi trên hàng đợi `FileWork` rồi áp kết quả trên main actor.
+/// `ExamSourceReader` (gói `.exam`, hay `.oef` chuyển mỗi lần đọc: plan-oef.md QO9), ghi đề mẫu. Không trạng thái,
+/// `Sendable`, đồng bộ (chặn luồng): `LibraryStore` gọi trên hàng đợi `FileWork` rồi áp kết quả trên main actor.
 struct ExamFileInspector: Sendable {
     typealias Reader = @Sendable (URL, ReadMode) throws -> ExamPackage
 
     static let defaultReader: Reader = { url, mode in
-        try ExamPackageReader.read(contentsOf: url, mode: mode)
+        try ExamSourceReader.read(contentsOf: url, mode: mode)
     }
 
     /// Đọc gói đề; test thay bằng bản đếm số lần đọc hoặc kiểm luồng.
@@ -217,7 +217,7 @@ struct ExamFileInspector: Sendable {
     // MARK: - Nhập file
 
     enum Inspection: Hashable, Sendable {
-        /// Không phải file `.exam` (đuôi khác, thư mục).
+        /// Không phải file `.exam` hay `.oef` (đuôi khác, thư mục).
         case notExam
         /// Không dùng được. `unreadable`: file có thật nhưng không đọc được (kể cả chế độ dễ), đủ để cập
         /// nhật trạng thái của mục đang trỏ tới đúng file đó.
@@ -237,7 +237,9 @@ struct ExamFileInspector: Sendable {
     /// Đọc một file người dùng chọn hoặc kéo vào. Chưa quyết định thêm hay không: bản Học viên từ
     /// chối `.failsStrict`, việc đó do `LibraryStore` quyết theo chế độ của bản app.
     func inspectNewFile(_ url: URL) -> Inspection {
-        guard url.isFileURL, url.pathExtension.lowercased() == ExamFileFormat.fileExtension else { return .notExam }
+        guard url.isFileURL, ExamSourceReader.fileExtensions.contains(url.pathExtension.lowercased()) else {
+            return .notExam
+        }
         // iOS: URL của hộp chọn file mang quyền security scope; mở quyền cho cả lần đọc và lúc tạo bookmark.
         return SecurityScopedAccess.with(url) { inspectAccessibleFile(url) }
     }

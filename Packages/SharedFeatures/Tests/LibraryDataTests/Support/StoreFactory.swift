@@ -66,7 +66,7 @@ final class ReadRecorder: @unchecked Sendable {
             }
             defer { lock.withLock { inFlight -= 1 } }
             if delay > 0 { Thread.sleep(forTimeInterval: delay) }
-            return try ExamPackageReader.read(contentsOf: url, mode: mode)
+            return try ExamSourceReader.read(contentsOf: url, mode: mode)
         }
     }
 
@@ -189,7 +189,7 @@ final class ReadGate: @unchecked Sendable {
                 while blocked.contains(name) { condition.wait() }
             }
             defer { condition.withLock { finished[name, default: 0] += 1 } }
-            return try ExamPackageReader.read(contentsOf: url, mode: mode)
+            return try ExamSourceReader.read(contentsOf: url, mode: mode)
         }
     }
 }

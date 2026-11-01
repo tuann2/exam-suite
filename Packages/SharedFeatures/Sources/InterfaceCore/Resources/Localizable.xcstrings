@@ -17,12 +17,12 @@
         }
       }
     },
-    "\"%@\" không phải file đề .exam." : {
+    "\"%@\" không phải file đề .exam hay .oef." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\"%@\" isn’t an .exam file."
+            "value" : "\"%@\" isn’t an .exam or .oef file."
           }
         }
       }
@@ -397,12 +397,12 @@
         }
       }
     },
-    "Chỉ thêm được file đề có đuôi .exam." : {
+    "Chỉ thêm được file đề có đuôi .exam hoặc .oef." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Only .exam files can be added."
+            "value" : "Only .exam and .oef files can be added."
           }
         }
       }
@@ -1523,12 +1523,12 @@
         }
       }
     },
-    "Không phải file đề .exam." : {
+    "Không phải file đề .exam hay .oef." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Not an .exam file."
+            "value" : "Not an .exam or .oef file."
           }
         }
       }

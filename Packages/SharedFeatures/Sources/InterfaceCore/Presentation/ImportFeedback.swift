@@ -43,7 +43,7 @@ public struct ImportFeedback: Hashable, Sendable {
     public var notice: String?
     /// File cùng id với đề đã có nhưng khác file: hỏi lần lượt.
     public var replacements: [PendingReplacement]
-    /// File không thêm được (hỏng, có lỗi, cần app mới hơn, không phải `.exam`).
+    /// File không thêm được (hỏng, có lỗi, cần app mới hơn, không phải `.exam`, `.oef`).
     public var problems: [ImportProblem]
 
     /// - Parameter titles: tiêu đề hiện tại của các đề trong thư viện, theo id đề.
@@ -63,8 +63,8 @@ public struct ImportFeedback: Hashable, Sendable {
                 ImportProblem(
                     position: position,
                     url: item.url,
-                    reason: localized("Không phải file đề .exam."),
-                    nextStep: localized("Chỉ thêm được file đề có đuôi .exam.")
+                    reason: localized("Không phải file đề .exam hay .oef."),
+                    nextStep: localized("Chỉ thêm được file đề có đuôi .exam hoặc .oef.")
                 )
             case .added, .alreadyInLibrary, .needsReplaceConfirmation:
                 nil

@@ -63,6 +63,22 @@
           }
         }
       }
+    },
+    "Open Exam Suite Exam" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Exam Suite Exam"
+          }
+        },
+        "vi" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Đề Open Exam Suite"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

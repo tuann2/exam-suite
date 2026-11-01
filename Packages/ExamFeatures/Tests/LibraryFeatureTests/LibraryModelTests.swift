@@ -146,8 +146,8 @@ struct LibraryModelTests {
         #expect(problems.map(\.fileName) == ["hong.exam", "ghi-chu.txt"])
         #expect(problems[0].reason == ExamFileError.notAZipArchive.errorDescription)
         #expect(problems[0].nextStep == ImportProblem.nextStep(for: .corrupt(reason: .package(.notAZipArchive))))
-        #expect(problems[1].reason == "Không phải file đề .exam.")
-        #expect(problems[1].nextStep == "Chỉ thêm được file đề có đuôi .exam.")
+        #expect(problems[1].reason == "Không phải file đề .exam hay .oef.")
+        #expect(problems[1].nextStep == "Chỉ thêm được file đề có đuôi .exam hoặc .oef.")
         #expect(Set(problems.map(\.id)).count == 2)
 
         model.dismissPrompt(prompt.id)
@@ -523,6 +523,22 @@ struct LibraryModelTests {
             #expect(admin.canEdit(entry) == expected, "\(status)")
             #expect(!student.canEdit(entry))
         }
+    }
+
+    @Test("Bản Admin: đề .oef không Sửa được (chỉ qua Import đề…, plan-oef.md QO10), có chú thích; đề .exam vẫn Sửa được")
+    func oefEntriesCannotBeEdited() {
+        let admin = LibraryModel(store: .preview(entries: [], configuration: .admin), startsAutomatically: false)
+        let student = LibraryModel(store: .preview(entries: []), startsAutomatically: false)
+        var entry = PresentationTests.entry(title: "Đề", code: nil, questions: 1, status: .ready)
+        #expect(admin.canEdit(entry))
+        #expect(ExamActions(entry: entry, model: admin).editHelp == nil)
+        entry.fileURL = URL(fileURLWithPath: "/tmp/de.OEF")
+        #expect(entry.isOEF)
+        #expect(!admin.canEdit(entry))
+        #expect(ExamActions(entry: entry, model: admin).editHelp
+            == "Đề .oef không sửa trực tiếp được. Dùng Import đề… để chuyển sang .exam rồi sửa.")
+        #expect(!ExamActions(entry: entry, model: admin).accessibilityActions.contains { $0.title == "Sửa" })
+        #expect(ExamActions(entry: entry, model: student).editHelp == nil)
     }
 
     // MARK: - Danh sách, lịch sử, bàn phím

@@ -54,7 +54,7 @@ public final class MobileAppModel {
         )
     }
 
-    /// File `.exam` mở từ app khác (`onOpenURL`): dời khỏi `Inbox` nếu cần rồi đi qua đúng luồng Thêm đề của Thư viện
+    /// File `.exam`, `.oef` mở từ app khác (`onOpenURL`): dời khỏi `Inbox` nếu cần rồi đi qua đúng luồng Thêm đề của Thư viện
     /// (báo lỗi, hộp Dùng file mới / Huỷ, chọn đề vừa thêm). Đang làm bài thì màn làm bài vẫn hiện (đang Tạm dừng vì
     /// vừa rời app); đề vẫn được thêm, hộp hỏi và việc chọn đề hiện khi về Thư viện (QI12b).
     @discardableResult

@@ -118,6 +118,9 @@ ROWS: list[Row] = [
     # rồi Thi hết giờ, luồng 3 Quay lại hỏi Bỏ bài và xuống nền thì tạm dừng) đều đi qua Thư viện và phiên thi.
     Row("MobileFeature", [M + "Sources/MobileFeature/*"], classes={
         IOS: ["PhoneExamFlowUITests", "PhoneLeaveAppUITests", "PhonePracticeFlowUITests"]}),
+    # File `.oef` mà luồng 3 iOS thêm bằng Thêm đề (resource của target UI test iOS; id đề dẫn xuất ghi cứng trong test).
+    Row("fixtures/oef/co-ban", ["fixtures/oef/co-ban.oef", "fixtures/oef/src/co-ban.json"],
+        classes={IOS: ["PhoneLeaveAppUITests"]}),
     # Shell và điểm vào của từng bản: mọi lớp của bản đó.
     Row("StudentShell, Apps/Student", [F + "StudentShell/*", "Apps/Student/*"], shell=STUDENT),
     Row("AdminShell, Apps/Admin", [F + "AdminShell/*", "Apps/Admin/*"], shell=ADMIN),
@@ -314,6 +317,10 @@ def self_test(root: Path) -> None:
         assert ios_only["classes"] == {STUDENT: [], ADMIN: [], IOS: full_ios}, (ios_file, ios_only)
     both = plan([M + "Sources/MobileFeature/MobileRootView.swift", "Apps/Student/StudentApp.swift"], classes)
     assert both["classes"] == {STUDENT: full_student, ADMIN: [], IOS: full_ios}, both
+    # Fixture `.oef` mà UI test iOS dùng: chỉ luồng 3; fixture `.oef` khác chỉ có test của lõi (đối chứng âm).
+    oef = plan(["fixtures/oef/co-ban.oef"], classes)
+    assert oef["classes"] == {STUDENT: [], ADMIN: [], IOS: ["PhoneLeaveAppUITests"]}, oef
+    assert plan(["fixtures/oef/anh-bmp.oef"], classes)["mode"] == "none"
     # Module dùng chung và hạ tầng chung: đủ bộ gồm cả bản iOS.
     assert is_full(plan(["project.yml"], classes)) and full_ios
     # Tài liệu, unit test, script khác, LargeExamSupport: không lớp nào.

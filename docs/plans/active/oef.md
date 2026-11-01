@@ -4,8 +4,8 @@ Date: 2026-10-31
 
 ## Status
 
-Active. O1 trên nhánh `feature/oef-o1` (PR #13); O3 trên nhánh `feature/oef-o3`, xếp chồng một tầng trên O1 (O2 chờ I3
-của iOS merge, QO12).
+Active. O1 (PR #13) và O3 (PR #14) đã merge 2026-10-31; cổng GO1 Nt0 thử sau. O2 trên nhánh `feature/oef-o2`, xếp
+chồng một tầng trên I3 (PR #12, Nt0 cho merge trước cổng GI2 để làm liền mạch).
 
 ## Outcome
 
@@ -46,7 +46,7 @@ Thư viện, phiên thi đọc qua `ExamSourceReader`, UTType; sau khi I3 của 
 
 ## Progress
 
-- [ ] O1 Hợp đồng, oracle, bộ đọc Swift, Import đề… (rủi ro cao). Cổng GO1. Đã làm: ADR 0014; exam-format.md mục File
+- [x] O1 Hợp đồng, oracle, bộ đọc Swift, Import đề… (rủi ro cao; PR #13, merge 2026-10-31, cổng GO1 thử sau). Đã làm: ADR 0014; exam-format.md mục File
       `.oef`; import.md mục `.oef`; ghi chú ở ADR 0002, 0003; `ProtobufWire`, `OEFReader`, `OEFProblem`/`OEFNote`/
       `OEFLimits`, `ExamSourceReader`, `ExamFileError.oef` (ExamFile); `scripts/make_oef.py` + 15 fixture
       `fixtures/oef/` + `expected.json` viết tay; `OEFReaderTests` (oracle, vector), `OEFRobustnessTests` (cắt cụt,
@@ -54,8 +54,15 @@ Thư viện, phiên thi đọc qua `ExamSourceReader`, UTType; sau khi I3 của 
       `ImportSourceFormat.oef`, `OEFImporter`, mã và chi tiết mục báo cáo mới, `ImportError.unreadableOEF`,
       `AuthoringMessages`, `OEFImportTests`, ca `.oef` thật trong `ImportFlowModelTests`; catalog vi/en; ngân sách
       `oef.read` + test `Timing` (`OEFEncoding` chỉ cho test trong LargeExamSupport); vòng nén `SHA256`.
-- [ ] O2 Bản Học viên macOS và iOS (rủi ro cao). Sau I3 của iOS.
-- [ ] O3 Android (rủi ro cao). Song song O2. Đã làm: `:core` `ProtobufWire`, `OefReader` (chỉ đọc nghiêm, file đọc qua
+- [ ] O2 Bản Học viên macOS và iOS (rủi ro cao). Sau I3 của iOS. Đã làm: hai điểm đọc của bản Học viên qua
+      `ExamSourceReader` (`ExamFileInspector.defaultReader`, `SessionServices`); `inspectNewFile` nhận `.oef`; UTType
+      `openExamFile`, `examSourceTypes` cho hộp chọn file của Thư viện macOS và iOS; `project.yml`: UTType import
+      `vn.io.nt0.examsuite.oef` ở ba bản app, document type `.oef` hạng Alternate ở hai bản Học viên (bản `.uitest`
+      None), InfoPlist.xcstrings "Đề Open Exam Suite"; Thông tin: dòng Định dạng; bản Admin: Sửa tắt với đề `.oef`, kèm
+      chú thích; câu "không phải file đề .exam hay .oef"; `verify_local.sh` kiểm hạng của mọi document type của bản
+      `.uitest`; test `OEFLibraryTests`, `LibraryModelTests`, `AppLaunchStorageTests`, luồng 3 iOS thêm `.oef`;
+      library.md, mobile.md mục Bản iOS, CHANGELOG, CHANGELOG-ios, thuật ngữ đề xuất của accessibility-localization.md.
+- [x] O3 Android (rủi ro cao; PR #14, merge 2026-10-31). Đã làm: `:core` `ProtobufWire`, `OefReader` (chỉ đọc nghiêm, file đọc qua
       ánh xạ bộ nhớ), `OefProblem`/`OefPlace`/`OefLimits`, `ExamFileError.Oef`, `ExamSourceKind` (nhận diện theo nội
       dung), `ExamPackageWriter`, `MediaNaming.path`; `SharedOracleTest` đọc `fixtures/oef/` (phần đọc nghiêm, vector),
       `OefReaderTest` (cắt cụt, đột biến có seed, giới hạn, nhận diện, ghi gói rồi đọc lại); `:data` `ExamLibrary.import`
@@ -112,6 +119,22 @@ Thư viện, phiên thi đọc qua `ExamSourceReader`, UTType; sau khi I3 của 
   ART (`PlatformTest`: giải mã UTF-8, NFC của ART khác JDK); plan-oef.md dẫn sang luật nhận diện đã chốt; nit tài liệu.
   Danh sách đường dẫn, chữ đáp án trong câu báo của Android rút gọn còn 5 mục như các câu khác của bản Android (macOS
   hiện tới 20).
+- 2026-10-31 (O2, Nt0): Thư viện bản Admin nhận `.oef` như plan (đọc dễ), nhưng **Sửa tắt** với đề `.oef`, chú thích
+  "Đề .oef không sửa trực tiếp được. Dùng Import đề… để chuyển sang .exam rồi sửa." (QO10 không cho mở `.oef` vào cửa sổ
+  soạn đề; hai phương án khác: Sửa mở Import đề… với file đó, hay Thư viện Admin không nhận `.oef`).
+- 2026-10-31 (O2, chi tiết cài đặt): đoạn `.oef` của XCUITest iOS ở luồng 3 thay vì luồng 2 như plan-oef.md Phần 5:
+  file thay hộp chọn file (`-ExamSuiteUITestChosenFile`) là một đường dẫn cho cả lần mở app, luồng 2 đã dùng nó cho
+  `.exam`; luồng 3 chưa dùng nên truyền `.oef` ngay lần mở đầu, không thêm lần mở app. Thông tin của macOS thay dòng
+  "Phiên bản định dạng" bằng "Định dạng: Open Exam Suite (.oef)" (đề `.oef` luôn ra phiên bản 1, không có nghĩa); iOS
+  chưa có màn Thông tin.
+- 2026-10-31 (review độc lập O2): không chặn; mọi đường đọc và nhận file của bản Học viên (Thêm đề, kéo thả, Finder,
+  `onOpenURL`, `Received/`, Tìm file…, Làm mới, Trước khi thi, làm bài, Kết quả, Xem lại, PDF) đi qua `ExamSourceReader`.
+  Đã sửa: chữ gợi ý (lớp phủ kéo thả, banner chào, Thư viện trống ở macOS và iOS) nhắc cả `.oef`; bản Admin, đề `.oef`
+  có lỗi: bước Sửa thành dòng chữ chỉ sang Import đề… (chú thích của nút tắt có thể không hiện); `uitest_plan.py` map
+  `fixtures/oef/co-ban.oef` sang `PhoneLeaveAppUITests`; câu của CHANGELOG-ios; test kiểm hạng của document type `.oef`;
+  comment. Để GO2: chú thích Sửa ở bản Admin; máy có Open Exam Suite (nếu app khác khai báo export UTI cho `.oef`,
+  LaunchServices có thể ưu tiên UTI đó: hộp chọn file của Thư viện làm mờ `.oef`, Open With không có Exam Suite;
+  Import đề… không bị vì tra theo đuôi).
 - 2026-10-31: `fixtures/oef/**` và `scripts/make_oef.py` để mức `full` của `verify_scope.py` (mặc định với đường dẫn chưa
   có trong bảng): test của ExamFeatures (`OEFImportTests`, `ImportFlowModelTests`) đọc `fixtures/oef/`.
 

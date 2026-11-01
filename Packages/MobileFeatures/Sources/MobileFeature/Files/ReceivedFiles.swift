@@ -1,7 +1,7 @@
 import Foundation
 import LibraryData
 
-/// File `.exam` mở từ app khác (docs/product/mobile.md, mục Bản iOS, QI12).
+/// File `.exam`, `.oef` mở từ app khác (docs/product/mobile.md, mục Bản iOS, QI12).
 ///
 /// - Hộp chia sẻ, "Mở bằng" (Zalo, Mail, AirDrop…): iOS chép file vào thư mục `Inbox` của app (`Documents/Inbox`) rồi
 ///   giao URL đó. `Inbox` không phải chỗ lưu lâu dài (app không được tạo file ở đó, iOS có thể dọn), nên app dời file

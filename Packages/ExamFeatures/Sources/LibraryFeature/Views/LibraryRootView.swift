@@ -59,7 +59,7 @@ public struct LibraryRootView: View {
                 get: { model.fileImportRequest != nil && model.infoExamID == nil },
                 set: { presented in if !presented { model.fileImporterDismissed() } }
             ),
-            allowedContentTypes: [.examPackage],
+            allowedContentTypes: UTType.examSourceTypes,
             allowsMultipleSelection: model.fileImportRequest?.allowsMultipleSelection ?? true,
             onCompletion: { result in _ = model.completeFileImport(result) },
             onCancellation: { model.cancelFileImport() }
@@ -258,7 +258,7 @@ struct LibraryDetailView: View {
             ContentUnavailableView {
                 Label(localized("Chưa có đề nào"), systemImage: "books.vertical")
             } description: {
-                Text("Thêm file đề .exam bằng nút Thêm đề (⌘O) hoặc kéo file vào cửa sổ này.", bundle: .module)
+                Text("Thêm file đề .exam hay .oef bằng nút Thêm đề (⌘O) hoặc kéo file vào cửa sổ này.", bundle: .module)
             } actions: {
                 Button(localized("Thêm đề…")) { model.requestAddExams() }
             }

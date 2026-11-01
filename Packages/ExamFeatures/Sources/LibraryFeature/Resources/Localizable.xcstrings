@@ -165,6 +165,16 @@
         }
       }
     },
+    "Đề .oef không sửa trực tiếp được. Dùng Import đề… để chuyển sang .exam rồi sửa." : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : ".oef exams can’t be edited directly. Use Import Exam… to convert to .exam, then edit."
+          }
+        }
+      }
+    },
     "Đề có lần thi hoặc được thêm trong 30 ngày qua sẽ hiện ở đây." : {
       "localizations" : {
         "en" : {
@@ -221,6 +231,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Score"
+          }
+        }
+      }
+    },
+    "Định dạng" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Format"
           }
         }
       }
@@ -537,6 +557,16 @@
         }
       }
     },
+    "Open Exam Suite (.oef)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Exam Suite (.oef)"
+          }
+        }
+      }
+    },
     "Phiên bản định dạng" : {
       "localizations" : {
         "en" : {
@@ -617,12 +647,12 @@
         }
       }
     },
-    "Thả file .exam vào đây để thêm vào thư viện" : {
+    "Thả file .exam hay .oef vào đây để thêm vào thư viện" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Drop .exam files here to add them to the Library"
+            "value" : "Drop .exam or .oef files here to add them to the Library"
           }
         }
       }
@@ -677,12 +707,12 @@
         }
       }
     },
-    "Thêm file đề .exam bằng nút Thêm đề (⌘O) hoặc kéo file vào cửa sổ này." : {
+    "Thêm file đề .exam hay .oef bằng nút Thêm đề (⌘O) hoặc kéo file vào cửa sổ này." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Add .exam files with the Add Exams button (⌘O), or drag files into this window."
+            "value" : "Add .exam or .oef files with the Add Exams button (⌘O), or drag files into this window."
           }
         }
       }
@@ -757,12 +787,12 @@
         }
       }
     },
-    "Thư viện có sẵn đề mẫu để bạn làm quen. Thêm đề của bạn bằng nút Thêm đề (⌘O) hoặc kéo file .exam vào cửa sổ này. Xoá đề mẫu thì lấy lại được bằng Trợ giúp > Khôi phục đề mẫu." : {
+    "Thư viện có sẵn đề mẫu để bạn làm quen. Thêm đề của bạn bằng nút Thêm đề (⌘O) hoặc kéo file .exam hay .oef vào cửa sổ này. Xoá đề mẫu thì lấy lại được bằng Trợ giúp > Khôi phục đề mẫu." : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The Library includes sample exams to help you get started. Add your own exams with the Add Exams button (⌘O), or drag .exam files into this window. If you delete the sample exams, you can get them back with Help > Restore Sample Exams."
+            "value" : "The Library includes sample exams to help you get started. Add your own exams with the Add Exams button (⌘O), or drag .exam or .oef files into this window. If you delete the sample exams, you can get them back with Help > Restore Sample Exams."
           }
         }
       }

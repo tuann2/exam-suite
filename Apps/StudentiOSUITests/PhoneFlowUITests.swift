@@ -111,11 +111,14 @@ final class PhoneExamFlowUITests: XCTestCase {
 
 /// Luồng 3 trên iPhone: nút Quay lại hỏi "Bỏ bài?" (Tiếp tục làm giữ bài); vuốt từ cạnh trái hay trên nội dung không
 /// rời màn làm bài; đang phóng to ảnh mà xuống nền thì Tạm dừng "vì bạn rời app", ảnh đóng theo câu, mở lại vẫn Tạm
-/// dừng tới khi bấm Tiếp tục; Bỏ bài thì về Thư viện, không có lần thi.
+/// dừng tới khi bấm Tiếp tục; Bỏ bài thì về Thư viện, không có lần thi. Cuối luồng: Thêm đề với file `.oef` của Open
+/// Exam Suite (oracle `fixtures/oef/co-ban.oef`), đề vào Thư viện và mở được Trước khi thi (plan-oef.md bước O2).
 final class PhoneLeaveAppUITests: XCTestCase {
     @MainActor
     func testBackAsksAndBackgroundPauses() throws {
         let phone = try PhoneApp(for: self)
+        let oef = try XCTUnwrap(Bundle(for: Self.self).url(forResource: "co-ban", withExtension: "oef"))
+        try phone.useChosenFile(copying: oef, as: "Đề thử.oef")
         phone.app.launch()
         phone.start(Samples.lamQuen, mode: "Luyện tập")
 
@@ -153,5 +156,12 @@ final class PhoneLeaveAppUITests: XCTestCase {
         phone.tap("session.back")
         phone.tap("session.discard", timeout: 5)
         XCTAssertTrue(phone.row(Samples.lamQuen).waitForExistence(timeout: 10), "Bỏ bài phải về Thư viện")
+
+        // Thêm đề `.oef`: id đề dẫn xuất từ mã và tiêu đề của file (exam-format.md, mục File `.oef`).
+        phone.tap("library.add")
+        let oefRow = phone.element("library.row.28E653AB-ADCB-82CD-A684-5AF689FEDBAB")
+        XCTAssertTrue(oefRow.waitForExistence(timeout: 10), "Thêm đề .oef phải có trong Thư viện")
+        oefRow.tap()
+        XCTAssertTrue(phone.element("preExam.start").waitForExistence(timeout: 10), "Đề .oef phải mở được Trước khi thi")
     }
 }

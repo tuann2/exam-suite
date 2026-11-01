@@ -205,6 +205,14 @@ Thuật ngữ đề xuất của bản iOS (bước I3, màn Giới thiệu; age
 | Mã nguồn và giấy phép | Source Code and Licenses | Link tới repo, như `Credits.rtf` |
 | Mục, sắp xếp, Giới thiệu | Section, Sort, About | Nhãn trợ năng của menu Thư viện |
 
+Thuật ngữ đề xuất của file `.oef` (plan-oef.md bước O2; agent dịch theo phương án 4, **chờ Nt0 duyệt**):
+
+| Tiếng Việt | Tiếng Anh (đề xuất) | Ghi chú |
+| --- | --- | --- |
+| Đề Open Exam Suite | Open Exam Suite Exam | Tên kiểu tài liệu `.oef` (Info.plist, như "Đề Exam Suite") |
+| Định dạng: Open Exam Suite (.oef) | Format: Open Exam Suite (.oef) | Dòng của Thông tin (bản macOS) |
+| Đề .oef không sửa trực tiếp được… Import đề… | .oef exams can’t be edited directly… Import Exam… | Chú thích của Sửa tắt (bản Admin) |
+
 ### Cách làm
 
 - Mỗi target có chữ giao diện có `Localizable.xcstrings` riêng: InterfaceCore, SessionModel (`Packages/SharedFeatures`,
